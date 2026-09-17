@@ -5,7 +5,7 @@ const { chromium, webkit } = await import(process.env.PLAYWRIGHT_MODULE || '/tmp
 const base = process.env.REVIEW_URL || 'http://127.0.0.1:4176';
 const out = 'review-artifacts';
 mkdirSync(out, { recursive: true });
-const report = { commit: execFileSync('git', ['rev-parse', 'HEAD'], { encoding:'utf8' }).trim(), base, layouts: [], checks: [], errors: [] };
+const report = { commit: execFileSync('git', ['rev-parse', 'HEAD'], { encoding:'utf8' }).trim(), base, layouts: [], checks: [], errors: [], layoutFailures: [] };
 const sizes = [[320,568],[360,640],[390,844],[430,932],[768,1024],[844,390],[1024,768],[1280,720],[1366,768],[1440,900],[1920,1080],[2560,1440],[3840,2160]];
 const query = (slide = 1) => `${base}/?section=sales-model&modelView=premises&slide=${slide}&page=overview&branch=all&role=all&group=both&scope=without&quarter=3&metric=sales`;
 async function ready(page, slide) {
@@ -54,9 +54,11 @@ try {
         });
         report.layouts.push({ browser:name,width,height,slide,...layout });
         const label=`${name} ${width}x${height} slide ${slide}`;
+        try {
         assert.ok(layout.visibleLinks && layout.controls && layout.documentFits && layout.images, `${label}: chrome does not fit ${JSON.stringify(layout)}`);
         assert.equal(layout.overflow.length,0,`${label}: text outside slide ${layout.overflow.join('; ')}`);
         assert.ok(width>900 ? layout.slideFits : layout.lastReachable,`${label}: slide is clipped`);
+        } catch (error) { report.layoutFailures.push(String(error)); }
         if ([320,390,844,1366,1920].includes(width)) await page.screenshot({ path:`${out}/${name}-${width}x${height}-${slide}.png` });
       }
     }
@@ -133,6 +135,7 @@ try {
     }
     await browser.close();
   }
+  assert.equal(report.layoutFailures.length,0,report.layoutFailures.join('\n'));
   assert.equal(report.errors.length,0,report.errors.join('\n'));
   report.status='passed';
 } catch(error) { report.status='failed';report.failure=String(error.stack || error);throw error; }

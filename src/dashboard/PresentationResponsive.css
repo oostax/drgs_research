@@ -1,0 +1,18 @@
+/* Preserve a readable reference width on short desktop screens, reflow on mobile. */
+@media(min-width:901px) {
+  .sales-deck .deck-canvas { inset:auto; top:0; left:50%; width:max(100%,1280px); transform:translate(-50%,var(--deck-offset,0px)) scale(var(--deck-scale,1)); }
+}
+
+@media(max-width:900px) {
+  .sales-deck :is(.adjacent-slide,.campaign-slide) { grid-template-columns:minmax(0,1fr); }
+  .sales-deck :is(.adjacent-copy,.adjacent-actions,.adjacent-action,.adjacent-action>div,.campaign-goals,.campaign-goal,.campaign-goal>div) { min-width:0; }
+  .sales-deck .adjacent-copy h2 { font-size:clamp(26px,4.4vw,38px); line-height:1.15; }
+  .sales-deck .adjacent-copy h2 span { white-space:normal; }
+}
+@media(max-width:600px) {
+  .sales-deck :is(.adjacent-action,.campaign-goal) { grid-template-columns:minmax(0,1fr); padding:20px; gap:16px; }
+  .sales-deck :is(.adjacent-action,.campaign-goal)>.deck-icon { width:52px; height:52px; border-radius:12px; }
+  .sales-deck :is(.adjacent-action,.campaign-goal)>.deck-icon svg { width:30px; height:30px; }
+  .sales-deck .adjacent-outcome { align-items:flex-start; padding:18px; }
+  .sales-deck .campaign-goal h3 { font-size:24px; }
+}

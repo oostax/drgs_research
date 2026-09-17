@@ -25,7 +25,7 @@ function useSlideFit(slide: number) {
       surface.style.setProperty('--deck-available-height', `${available}px`);
       const compact = window.matchMedia('(max-width: 900px)').matches;
       const height = Math.max(content.offsetHeight, 1);
-      const scale = compact ? 1 : Math.min(1, available / height);
+      const scale = compact ? 1 : Math.min(1, frame.clientWidth / Math.max(surface.offsetWidth, 1), available / height);
       surface.style.setProperty('--deck-scale', String(scale));
       surface.style.setProperty('--deck-offset', `${compact ? 0 : Math.max(0, (available - height * scale) / 2)}px`);
     };

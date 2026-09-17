@@ -5,6 +5,7 @@ import "./dashboard/styles.css";
 import "./dashboard/readable.css";
 import "./dashboard/OverviewPanels.css";
 import "./dashboard/Presentation.css";
+import "./dashboard/PresentationResponsive.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

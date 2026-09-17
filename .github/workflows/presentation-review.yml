@@ -1,14 +1,14 @@
 name: Presentation review
 on:
   push:
-    branches: [fix/presentation-responsive-navigation]
+    branches: [master, fix/presentation-responsive-navigation]
   pull_request:
     paths:
       - 'src/dashboard/**'
       - 'scripts/presentation-*.mjs'
       - '.github/workflows/presentation-review.yml'
 permissions:
-  contents: write
+  contents: read
 concurrency:
   group: presentation-${{ github.ref }}
   cancel-in-progress: true
@@ -18,17 +18,6 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - name: Integrate verified presentation source
-        if: github.event_name == 'push' && github.ref == 'refs/heads/fix/presentation-responsive-navigation'
-        run: |
-          python3 .github/apply-presentation.py
-          git add src/dashboard/App.tsx src/dashboard/SalesModelDeck.tsx src/dashboard/model.ts src/main.tsx
-          if ! git diff --cached --quiet; then
-            git config user.name 'github-actions[bot]'
-            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-            git commit -m 'fix: integrate responsive presentation and cross-section navigation'
-            git push origin HEAD:fix/presentation-responsive-navigation
-          fi
       - uses: actions/setup-node@v4
         with:
           node-version: 24
