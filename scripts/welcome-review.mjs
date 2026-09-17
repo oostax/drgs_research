@@ -71,13 +71,15 @@ for (const [engine,type] of [['chromium',chromium],['webkit',webkit]]) {
     report.interactions.push(`${engine}: emulated touch swipe advances to next section`);await touch.close();
     const animated = await browser.newPage({viewport:{width:1440,height:900},reducedMotion:'no-preference'});
     await animated.goto(url);await ready(animated);await animated.waitForTimeout(1100);
+    await animated.keyboard.press('Tab');
+    assert.equal(await animated.evaluate(()=>document.documentElement.dataset.input),'keyboard','Keyboard modality was not activated');
     const samples = [];
     for(let i=0;i<12;i++) {
       samples.push(await animated.evaluate(()=>({transform:getComputedStyle(document.querySelector('.welcome-ribbon-main')).transform,
         layout: [...document.querySelectorAll('.welcome-copy,.welcome-heading,.welcome-sector,.welcome-speaker')].map(e=>[e.offsetTop,e.offsetLeft,e.offsetWidth,e.offsetHeight]).flat().join('|')})));
       await animated.waitForTimeout(400);
     }
-    assert(new Set(samples.map(s=>s.transform)).size>1, 'Sculpture is not animated');
+    assert(new Set(samples.map(s=>s.transform)).size>1, 'Sculpture is not animated in keyboard mode');
     assert.equal(new Set(samples.map(s=>s.layout)).size,1,'Text geometry changed during the animation');
     assert.equal(new URL(animated.url()).searchParams.get('section'),'title','Unexpected auto-navigation');
     await animated.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,value:true});document.dispatchEvent(new Event('visibilitychange'));});

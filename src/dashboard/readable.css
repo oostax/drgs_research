@@ -348,6 +348,8 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible, input:focus-vis
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
-/* Keyboard navigation stays still across dashboard controls. Presentation slides are
-   a deliberate exception: their transition supplies spatial context between scenes. */
-html[data-input="keyboard"] *:not(.sales-deck):not(.sales-deck *), html[data-input="keyboard"] *:not(.sales-deck):not(.sales-deck *)::before, html[data-input="keyboard"] *:not(.sales-deck):not(.sales-deck *)::after { animation: none !important; transition: none !important; }
+/* Keyboard navigation stays still across dashboard controls. Presentation surfaces
+   are deliberate exceptions: their motion must not depend on a pointer click. */
+html[data-input="keyboard"] *:not(.sales-deck):not(.sales-deck *):not(.welcome-page):not(.welcome-page *),
+html[data-input="keyboard"] *:not(.sales-deck):not(.sales-deck *):not(.welcome-page):not(.welcome-page *)::before,
+html[data-input="keyboard"] *:not(.sales-deck):not(.sales-deck *):not(.welcome-page):not(.welcome-page *)::after { animation: none !important; transition: none !important; }
