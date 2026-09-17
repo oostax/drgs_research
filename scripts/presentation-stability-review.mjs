@@ -9,17 +9,24 @@ const url = (slide = 6) => `${base}/?section=sales-model&modelView=premises&slid
 const ready = page => page.locator('.deck-stage:not(.deck-stage-leave)[data-fit-ready="true"]').waitFor();
 function recordFrames() {
   window.fitFrames = [];
-  const tick = () => {
+  // Headless WebKit may throttle rAF even on an active page. Observe visible
+  // layout commits as well as paint callbacks, without sampling within a fit.
+  const sample = source => {
     const frame = document.querySelector('.deck-stage:not(.deck-stage-leave)');
     const inner = frame?.querySelector('.deck-fit-content');
     if (inner && getComputedStyle(inner).visibility === 'visible') {
-      window.fitFrames.push({ slide: frame.dataset.slide, fonts: document.fonts.status,
+      window.fitFrames.push({ source, time: performance.now(), slide: frame.dataset.slide, fonts: document.fonts.status,
         key: [frame.clientWidth, frame.clientHeight, inner.offsetWidth, inner.offsetHeight,
           inner.style.getPropertyValue('--slide-scale'), inner.style.getPropertyValue('--slide-available-height')].join('|') });
     }
-    requestAnimationFrame(tick);
   };
+  const tick = () => { sample('animation-frame'); requestAnimationFrame(tick); };
   requestAnimationFrame(tick);
+  setInterval(() => sample('interval'), 16);
+  new MutationObserver(() => sample('layout-commit')).observe(document, {
+    subtree: true, childList: true, attributes: true,
+    attributeFilter: ['style', 'class', 'data-fit-ready'],
+  });
 }
 function cardAudit() {
   const cards = [...document.querySelectorAll('.deck-stage:not(.deck-stage-leave) .assignment-role')];
@@ -60,13 +67,16 @@ for (const [engine, browserType] of [['chromium',chromium],['webkit',webkit]]) {
       });
       const page = await context.newPage(); page.on('pageerror',e => report.errors.push(e.message));
       await page.addInitScript(recordFrames);
+      await page.bringToFront();
       await page.goto(url(slide)); await ready(page); await page.waitForTimeout(3300);
       const frames = await page.evaluate(() => window.fitFrames);
-      assert(frames.length > 20, 'Not enough painted-frame samples');
+      const layouts = [...new Set(frames.map(f => f.key))];
+      report.coldStarts.push({engine,width,height,slide,samples:frames.length,
+        paintCallbacks:frames.filter(f=>f.source==='animation-frame').length,visibleLayouts:layouts.length,layouts});
+      assert(frames.length > 20, `Insufficient visible-layout samples: ${engine} ${width} slide ${slide}: ${frames.length}`);
       assert.equal(new Set(frames.map(f => f.key)).size,1, `Visible refit: ${engine} ${width} slide ${slide}: ${JSON.stringify([...new Set(frames.map(f=>f.key))])}`);
       assert(frames.every(f => f.fonts === 'loaded'), 'Revealed before fonts finished');
       if(slide===6) assert((await page.evaluate(cardAudit)).every(c=>c.contained && c.textContained));
-      report.coldStarts.push({engine,width,height,slide,samples:frames.length,visibleLayouts:1});
       // A warm slide transition must also keep one layout throughout the entrance.
       if(slide===6) {
         await page.getByRole('button',{name:'Следующий слайд',exact:true}).click(); await ready(page); await page.waitForTimeout(2000);
