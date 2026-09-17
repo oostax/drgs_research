@@ -51,20 +51,25 @@ export function DashboardHeader({ c, change }: { c: Context; change: (patch: Par
     <header className="pulse-header" data-motion-paused={hidden || undefined}>
       <div className="presentation-nav-shell">
         <nav className="presentation-navigation" aria-label="Разделы презентации">
-          {sections.map((section) => (
-            <a
+          {sections.map((section) => {
+            const sectionDefaults = {
+              ...(section.id === "smo" ? { smoView: "market" as const } : {}),
+              ...(section.id === "sales-model" ? { modelView: "premises" as const, slide: 1 } : {}),
+              ...(section.id === "academy" ? { academyView: "essence" as const } : {}),
+            };
+            return <a
               key={section.id}
               className="presentation-nav-link"
               aria-label={section.label}
               aria-current={c.section === section.id ? "page" : undefined}
-              href={contextUrl({ ...c, section: section.id, ...(section.id === "sales-model" ? { modelView: "premises", slide: 1 } : { slide: 1 }), ...(section.id === "academy" ? { academyView: "essence" as const } : {}) })}
-              onClick={(event) => navigate(event, { section: section.id, ...(section.id === "sales-model" ? { modelView: "premises", slide: 1 } : { slide: 1 }), ...(section.id === "academy" ? { academyView: "essence" as const } : {}) })}
+              href={contextUrl({ ...c, section: section.id, slide: 1, ...sectionDefaults })}
+              onClick={(event) => navigate(event, { section: section.id, slide: 1, ...sectionDefaults })}
             >
               <span className="presentation-nav-icon"><LucideLoopIcon name={section.id} /></span>
               <span className="presentation-nav-label" data-short={section.short}>{section.label}</span>
               <span className="presentation-nav-cue" aria-hidden="true" />
-            </a>
-          ))}
+            </a>;
+          })}
         </nav>
       </div>
       {c.section === "sales-model" && (

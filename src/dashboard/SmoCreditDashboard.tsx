@@ -83,9 +83,9 @@ export function SmoCreditDashboard({ view, onViewChange }: { view: SmoView; onVi
   }, [documentHtml, ready, error]);
   return <section className="smo-dashboard" aria-label="Кредитование СМО">
     <div className="smo-frame-shell" aria-busy={!ready && !error}>
-      {!ready && !error && <div className="smo-loading" role="status"><SmoIcon view={view}/><p>Загрузка данных кредитования</p><span>Карта, расчёты и подробные материалы</span></div>}
+      {!documentHtml && !error && <div className="smo-loading" role="status"><SmoIcon view={view}/><p>Загрузка данных кредитования</p><span>Карта, расчёты и подробные материалы</span></div>}
       {error && <div className="smo-load-error" role="alert"><h2>Материалы пока недоступны</h2><p>{error}</p><button onClick={() => { setDocumentHtml(''); setRetry(value => value + 1); }}>Повторить загрузку</button></div>}
-      {documentHtml && <iframe ref={frame} className={`smo-frame${ready && !error ? ' is-ready' : ''}`} title="Кредитование СМО" srcDoc={documentHtml} sandbox="allow-scripts allow-same-origin allow-downloads allow-modals" />}
+      {documentHtml && <iframe ref={frame} className={`smo-frame is-visible${ready && !error ? ' is-ready' : ''}`} title="Кредитование СМО" srcDoc={documentHtml} sandbox="allow-scripts allow-same-origin allow-downloads allow-modals" />}
     </div>
   </section>;
 }

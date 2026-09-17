@@ -1261,7 +1261,14 @@ export default function App() {
     return () => window.removeEventListener("popstate", back);
   }, [data]);
   const change: Change = (patch) => {
-    const next = normalizeMetricContext({ ...c, ...patch }, data || undefined);
+    const sectionDefaults: Partial<Context> = patch.section && patch.section !== c.section
+      ? {
+          ...(patch.section === "smo" ? { smoView: "market" as const } : {}),
+          ...(patch.section === "sales-model" ? { modelView: "premises" as const, slide: 1 } : {}),
+          ...(patch.section === "academy" ? { academyView: "essence" as const } : {}),
+        }
+      : {};
+    const next = normalizeMetricContext({ ...c, ...sectionDefaults, ...patch }, data || undefined);
     window.history.pushState({}, "", contextUrl(next));
     setC(next);
     if ((patch.page && patch.page !== c.page) || (patch.section && patch.section !== c.section) || (patch.modelView && patch.modelView !== c.modelView) || (patch.smoView && patch.smoView !== c.smoView) || (patch.academyView && patch.academyView !== c.academyView))
