@@ -8,7 +8,8 @@ let fontsSettled = false;
 /** Load every slide weight before revealing a layout measured with its final font metrics. */
 function presentationFonts(): Promise<void> | undefined {
   if (!document.fonts || fontsSettled) return;
-  if (fontSpecs.every(font => document.fonts.check(font, "Модель продаж"))) return;
+  // check() can succeed before a newly used face enters its loading cycle in WebKit.
+  // Explicit loads are cached by the browser and resolve immediately on a warm visit.
   return pendingFonts ??= Promise.all(fontSpecs.map(font =>
     document.fonts.load(font, "Модель продаж").catch(() => []),
   )).then(() => document.fonts.ready).then(() => { fontsSettled = true; });
@@ -51,10 +52,10 @@ export function PresentationFrame({ children, className = "", hidden, slide }: {
   useLayoutEffect(() => {
     const outer = frame.current, inner = content.current;
     if (!outer || !inner) return;
-    let disposed = false, fontsReady = false;
+    let disposed = false, fontsReady = false, waitingForFontLayout = false;
     let lastWidth = -1, lastHeight = -1;
     const fit = () => {
-      if (disposed || !fontsReady) return;
+      if (disposed || !fontsReady || waitingForFontLayout) return;
       // Child layout effects run first. Resolve header + deck geometry here too, not
       // one paint later in the parent's effect or its ResizeObserver notification.
       syncPresentationHeight(outer.closest<HTMLElement>(".sales-deck"));
@@ -77,6 +78,16 @@ export function PresentationFrame({ children, className = "", hidden, slide }: {
       }
       measure(scale);
       inner.style.setProperty("--slide-scale", String(scale));
+      // Resolving style/layout can start another font cycle in WebKit. Keep this
+      // first layout unpainted until that cycle settles, then measure once again.
+      if (outer.dataset.fitReady !== "true" && document.fonts?.status === "loading") {
+        waitingForFontLayout = true;
+        void document.fonts.ready.then(() => {
+          waitingForFontLayout = false;
+          fit();
+        });
+        return;
+      }
       lastWidth = width;
       lastHeight = height;
       inner.style.visibility = "visible";
