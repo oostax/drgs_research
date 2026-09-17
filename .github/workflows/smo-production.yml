@@ -1,0 +1,41 @@
+name: Publish SMO to production
+on:
+  push:
+    branches: [release/smo-production]
+    paths: [.github/workflows/smo-production.yml]
+permissions:
+  contents: read
+concurrency:
+  group: smo-production-deploy
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: team_5uZoLk51GFWht7dR1s5qfGng
+      VERCEL_PROJECT_ID: prj_HRhVkwIJG5dczB3BDA9XQgCVGYCL
+    steps:
+      - name: Require existing deployment authorization
+        shell: bash
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo '::error::VERCEL_TOKEN is not configured for this repository. Production was not changed.'
+            exit 1
+          fi
+      - uses: actions/checkout@v4
+        with:
+          ref: 83cf0a580f3e3101beec2d9012783d2cbd6c2152
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Publish existing project without test jobs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .vercel
+          printf '{"orgId":"%s","projectId":"%s"}\n' "$VERCEL_ORG_ID" "$VERCEL_PROJECT_ID" > .vercel/project.json
+          npx --yes vercel@latest deploy --prod --yes --archive=tgz --token "$VERCEL_TOKEN" > /tmp/smo-production-url.txt
+          printf '## Production deployment\n\nCommit: `83cf0a580f3e3101beec2d9012783d2cbd6c2152`\n\n' >> "$GITHUB_STEP_SUMMARY"
+          cat /tmp/smo-production-url.txt >> "$GITHUB_STEP_SUMMARY"
