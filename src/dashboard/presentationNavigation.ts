@@ -1,3 +1,4 @@
+import { academyViews, normalizeAcademyView } from "./academyNavigation";
 import type { Context, PresentationSection, SalesModelView } from "./types";
 import { normalizeSmoView, smoViews } from "./smoNavigation";
 
@@ -30,6 +31,11 @@ export function adjacentPresentation(c: Context, direction: -1 | 1): Presentatio
     const destination = smoViews[index + direction];
     if (destination) return { label: destination.label, patch: { smoView: destination.id } };
   }
+  if (c.section === "academy") {
+    const index = academyViews.findIndex(item => item.id === normalizeAcademyView(c.academyView));
+    const destination = academyViews[index + direction];
+    if (destination) return { label: destination.label, patch: { academyView: destination.id } };
+  }
   if (c.section === "sales-model") {
     if (c.modelView === "premises" && direction === 1) return { label: "Результаты", patch: { modelView: "results", page: "overview" } };
     if (c.modelView === "results") return direction === 1
@@ -41,6 +47,6 @@ export function adjacentPresentation(c: Context, direction: -1 | 1): Presentatio
   if (!section) return null;
   return {
     label: section.label,
-    patch: { section: section.id, slide: 1, ...(section.id === "smo" ? { smoView: direction === 1 ? "market" : "risk" } as const : {}), ...(section.id === "sales-model" ? { modelView: direction === 1 ? "premises" : "next" } as const : {}) },
+    patch: { section: section.id, slide: 1, ...(section.id === "academy" ? { academyView: direction === 1 ? "essence" : "next" } as const : {}), ...(section.id === "smo" ? { smoView: direction === 1 ? "market" : "risk" } as const : {}), ...(section.id === "sales-model" ? { modelView: direction === 1 ? "premises" : "next" } as const : {}) },
   };
 }

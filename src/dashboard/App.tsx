@@ -1,3 +1,4 @@
+import { AcademyPage } from "./AcademyPage";
 import { SmoCreditDashboard } from "./SmoCreditDashboard";
 import { StrategyDashboard } from "./StrategyDashboard";
 import { normalizeSmoView } from "./smoNavigation";
@@ -1263,7 +1264,7 @@ export default function App() {
     const next = normalizeMetricContext({ ...c, ...patch }, data || undefined);
     window.history.pushState({}, "", contextUrl(next));
     setC(next);
-    if ((patch.page && patch.page !== c.page) || (patch.section && patch.section !== c.section) || (patch.modelView && patch.modelView !== c.modelView) || (patch.smoView && patch.smoView !== c.smoView))
+    if ((patch.page && patch.page !== c.page) || (patch.section && patch.section !== c.section) || (patch.modelView && patch.modelView !== c.modelView) || (patch.smoView && patch.smoView !== c.smoView) || (patch.academyView && patch.academyView !== c.academyView))
       window.scrollTo({ top: 0, behavior: "instant" });
   };
   useEffect(() => {
@@ -1296,6 +1297,13 @@ export default function App() {
       <main id="main" className="app-main section-strategy">
         <StrategyDashboard />
       </main>
+    </>
+  );
+  if (c.section === "academy") return (
+    <>
+      <a className="skip-link" href="#main">Перейти к содержимому</a>
+      <DashboardHeader c={c} change={change} />
+      <main id="main" className="app-main section-academy"><AcademyPage c={c} change={change} /></main>
     </>
   );
   if (error)
