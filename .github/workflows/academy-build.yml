@@ -1,0 +1,134 @@
+name: Academy build and review
+on:
+  push:
+    branches: [work/academy-native-20260917]
+    paths: ['.github/workflows/academy-build.yml']
+permissions:
+  contents: write
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Prepare one-time transport
+        run: |
+          mkdir -p /tmp/academy-transfer review-artifacts
+          openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out /tmp/academy-transfer/private.pem 2>/dev/null
+          openssl pkey -in /tmp/academy-transfer/private.pem -pubout -out review-artifacts/transfer-public.pem
+          printf '%s:%s' "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" > review-artifacts/transfer-id.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: academy-key
+          path: review-artifacts
+          retention-days: 1
+          overwrite: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - name: Install browser for the original file download and visual review
+        run: |
+          npm install --prefix /tmp/presentation-browser --no-package-lock playwright@1.55.1
+          /tmp/presentation-browser/node_modules/.bin/playwright install --with-deps chromium
+      - name: Receive the one-time request
+        run: |
+          python3 - <<'PY'
+          import base64, hashlib, hmac, json, os, pathlib, subprocess, time
+          scratch = pathlib.Path('/tmp/academy-transfer')
+          transfer_id = os.environ['GITHUB_RUN_ID'] + ':' + os.environ['GITHUB_RUN_ATTEMPT']
+          for _ in range(180):
+              subprocess.run(['git','fetch','--quiet','origin','work/academy-native-20260917'],check=True)
+              result = subprocess.run(['git','show','FETCH_HEAD:.github/academy-transfer.json'],capture_output=True,text=True)
+              if result.returncode == 0:
+                  payload = json.loads(result.stdout)
+                  if payload.get('transfer_id') == transfer_id:
+                      break
+              time.sleep(5)
+          else:
+              raise SystemExit('No one-time bundle received.')
+          changed = subprocess.check_output(['git','diff','--name-only',os.environ['GITHUB_SHA'],'FETCH_HEAD'],text=True).splitlines()
+          if set(changed) - {'.github/academy-transfer.json'}:
+              raise SystemExit('Concurrent edit; no files overwritten.')
+          subprocess.run(['git','reset','--hard','FETCH_HEAD'],check=True)
+          (scratch/'key.enc').write_bytes(base64.b64decode(payload['key']))
+          subprocess.run(['openssl','pkeyutl','-decrypt','-inkey',str(scratch/'private.pem'),'-in',str(scratch/'key.enc'),'-out',str(scratch/'key.json'),'-pkeyopt','rsa_padding_mode:oaep','-pkeyopt','rsa_oaep_md:sha256'],check=True)
+          key = json.loads((scratch/'key.json').read_text())
+          cipher = base64.b64decode(payload['payload'])
+          if not hmac.compare_digest(hmac.new(bytes.fromhex(key['key']),cipher,hashlib.sha256).hexdigest(),payload['mac']):
+              raise SystemExit('Authentication failed.')
+          (scratch/'request.enc').write_bytes(cipher)
+          subprocess.run(['openssl','enc','-d','-aes-256-cbc','-K',key['key'],'-iv',key['iv'],'-in',str(scratch/'request.enc'),'-out',str(scratch/'request.json')],check=True)
+          PY
+      - name: Download through the supplied URL without changing its host or permissions
+        run: |
+          node --input-type=module <<'JS'
+          import {readFileSync, writeFileSync} from 'node:fs';
+          import {createHash} from 'node:crypto';
+          import {chromium} from '/tmp/presentation-browser/node_modules/playwright/index.mjs';
+          const request = JSON.parse(readFileSync('/tmp/academy-transfer/request.json','utf8'));
+          const browser = await chromium.launch({headless:true});
+          let success = false;
+          try {
+            const page = await browser.newPage({acceptDownloads:true});
+            const pending = page.waitForEvent('download',{timeout:30000});
+            pending.catch(()=>{});
+            try { await page.goto(request.url,{timeout:30000}); } catch {}
+            const download = await pending;
+            await download.saveAs('/tmp/academy-transfer/bundle.zip');
+            const data = readFileSync('/tmp/academy-transfer/bundle.zip');
+            if(createHash('sha256').update(data).digest('hex')!==request.sha256) throw new Error('Checksum mismatch');
+            success = true;
+          } catch {
+            writeFileSync('review-artifacts/transfer-status.txt','The original file URL did not deliver the bundle. No master changes made.');
+          } finally { await browser.close(); }
+          if(!success) process.exit(1);
+          JS
+      - name: Apply and commit candidate to the isolated branch
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, pathlib, subprocess, zipfile
+          with zipfile.ZipFile('/tmp/academy-transfer/bundle.zip') as archive:
+              manifest = json.loads(archive.read('manifest.json'))
+              for item in manifest['files']:
+                  path = pathlib.Path(item['path'])
+                  if path.is_absolute() or '..' in path.parts or not str(path).startswith(('src/dashboard/','public/academy/','scripts/academy-','docs/ACADEMY_')):
+                      raise SystemExit('Unexpected file destination.')
+                  before = hashlib.sha256(path.read_bytes()).hexdigest() if path.exists() else None
+                  if before != item['before'] or hashlib.sha256(archive.read(item['path'])).hexdigest() != item['after']:
+                      raise SystemExit('Source mismatch: '+str(path))
+              for item in manifest['files']:
+                  path = pathlib.Path(item['path']); path.parent.mkdir(parents=True,exist_ok=True); path.write_bytes(archive.read(item['path']))
+          pathlib.Path('review-artifacts/changed-files.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2))
+          subprocess.run(['git','diff','--check'],check=True)
+          subprocess.run(['git','add','--',*[item['path'] for item in manifest['files']]],check=True)
+          subprocess.run(['git','config','user.name','github-actions[bot]'],check=True)
+          subprocess.run(['git','config','user.email','41898282+github-actions[bot]@users.noreply.github.com'],check=True)
+          subprocess.run(['git','commit','-m','feat: integrate native hybrid leaders academy with preserved source'],check=True)
+          subprocess.run(['git','push','origin','HEAD:refs/heads/work/academy-native-20260917'],check=True)
+          pathlib.Path('review-artifacts/result-commit.txt').write_text(subprocess.check_output(['git','rev-parse','HEAD'],text=True))
+          pathlib.Path('review-artifacts/result-tree.txt').write_text(subprocess.check_output(['git','rev-parse','HEAD^{tree}'],text=True))
+          PY
+      - name: Install, test and build
+        run: |
+          set -euo pipefail
+          pnpm install --frozen-lockfile --force
+          pnpm test 2>&1 | tee review-artifacts/tests.txt
+          pnpm build 2>&1 | tee review-artifacts/build.txt
+      - name: Browser review
+        run: |
+          set -euo pipefail
+          pnpm exec vite preview --host 127.0.0.1 --port 4176 > /tmp/academy-preview.log 2>&1 &
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4176/ >/dev/null && break; sleep 1; done
+          node scripts/academy-review.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: academy-reviewed
+          path: review-artifacts
+          overwrite: true
+          retention-days: 3
