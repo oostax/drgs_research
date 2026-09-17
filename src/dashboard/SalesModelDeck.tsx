@@ -34,7 +34,7 @@ function TypewriterHeading() {
 }
 
 const changesHeadline = "Суть изменений и ожидаемые результаты";
-const questionHeadline = "Как меняем?";
+const questionHeadline = "Что меняем";
 
 function WordRiseHeading() {
   return <h2 className="changes-word-rise" aria-label={changesHeadline}>
@@ -172,7 +172,7 @@ const slides = [
     <p className="adjacent-outcome"><Icon name="sales" size={24}/><span>Согласованные процессы и единые подходы с партнёрами помогают оперативнее решать задачи клиентов и достигать лучших результатов.</span></p>
   </div>,
   <div className="deck-standard campaign-slide" key="campaign">
-    <h2>Как меняем кампании продаж</h2>
+    <h2>Компании продаж</h2>
     <div className="radar" aria-hidden="true"><i className="radar-ring ring-one"/><i className="radar-ring ring-two"/><i className="radar-ring ring-three"/><span className="radar-axis axis-x"/><span className="radar-axis axis-y"/><b className="radar-sweep"/><em className="radar-target target-one"/><em className="radar-target target-two"/><em className="radar-target target-three"/><strong><Icon name="sales" size={42}/></strong></div>
     <div className="campaign-goals">
       <article className="campaign-goal goal-quality"><LineIcon name="target"/><div><b>Точный сигнал</b><h3>Повышение качества лидогенерации</h3></div></article>
