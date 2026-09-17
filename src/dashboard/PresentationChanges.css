@@ -1,6 +1,23 @@
-/* Slide 3: presentation-scale copy, independent of the dashboard's small body type. */
+/* Slide 3 uses presentation-sized copy; other slides keep their existing type. */
+.sales-deck.is-responsive .deck-changes {
+  --changes-heading-height: 54px;
+  --changes-heading-gap: 12px;
+  --changes-panel-padding: 18px;
+}
 .sales-deck.is-responsive .deck-changes .change-columns { flex: 1 0 auto; min-height: auto; }
-.sales-deck.is-responsive .deck-changes .change-columns section { min-height: auto; }
+.sales-deck.is-responsive .deck-changes .change-columns section {
+  min-height: auto;
+  padding: var(--changes-panel-padding);
+  /* Fixed heading tracks prevent WebKit distributing spare space differently
+     between the two columns before its next paint. List tracks remain natural. */
+  grid-template-rows: var(--changes-heading-height) minmax(min-content, 1fr);
+  row-gap: var(--changes-heading-gap);
+}
+.sales-deck.is-responsive .deck-changes .change-columns header {
+  height: var(--changes-heading-height);
+  min-height: 0;
+  margin-bottom: 0;
+}
 .sales-deck.is-responsive .deck-changes .change-columns ol {
   min-height: auto;
   grid-template-rows: repeat(5, 1fr);
@@ -10,49 +27,64 @@
   font-size: clamp(24px, 1.65vw, 32px);
   font-weight: 450;
   line-height: 1.32;
-  padding: 12px 18px;
+  padding: 10px 16px;
+}
+.sales-deck.is-responsive .deck-changes .change-current {
+  padding-top: calc(var(--changes-panel-padding) + var(--changes-heading-height) + var(--changes-heading-gap));
+  padding-bottom: var(--changes-panel-padding);
 }
 @media (max-width: 1050px) {
-  .sales-deck.is-responsive .deck-changes .change-columns li { font-size: 22px; padding: 10px 12px; }
+  .sales-deck.is-responsive .deck-changes { --changes-panel-padding: 14px; }
+  .sales-deck.is-responsive .deck-changes .change-columns li { font-size: 22px; padding: 8px 12px; }
 }
 @media (max-width: 680px) {
-  .sales-deck.is-responsive .deck-changes { padding: 18px 14px; }
-  .sales-deck.is-responsive .deck-changes .change-columns { margin-top: 12px; gap: 10px; }
-  .sales-deck.is-responsive .deck-changes .change-columns section { padding: 10px; }
-  .sales-deck.is-responsive .deck-changes .change-columns ol { grid-template-rows: none; }
-  .sales-deck.is-responsive .deck-changes .change-columns li { font-size: 18px; padding: 7px 10px; line-height: 1.28; }
+  .sales-deck.is-responsive .deck-changes {
+    --changes-heading-height: 34px;
+    --changes-heading-gap: 8px;
+    --changes-panel-padding: 8px;
+    padding: 16px 12px;
+  }
+  .sales-deck.is-responsive .deck-changes .change-columns { margin-top: 10px; gap: 8px; }
+  .sales-deck.is-responsive .deck-changes .change-columns ol { grid-template-rows: none; gap: 5px; }
+  .sales-deck.is-responsive .deck-changes .change-columns li { font-size: 18px; padding: 5px 9px; line-height: 1.28; }
 }
-/* Recover reading space on laptop-height viewports instead of shrinking the copy. */
+/* Recover reading space on laptop-height viewports before scaling the copy. */
 @media (min-width: 681px) and (min-height: 501px) and (max-height: 850px) {
-  .sales-deck.is-responsive .deck-changes { padding: 24px; }
-  .sales-deck.is-responsive .deck-changes .change-columns { margin-top: 16px; }
-  .sales-deck.is-responsive .deck-changes .change-columns section { padding: 14px; }
-  .sales-deck.is-responsive .deck-changes .change-columns header { min-height: 40px; margin-bottom: 10px; }
+  .sales-deck.is-responsive .deck-changes {
+    --changes-heading-height: 40px;
+    --changes-heading-gap: 8px;
+    --changes-panel-padding: 12px;
+    padding: 22px;
+  }
+  .sales-deck.is-responsive .deck-changes .change-columns { margin-top: 14px; }
   .sales-deck.is-responsive .deck-changes .change-columns header .deck-icon { width: 40px; height: 40px; }
   .sales-deck.is-responsive .deck-changes .change-columns header svg { width: 26px; height: 26px; }
-  .sales-deck.is-responsive .deck-changes .change-columns li { padding: 8px 14px; }
-  .sales-deck.is-responsive .deck-changes .change-current { padding: 64px 0 14px; }
+  .sales-deck.is-responsive .deck-changes .change-columns li { padding: 7px 12px; }
 }
 @media (max-height: 500px) and (min-width: 681px) {
-  .sales-deck.is-responsive .deck-changes { padding: 12px 18px; }
+  .sales-deck.is-responsive .deck-changes {
+    --changes-heading-height: 32px;
+    --changes-heading-gap: 8px;
+    --changes-panel-padding: 10px;
+    padding: 12px 18px;
+  }
   .sales-deck.is-responsive .deck-changes > h2 { font-size: 28px; }
   .sales-deck.is-responsive .deck-changes .change-columns { margin-top: 10px; gap: 12px; }
-  .sales-deck.is-responsive .deck-changes .change-columns section { padding: 10px; }
-  .sales-deck.is-responsive .deck-changes .change-columns header { min-height: 32px; margin-bottom: 8px; gap: 10px; }
+  .sales-deck.is-responsive .deck-changes .change-columns header { gap: 10px; }
   .sales-deck.is-responsive .deck-changes .change-columns header .deck-icon { width: 32px; height: 32px; }
   .sales-deck.is-responsive .deck-changes .change-columns header svg { width: 22px; height: 22px; }
   .sales-deck.is-responsive .deck-changes .change-columns h3 { font-size: 22px; }
   .sales-deck.is-responsive .deck-changes .change-columns ol { gap: 6px; }
   .sales-deck.is-responsive .deck-changes .change-columns li { font-size: 20px; padding: 6px 10px; line-height: 1.25; }
-  .sales-deck.is-responsive .deck-changes .change-current { grid-template-rows: repeat(5, minmax(0, 1fr)); gap: 6px; padding: 50px 0 10px; }
+  .sales-deck.is-responsive .deck-changes .change-current { grid-template-rows: repeat(5, minmax(0, 1fr)); gap: 6px; }
 }
-/* Compact the chrome on the smallest phones before reducing the slide itself. */
 @media (max-width: 360px) {
-  .sales-deck.is-responsive .deck-changes { padding: 12px 10px; }
+  .sales-deck.is-responsive .deck-changes {
+    --changes-heading-height: 28px;
+    padding: 12px 10px;
+  }
   .sales-deck.is-responsive .deck-changes > h2 { font-size: 26px; }
-  .sales-deck.is-responsive .deck-changes .change-columns { margin-top: 8px; gap: 8px; }
-  .sales-deck.is-responsive .deck-changes .change-columns section { padding: 8px; }
-  .sales-deck.is-responsive .deck-changes .change-columns header { min-height: 28px; margin-bottom: 8px; }
+  .sales-deck.is-responsive .deck-changes .change-columns { margin-top: 8px; }
   .sales-deck.is-responsive .deck-changes .change-columns header .deck-icon { width: 28px; height: 28px; }
   .sales-deck.is-responsive .deck-changes .change-columns ol { gap: 4px; }
   .sales-deck.is-responsive .deck-changes .change-columns li { padding: 5px 8px; }
