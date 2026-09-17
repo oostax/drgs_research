@@ -49,11 +49,11 @@ describe("Стабильная компоновка до первого пока
     const view = show(); view.unmount();
     expect(observers[0].disconnect).toHaveBeenCalledOnce();
   });
-  it("не показывает запасной шрифт и ждёт все четыре начертания", async () => {
+  it("ждёт все четыре начертания даже при оптимистичном fonts.check", async () => {
     let complete!: () => void;
     const loading = new Promise<void>(resolve => { complete = resolve; });
     const load = vi.fn(() => loading.then(() => []));
-    Object.defineProperty(document, "fonts", { configurable: true, value: { check: () => false, load, ready: Promise.resolve() } });
+    Object.defineProperty(document, "fonts", { configurable: true, value: { check: () => true, load, ready: Promise.resolve() } });
     show();
     expect(frame().dataset.fitReady).toBe("false");
     expect(content().style.visibility).not.toBe("visible");
@@ -64,5 +64,30 @@ describe("Стабильная компоновка до первого пока
     expect(frame().dataset.fitReady).toBe("true");
     const set = vi.spyOn(content().style, "setProperty");
     notify(); expect(set).not.toHaveBeenCalled();
+  });
+  it("не раскрывает слайд, пока повторный цикл раскладки шрифтов не завершён", async () => {
+    let complete!: () => void;
+    const ready = new Promise<void>(resolve => { complete = resolve; });
+    const fonts = { status: "loading", ready };
+    Object.defineProperty(document, "fonts", { configurable: true, value: fonts });
+    show();
+    expect(frame().dataset.fitReady).toBe("false");
+    expect(content().style.visibility).not.toBe("visible");
+    notify();
+    expect(frame().dataset.fitReady).toBe("false");
+    await act(async () => { fonts.status = "loaded"; complete(); await ready; });
+    expect(frame().dataset.fitReady).toBe("true");
+    expect(content().style.visibility).toBe("visible");
+  });
+  it("не меняет удалённый слайд после завершения загрузки шрифтов", async () => {
+    let complete!: () => void;
+    const ready = new Promise<void>(resolve => { complete = resolve; });
+    const fonts = { status: "loading", ready };
+    Object.defineProperty(document, "fonts", { configurable: true, value: fonts });
+    const view = show();
+    const oldFrame = frame();
+    view.unmount();
+    await act(async () => { fonts.status = "loaded"; complete(); await ready; });
+    expect(oldFrame.dataset.fitReady).toBe("false");
   });
 });
