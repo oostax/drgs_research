@@ -1,0 +1,63 @@
+diff --git a/src/dashboard/App.tsx b/src/dashboard/App.tsx
+index 61348df..2e6b720 100644
+--- a/src/dashboard/App.tsx
++++ b/src/dashboard/App.tsx
+@@ -39,6 +39,7 @@ import { SupplementalPeriods } from "./SupplementalAnalysis";
+ import { SupplementalCard, SupplementalDetail, useSupplemental } from './SupplementalCard';
+ import type { SupplementalLoad } from './SupplementalCard';
+ import { isSupplemental, type Supplemental } from './supplementalModel';
++import { WelcomePage } from "./WelcomePage";
+ import { SalesModelDeck } from './SalesModelDeck';
+ import { PresentationSectionControls } from './PresentationSectionControls';
+ import { adjacentPresentation, presentationSections } from './presentationNavigation';
+@@ -1263,12 +1264,18 @@ export default function App() {
+       window.scrollTo({ top: 0, behavior: "instant" });
+   };
+   useEffect(() => {
+-    const sectionTitle = c.section === "title" ? "Титульный лист" : c.section === "smo" ? "Кредитование СМО" : c.section === "strategy" ? "Стратегический диалог" : c.section === "academy" ? "Академия гибридных лидеров" : c.section === "tb-tasks" ? "Задачи ТБ" : c.modelView === "premises" ? "Предпосылки изменений" : c.modelView === "next" ? "Дальнейшие шаги" : c.page === "overview" ? "Результаты пилота" : c.page === "map" ? "Карта ГОСБ" : metricNames[c.metric];
++    const sectionTitle = c.section === "title" ? "Приветствие" : c.section === "smo" ? "Кредитование СМО" : c.section === "strategy" ? "Стратегический диалог" : c.section === "academy" ? "Академия гибридных лидеров" : c.section === "tb-tasks" ? "Задачи ТБ" : c.modelView === "premises" ? "Предпосылки изменений" : c.modelView === "next" ? "Дальнейшие шаги" : c.page === "overview" ? "Результаты пилота" : c.page === "map" ? "Карта ГОСБ" : metricNames[c.metric];
+     document.title = `${sectionTitle} · Пульс`;
+   }, [c.section, c.modelView, c.page, c.metric]);
+   useEffect(() => {
+     if (data) window.history.replaceState({}, "", contextUrl(c));
+   }, [data, c]);
++  // The welcome is independent of analytics loading and remains available if data requests fail.
++  if (c.section === "title") return <>
++    <a className="skip-link" href="#main">Перейти к содержимому</a>
++    <DashboardHeader c={c} change={change} />
++    <main id="main" className="app-main section-title"><WelcomePage c={c} change={change} /></main>
++  </>;
+   if (error)
+     return (
+       <div className="app-error">
+diff --git a/src/dashboard/DashboardHeader.tsx b/src/dashboard/DashboardHeader.tsx
+index 752631d..454ea25 100644
+--- a/src/dashboard/DashboardHeader.tsx
++++ b/src/dashboard/DashboardHeader.tsx
+@@ -7,10 +7,9 @@ import { presentationSections as sections, salesModelViews as modelViews } from
+ 
+ function LucideLoopIcon({ name }: { name: PresentationSection }) {
+   const content = name === "title" ? <>
+-    <rect className="lucide-part part-1" x="3" y="3" width="7" height="7" rx="1" />
+-    <rect className="lucide-part part-2" x="14" y="3" width="7" height="7" rx="1" />
+-    <rect className="lucide-part part-3" x="14" y="14" width="7" height="7" rx="1" />
+-    <rect className="lucide-part part-4" x="3" y="14" width="7" height="7" rx="1" />
++    <path className="welcome-nav-sun" d="M5 17a7 7 0 0 1 14 0" />
++    <path className="welcome-nav-rays" d="M12 3v3M3.8 7.8l2 2m14.4-2-2 2M1 17h2m18 0h2" />
++    <path d="M3 21h18M5 17h14" />
+   </> : name === "smo" ? <>
+     <path className="lucide-part part-1" d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+     <rect className="lucide-part part-2" width="20" height="14" x="2" y="6" rx="2" />
+diff --git a/src/dashboard/presentationNavigation.ts b/src/dashboard/presentationNavigation.ts
+index 7ad127f..951297c 100644
+--- a/src/dashboard/presentationNavigation.ts
++++ b/src/dashboard/presentationNavigation.ts
+@@ -6,7 +6,7 @@ export const slideTitles = [
+   "Работа со смежными подразделениями", "Как меняем кампании продаж", "Проводится пилот",
+ ];
+ export const presentationSections: { id: PresentationSection; label: string; short?: string }[] = [
+-  { id: "title", label: "Титульный лист", short: "Титул" },
++  { id: "title", label: "Приветствие" },
+   { id: "smo", label: "Кредитование СМО", short: "СМО" },
+   { id: "sales-model", label: "Модель продаж" },
+   { id: "strategy", label: "Страт. диалог" },

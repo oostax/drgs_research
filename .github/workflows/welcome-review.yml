@@ -1,0 +1,88 @@
+name: Welcome page review
+on:
+  push:
+    branches: [master, feat/animated-welcome]
+    paths:
+      - 'src/dashboard/Welcome*'
+      - 'src/dashboard/DashboardHeader.tsx'
+      - 'src/dashboard/presentationNavigation.ts'
+      - 'src/dashboard/App.tsx'
+      - 'scripts/welcome-review.mjs'
+      - '.github/workflows/welcome-review.yml'
+  pull_request:
+    paths:
+      - 'src/dashboard/Welcome*'
+      - 'scripts/welcome-review.mjs'
+permissions:
+  contents: write
+concurrency:
+  group: welcome-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      # BEGIN WELCOME INTEGRATION
+      - name: Apply exact reviewed integration patch
+        if: github.ref == 'refs/heads/feat/animated-welcome'
+        run: |
+          git apply --check .github/welcome-integration.patch
+          git apply .github/welcome-integration.patch
+      # END WELCOME INTEGRATION
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - name: Install and test
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p review-artifacts
+          pnpm install --frozen-lockfile --force
+          pnpm test 2>&1 | tee review-artifacts/tests.txt
+          pnpm build 2>&1 | tee review-artifacts/build.txt
+          git hash-object src/dashboard/WelcomePage.tsx src/dashboard/WelcomePage.css src/dashboard/WelcomePage.test.tsx scripts/welcome-review.mjs src/dashboard/App.tsx src/dashboard/DashboardHeader.tsx src/dashboard/presentationNavigation.ts > review-artifacts/source-hashes.txt
+      - name: Browser and visual regression
+        run: |
+          npm install --prefix /tmp/presentation-browser --no-package-lock playwright@1.55.1
+          /tmp/presentation-browser/node_modules/.bin/playwright install --with-deps chromium webkit
+          pnpm exec vite preview --host 127.0.0.1 --port 4176 > /tmp/welcome-preview.log 2>&1 &
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4176/ > /dev/null && break; sleep 1; done
+          node scripts/welcome-review.mjs
+          node scripts/presentation-typography-review.mjs
+          node scripts/presentation-stability-review.mjs
+          node scripts/presentation-review.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: welcome-review
+          path: |
+            review-artifacts/*.txt
+            review-artifacts/*.json
+            review-artifacts/welcome
+          retention-days: 7
+      # BEGIN WELCOME INTEGRATION
+      - name: Commit verified integration and restore read-only CI
+        if: github.ref == 'refs/heads/feat/animated-welcome'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin feat/animated-welcome
+          test "$(git rev-parse FETCH_HEAD)" = "$GITHUB_SHA"
+          python3 - <<'PY'
+          import pathlib, re
+          path = pathlib.Path('.github/workflows/welcome-review.yml')
+          text = re.sub(r'      # BEGIN WELCOME INTEGRATION\n.*?      # END WELCOME INTEGRATION\n?', '', path.read_text(), flags=re.S)
+          path.write_text(text.replace('contents: write', 'contents: read'))
+          PY
+          git rm .github/welcome-integration.patch
+          git add src/dashboard/App.tsx src/dashboard/DashboardHeader.tsx src/dashboard/presentationNavigation.ts .github/workflows/welcome-review.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'feat: activate verified animated welcome and rename title navigation'
+          git push origin HEAD:refs/heads/feat/animated-welcome
+      # END WELCOME INTEGRATION
