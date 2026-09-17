@@ -115,7 +115,9 @@ export type Manifest = {
   };
   complexProducts: string[];
 };
+export type AcademyView = "essence" | "results" | "next";
 export type Context = {
+  academyView?: AcademyView;
   section: PresentationSection;
   modelView: SalesModelView;
   smoView?: import("./smoNavigation").SmoView;

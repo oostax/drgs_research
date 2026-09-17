@@ -1,3 +1,4 @@
+import { AcademyNavigation } from "./AcademyNavigation";
 import { useEffect, useState, type CSSProperties, type MouseEvent } from "react";
 import type { Context, PresentationSection } from "./types";
 import { contextUrl } from "./model";
@@ -56,8 +57,8 @@ export function DashboardHeader({ c, change }: { c: Context; change: (patch: Par
               className="presentation-nav-link"
               aria-label={section.label}
               aria-current={c.section === section.id ? "page" : undefined}
-              href={contextUrl({ ...c, section: section.id, ...(section.id === "sales-model" ? { modelView: "premises", slide: 1 } : { slide: 1 }) })}
-              onClick={(event) => navigate(event, { section: section.id, ...(section.id === "sales-model" ? { modelView: "premises", slide: 1 } : { slide: 1 }) })}
+              href={contextUrl({ ...c, section: section.id, ...(section.id === "sales-model" ? { modelView: "premises", slide: 1 } : { slide: 1 }), ...(section.id === "academy" ? { academyView: "essence" as const } : {}) })}
+              onClick={(event) => navigate(event, { section: section.id, ...(section.id === "sales-model" ? { modelView: "premises", slide: 1 } : { slide: 1 }), ...(section.id === "academy" ? { academyView: "essence" as const } : {}) })}
             >
               <span className="presentation-nav-icon"><LucideLoopIcon name={section.id} /></span>
               <span className="presentation-nav-label" data-short={section.short}>{section.label}</span>
@@ -87,6 +88,7 @@ export function DashboardHeader({ c, change }: { c: Context; change: (patch: Par
       )}
       {c.section === "smo" && <SmoCreditNavigation c={c} change={change} />}
       {c.section === "strategy" && <StrategyNavigation />}
+      {c.section === "academy" && <AcademyNavigation c={c} change={change} />}
     </header>
   );
 }
