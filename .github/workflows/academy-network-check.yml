@@ -1,0 +1,23 @@
+name: Academy transport diagnostic
+on:
+  push:
+    branches: [work/academy-native-20260917]
+    paths: ['.github/workflows/academy-network-check.yml']
+permissions:
+  contents: read
+jobs:
+  diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Check transfer host availability without any signed URL
+        run: |
+          python3 - <<'PY'
+          import socket, urllib.request
+          for host in ['sdmntprdenmarkeast.oaiusercontent.com', 'sdmntprpolandcentral.oaiusercontent.com', 'sdmntprnortheu.oaiusercontent.com']:
+              try:
+                  print(host, socket.gethostbyname_ex(host))
+                  urllib.request.urlopen('https://' + host + '/', timeout=10)
+              except Exception as e:
+                  print(type(e).__name__, str(e))
+          PY
