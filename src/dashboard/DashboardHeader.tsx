@@ -1,6 +1,7 @@
 import { useEffect, useState, type CSSProperties, type MouseEvent } from "react";
 import type { Context, PresentationSection } from "./types";
 import { contextUrl } from "./model";
+import { SmoCreditNavigation } from "./SmoCreditDashboard";
 import "./DashboardHeader.css";
 import "./PresentationHeader.css";
 import { presentationSections as sections, salesModelViews as modelViews } from "./presentationNavigation";
@@ -83,6 +84,7 @@ export function DashboardHeader({ c, change }: { c: Context; change: (patch: Par
           </nav>
         </div>
       )}
+      {c.section === "smo" && <SmoCreditNavigation c={c} change={change} />}
     </header>
   );
 }
