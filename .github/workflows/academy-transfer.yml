@@ -1,0 +1,147 @@
+name: Academy integration workspace
+on:
+  push:
+    branches: [work/academy-native-20260917]
+    paths: ['.github/workflows/academy-transfer.yml']
+permissions:
+  contents: write
+concurrency:
+  group: academy-integration-workspace
+  cancel-in-progress: false
+jobs:
+  integrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Prepare private transfer key and source snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/academy-transfer review-artifacts
+          openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out /tmp/academy-transfer/private.pem 2>/dev/null
+          openssl pkey -in /tmp/academy-transfer/private.pem -pubout -out review-artifacts/transfer-public.pem
+          git rev-parse HEAD > review-artifacts/workspace-commit.txt
+          git rev-parse HEAD^ > review-artifacts/base-commit.txt
+          printf '%s:%s' "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" > review-artifacts/transfer-id.txt
+          git ls-files -z 'src/**' 'public/fonts/**' '*config*' 'package.json' '*lock*' 'index.html' '**/AGENTS.md' 'AGENTS.md' 'DESIGN.md' 'scripts/*review*' | tar --null -T - -czf review-artifacts/workspace.tar.gz
+      - uses: actions/upload-artifact@v4
+        with:
+          name: academy-workspace
+          path: |
+            review-artifacts/transfer-public.pem
+            review-artifacts/workspace-commit.txt
+            review-artifacts/base-commit.txt
+            review-artifacts/transfer-id.txt
+            review-artifacts/workspace.tar.gz
+          overwrite: true
+          retention-days: 1
+      - name: Receive encrypted one-time transfer
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64, hashlib, hmac, json, os, pathlib, subprocess, time, urllib.request, zipfile
+          scratch = pathlib.Path('/tmp/academy-transfer')
+          transfer_id = os.environ['GITHUB_RUN_ID'] + ':' + os.environ['GITHUB_RUN_ATTEMPT']
+          payload = None
+          for _ in range(240):
+              subprocess.run(['git', 'fetch', '--quiet', 'origin', 'work/academy-native-20260917'], check=True)
+              candidate = subprocess.run(['git', 'show', 'FETCH_HEAD:.github/academy-transfer.json'], capture_output=True, text=True)
+              if candidate.returncode == 0:
+                  parsed = json.loads(candidate.stdout)
+                  if parsed.get('transfer_id') == transfer_id:
+                      payload = parsed
+                      break
+              time.sleep(5)
+          if payload is None:
+              raise SystemExit('No transfer received; master is unchanged.')
+          changed = subprocess.check_output(['git', 'diff', '--name-only', os.environ['GITHUB_SHA'], 'FETCH_HEAD'], text=True).splitlines()
+          if set(changed) - {'.github/academy-transfer.json'}:
+              raise SystemExit('Workspace changed concurrently; refusing to overwrite.')
+          subprocess.run(['git', 'reset', '--hard', 'FETCH_HEAD'], check=True)
+          (scratch / 'key.enc').write_bytes(base64.b64decode(payload['key']))
+          subprocess.run(['openssl', 'pkeyutl', '-decrypt', '-inkey', str(scratch / 'private.pem'), '-in', str(scratch / 'key.enc'), '-out', str(scratch / 'key.json'), '-pkeyopt', 'rsa_padding_mode:oaep', '-pkeyopt', 'rsa_oaep_md:sha256'], check=True)
+          key_info = json.loads((scratch / 'key.json').read_text())
+          ciphertext = base64.b64decode(payload['payload'])
+          if not hmac.compare_digest(hmac.new(bytes.fromhex(key_info['key']), ciphertext, hashlib.sha256).hexdigest(), payload['mac']):
+              raise SystemExit('Transfer authentication failed.')
+          (scratch / 'request.enc').write_bytes(ciphertext)
+          subprocess.run(['openssl', 'enc', '-d', '-aes-256-cbc', '-K', key_info['key'], '-iv', key_info['iv'], '-in', str(scratch / 'request.enc'), '-out', str(scratch / 'request.json')], check=True)
+          request = json.loads((scratch / 'request.json').read_text())
+          # The signed file URL is never committed or printed; it only grants this short-lived download.
+          try:
+              with urllib.request.urlopen(request['url'], timeout=60) as response:
+                  data = response.read()
+          except Exception:
+              raise SystemExit('The one-time source download failed or expired.') from None
+          if hashlib.sha256(data).hexdigest() != request['sha256']:
+              raise SystemExit('Bundle checksum mismatch.')
+          (scratch / 'bundle.zip').write_bytes(data)
+          with zipfile.ZipFile(scratch / 'bundle.zip') as archive:
+              manifest = json.loads(archive.read('manifest.json'))
+              for item in manifest['files']:
+                  path = pathlib.Path(item['path'])
+                  if path.is_absolute() or '..' in path.parts or not str(path).startswith(('src/dashboard/', 'public/academy/', 'scripts/academy-', 'docs/ACADEMY_')):
+                      raise SystemExit('Unexpected bundle destination.')
+                  previous = hashlib.sha256(path.read_bytes()).hexdigest() if path.exists() else None
+                  if previous != item['before']:
+                      raise SystemExit('Source changed: ' + str(path))
+                  content = archive.read(item['path'])
+                  if hashlib.sha256(content).hexdigest() != item['after']:
+                      raise SystemExit('File checksum mismatch: ' + str(path))
+              for item in manifest['files']:
+                  path = pathlib.Path(item['path'])
+                  path.parent.mkdir(parents=True, exist_ok=True)
+                  path.write_bytes(archive.read(item['path']))
+              pathlib.Path('review-artifacts/changed-files.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2))
+          print('Verified source bundle applied; original image bytes preserved.')
+          PY
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - name: Install, test and build
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm install --frozen-lockfile --force
+          pnpm test 2>&1 | tee review-artifacts/tests.txt
+          pnpm build 2>&1 | tee review-artifacts/build.txt
+      - name: Review academy in the browser
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --prefix /tmp/presentation-browser --no-package-lock playwright@1.55.1
+          /tmp/presentation-browser/node_modules/.bin/playwright install --with-deps chromium
+          pnpm exec vite preview --host 127.0.0.1 --port 4176 > /tmp/academy-preview.log 2>&1 &
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4176/ > /dev/null && break; sleep 1; done
+          node scripts/academy-review.mjs
+      - name: Commit verified integration to isolated branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          python3 - <<'PY'
+          import json, pathlib, subprocess
+          manifest = json.loads(pathlib.Path('review-artifacts/changed-files.json').read_text())
+          subprocess.run(['git', 'add', '--', *[item['path'] for item in manifest['files']]], check=True)
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'feat: integrate native hybrid leaders academy with preserved source'
+          git push origin HEAD:refs/heads/work/academy-native-20260917
+          git rev-parse HEAD > review-artifacts/result-commit.txt
+          git rev-parse HEAD^{tree} > review-artifacts/result-tree.txt
+          git diff --stat HEAD^ > review-artifacts/changes.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: academy-review
+          path: review-artifacts
+          overwrite: true
+          retention-days: 3
