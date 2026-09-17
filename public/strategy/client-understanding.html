@@ -329,17 +329,18 @@ body{background:var(--bg);color:var(--ink);font-family:"Manrope",system-ui,-appl
 :root{--ease-out:cubic-bezier(.23,1,.32,1);--ease-in-out:cubic-bezier(.77,0,.175,1)}
 .app{max-width:1640px;padding:16px 28px 18px}
 .slide{padding:clamp(28px,3.1vw,54px) clamp(32px,4.5vw,76px)}
-.js .slide.is-active{min-height:100%;display:flex;flex-direction:column;justify-content:center;animation:enter .42s var(--ease-out) both}
-.t{font-size:clamp(38px,3.25vw,62px);line-height:1.04;max-width:24ch}
-.t.xl{font-size:clamp(46px,4.5vw,76px);max-width:19ch}
-.lead{font-size:clamp(18px,1.5vw,23px);line-height:1.45;max-width:68ch;margin-bottom:30px}
+.js .stage{overflow-y:hidden}
+.js .slide.is-active{min-height:0;display:block;animation:enter .42s var(--ease-out) both}
+.t{font-size:clamp(36px,2.8vw,54px);line-height:1.08;max-width:24ch}
+.t.xl{font-size:clamp(42px,3.8vw,64px);max-width:19ch}
+.lead{font-size:clamp(18px,1.32vw,21px);line-height:1.4;max-width:68ch;margin-bottom:22px}
 .kick{font-size:15px;padding:7px 13px;margin-bottom:16px}
-.grid{gap:18px}.eq,.dflow,.ba,.tl,.chod{gap:18px}.eq,.dflow{flex:1;margin-top:clamp(28px,5vh,64px)}.eq .plate,.dflow .plate{min-height:clamp(250px,32vh,390px)}.grid.c3 .plate{min-height:clamp(230px,29vh,350px)}.fx{gap:12px}.tools{gap:34px}.pilot{gap:46px}
+.grid{gap:16px}.eq,.dflow,.ba,.tl,.chod{gap:16px}.eq,.dflow{margin-top:clamp(20px,3vh,38px)}.eq .plate,.dflow .plate{min-height:clamp(180px,24vh,270px)}.grid.c3 .plate{min-height:clamp(170px,22vh,260px)}.fx{gap:10px}.tools{gap:28px}.pilot{gap:34px}
 .plate{border-radius:22px;padding:28px}.plate h3{font-size:clamp(22px,1.7vw,30px);line-height:1.14;margin:16px 0 8px}.plate p{font-size:clamp(16px,1.22vw,19px);line-height:1.45}.lab{font-size:15px}.plate .ico,.accent .ico,.win .ico{width:32px;height:32px;border-radius:0;background:transparent;color:var(--green-strong)}.plate.l .ico,.accent .ico{color:var(--violet)}.plate.s .ico,.win .ico{color:#fff}.plate.pend .ico{color:var(--amber-ink)}.ico .i{width:32px;height:32px}.note{font-size:17px;padding:17px 20px}.chip{font-size:15px;padding:7px 13px}.big-n{font-size:clamp(58px,4.4vw,78px)}
-.dflow .plate{padding:32px;gap:24px}.dflow .plate .def{font-size:clamp(22px,1.7vw,30px);line-height:1.3}.tall .plate{min-height:270px;padding:32px}.tall .plate h3{font-size:clamp(25px,1.8vw,32px);margin-top:26px}.tall .plate p{font-size:19px}
+.dflow .plate{padding:26px;gap:18px}.dflow .plate .def{font-size:clamp(20px,1.42vw,26px);line-height:1.3}.tall .plate{min-height:200px;padding:26px}.tall .plate h3{font-size:clamp(23px,1.55vw,28px);margin-top:18px}.tall .plate p{font-size:18px}
 .fx .plate{padding:22px}.fx .ico,.fx .ico .i{width:28px;height:28px;border-radius:0}.fx .plate h3{font-size:clamp(18px,1.36vw,24px);margin:12px 0 6px}.fx .plate p{font-size:16px}.accent{margin-top:24px;padding:30px 34px}.accent p{font-size:clamp(25px,2.15vw,38px)}
-.legend .plate{padding:26px}.legend .cnt{font-size:16px}.thesis{font-size:20px;padding:20px 24px}.kpis .plate{min-height:110px;padding:20px 24px}.kpis .big-n{font-size:60px}.kpis .plate p,.cap{font-size:18px}.leaders-h .big-n{font-size:60px}.leaders-h span{font-size:22px}.llist{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.llist li{min-height:58px;font-size:17px;padding:11px 16px}
-.proj{padding:30px}.proj h3{font-size:28px}.who,.status,.pr dt{font-size:15px}.pr dd{font-size:17px;line-height:1.45}.hl{padding:16px 18px}.hl b{font-size:28px}.hl span{font-size:16px}.lt-row>div{font-size:17px;padding:12px 18px}.lt-head>div{font-size:15px}.lt-ind span{font-size:16px}.ach .plate{min-height:280px;padding:32px}.ach .plate h3{font-size:26px}.cc{padding:26px}.cc .share{font-size:58px}.cc .sum,.amt b{font-size:24px}.cc .base,.amt span{font-size:16px}.row{padding:20px 26px}.hd .yr{font-size:24px}.hd .pc{font-size:54px}.bar{height:18px}.win{padding:30px 34px}.win h2{font-size:clamp(26px,2.3vw,38px)}.win .chip{font-size:16px}.opt .plate{padding:32px;min-height:290px}.opt .plate h3{font-size:clamp(26px,1.9vw,34px)}.opt .plate p{font-size:19px}.pager{margin-top:12px}.pager-in{padding:8px}.pager button{width:64px;height:54px}.count{font-size:20px}
+.legend .plate{padding:22px}.legend .cnt{font-size:16px}.thesis{font-size:20px;padding:18px 22px}.kpis .plate{min-height:82px;padding:16px 20px}.kpis .big-n{font-size:52px}.kpis .plate p,.cap{font-size:17px}.leaders-h .big-n{font-size:52px}.leaders-h span{font-size:20px}.llist{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.llist li{min-height:44px;font-size:16px;padding:9px 13px}
+.proj{padding:30px}.proj h3{font-size:28px}.who,.status,.pr dt{font-size:15px}.pr dd{font-size:17px;line-height:1.45}.hl{padding:16px 18px}.hl b{font-size:28px}.hl span{font-size:16px}.lt-row>div{font-size:17px;padding:12px 18px}.lt-head>div{font-size:15px}.lt-ind span{font-size:16px}.ach .plate{min-height:280px;padding:32px}.ach .plate h3{font-size:26px}.cc{padding:26px}.cc .share{font-size:58px}.cc .sum,.amt b{font-size:24px}.cc .base,.amt span{font-size:16px}.row{padding:20px 26px}.hd .yr{font-size:24px}.hd .pc{font-size:54px}.bar{height:18px}.win{padding:30px 34px}.win h2{font-size:clamp(26px,2.3vw,38px)}.win .chip{font-size:16px}.opt .plate{padding:32px;min-height:290px}.opt .plate h3{font-size:clamp(26px,1.9vw,34px)}.opt .plate p{font-size:19px}.pager{margin-top:10px}.pager-in{width:min(520px,100%);gap:16px;padding:6px 12px;border-radius:18px}.pager button{width:44px;height:44px;border-radius:10px}.pager button.next{background:transparent}.pager button:hover:not(:disabled){background:var(--mint)}.count{order:3;min-width:auto;font-size:18px}.dots{order:2;display:flex;align-items:center;gap:16px;flex:1}.dots i{display:block;width:10px;height:10px;border-radius:999px;background:#b9cfc3}.dots i.is-active{width:34px;background:var(--green-2)}
 
 /* The loop denotes a live connection between the three presentation layers. */
 .js .slide.is-active .ico .i,.js .slide.is-active .note .i,.js .slide.is-active .thesis .i{animation:strategy-icon-loop 4.8s var(--ease-in-out) infinite;transform-box:fill-box;transform-origin:center;will-change:transform}
@@ -352,7 +353,7 @@ body{background:var(--bg);color:var(--ink);font-family:"Manrope",system-ui,-appl
 @keyframes strategy-rings-loop{to{transform:rotate(360deg)}}
 @keyframes strategy-orbit-loop{to{transform:rotate(360deg)}}
 .motion-paused *{animation-play-state:paused!important}
-@media (max-width:960px){.app{padding:14px 16px 18px}.slide{padding:30px 24px}.js .slide.is-active{justify-content:flex-start}.t{font-size:clamp(32px,7vw,46px)}.plate{padding:24px}.tall .plate,.opt .plate,.ach .plate{min-height:0}.llist{grid-template-columns:minmax(0,1fr)}.fx .plate{padding:18px}.fx .plate p{font-size:16px}}
+@media (max-width:960px){.app{padding:14px 16px 18px}.slide{padding:30px 24px}.t{font-size:clamp(32px,7vw,46px)}.plate{padding:24px}.tall .plate,.opt .plate,.ach .plate{min-height:0}.llist{grid-template-columns:minmax(0,1fr)}.fx .plate{padding:18px}.fx .plate p{font-size:16px}.dots{gap:10px}.dots i{width:8px;height:8px}.dots i.is-active{width:26px}}
 @media (max-width:600px){.slide{padding:26px 18px}.t{font-size:34px}.lead{font-size:17px}.plate{padding:20px}.plate h3{font-size:22px}.plate p{font-size:16px}.ico{width:48px;height:48px}.big-n{font-size:54px}.proj h3{font-size:24px}.llist li{font-size:16px}.row{padding:18px}.hd .pc{font-size:44px}.win{padding:24px}.pager button{width:54px;height:48px}}
 </style>
 </head>
@@ -752,6 +753,7 @@ body{background:var(--bg);color:var(--ink);font-family:"Manrope",system-ui,-appl
   <div class="pager">
     <div class="pager-in">
       <button class="prev" id="prev" aria-label="Назад"><svg class="i"><use href="#i-chev-l"/></svg></button>
+      <div class="dots" id="dots" aria-hidden="true"></div>
       <div class="count" id="count">01 / 06</div>
       <button class="next" id="next" aria-label="Вперед"><svg class="i"><use href="#i-chev-r"/></svg></button>
     </div>
@@ -791,7 +793,14 @@ body{background:var(--bg);color:var(--ink);font-family:"Manrope",system-ui,-appl
     });
   }
 
-  function fit() { /* Slides keep their authored type scale; the stage scrolls when content is taller. */ }
+  function fit() {
+    var el = bySub[cur.s][cur.i];
+    if (!el || window.innerWidth <= 960) return;
+    el.style.zoom = "";
+    var avail = stage.clientHeight - 2;
+    var height = el.getBoundingClientRect().height;
+    if (avail > 0 && height > avail) el.style.zoom = Math.max(.72, Math.min(1, avail / height));
+  }
 
   function show(s, i, scroll) {
     cur = { s: s, i: i };
@@ -802,6 +811,7 @@ body{background:var(--bg);color:var(--ink);font-family:"Manrope",system-ui,-appl
       b.setAttribute("aria-selected", +b.getAttribute("data-sub") === s ? "true" : "false");
     });
     var n = bySub[s].length;
+    document.getElementById("dots").innerHTML = Array(n).fill(0).map(function (_, index) { return '<i class="' + (index === i ? 'is-active' : '') + '"></i>'; }).join("");
     document.getElementById("prog").style.width = ((i + 1) / n * 100) + "%";
     document.getElementById("count").textContent = String(i + 1).padStart(2, "0") + " / " + String(n).padStart(2, "0");
     document.getElementById("prev").disabled = (s === 0 && i === 0);
