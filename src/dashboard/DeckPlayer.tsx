@@ -75,7 +75,12 @@ export function DeckPlayer({ slide: rawSlide, onSlideChange, onNextSection, onPr
     const target = normalizeSlide(next);
     if (target !== slide) onSlideChange(target);
   }, [slide, total, onSlideChange, onNextSection, onPreviousSection]);
-  const closeOverview = useCallback(() => { setOverview(false); overviewTrigger.current?.focus(); }, []);
+  const closeOverview = useCallback(() => {
+    // End native modality before restoring focus; background controls are inert while open.
+    overviewTrigger.current?.closest('.sales-deck')?.querySelector<HTMLDialogElement>('dialog[open]')?.close();
+    setOverview(false);
+    overviewTrigger.current?.focus();
+  }, []);
 
   useEffect(() => {
     const media = window.matchMedia('(prefers-reduced-motion: reduce)');

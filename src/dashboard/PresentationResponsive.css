@@ -16,3 +16,10 @@
   .sales-deck .adjacent-outcome { align-items:flex-start; padding:18px; }
   .sales-deck .campaign-goal h3 { font-size:24px; }
 }
+
+@media(min-width:600px) and (max-width:900px) and (max-height:500px) {
+  .pulse-header .presentation-navigation { grid-template-columns:repeat(6,minmax(0,1fr)); }
+  .pulse-header .presentation-nav-link { font-size:11px; gap:4px; }
+  .pulse-header .presentation-nav-label[data-short]::after { font-size:11px; }
+  .pulse-header .presentation-nav-icon { width:22px; height:22px; }
+}
