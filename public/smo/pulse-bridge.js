@@ -24,11 +24,17 @@
   });
   document.getElementById('content').before(extraNav);
   const icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19h16"/><path class="pulse-icon-segment p1" d="M7 15v-4"/><path class="pulse-icon-segment p2" d="M12 15V7"/><path class="pulse-icon-segment p3" d="M17 15V4"/></svg>';
+  function replayReveal() {
+    const content = document.getElementById('content');
+    if (!content) return;
+    content.classList.remove('pulse-rendering');
+    void content.offsetWidth;
+    requestAnimationFrame(() => content.classList.add('pulse-rendering'));
+  }
   function decorate() {
     renderSequence += 1;
     document.body.dataset.pulseRender = String(renderSequence);
-    document.getElementById('content')?.classList.remove('pulse-rendering');
-    requestAnimationFrame(() => document.getElementById('content')?.classList.add('pulse-rendering'));
+    replayReveal();
     document.querySelectorAll('#content > .card > h2, #content > .card > summary > h2, #content .grid > .card > h2, #content .grid > .card > summary > h2').forEach(heading => {
       if (heading.querySelector('.pulse-panel-icon')) return;
       const badge = document.createElement('span');
@@ -86,6 +92,9 @@
   });
   const pauseMotion = () => { document.body.dataset.motionPaused = String(document.hidden); };
   document.addEventListener('visibilitychange', pauseMotion); pauseMotion();
+  document.getElementById('content').addEventListener('toggle', event => {
+    if (event.target instanceof HTMLDetailsElement && event.target.open) replayReveal();
+  }, true);
   state.tab = mainView;
   render();
   Promise.resolve(document.fonts?.ready).then(() => requestAnimationFrame(() => {
