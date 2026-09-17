@@ -3,7 +3,7 @@ import type { Context, PresentationSection, SalesModelView } from "./types";
 export const slideTitles = [
   "Модель продаж", "Предпосылки изменений", "Суть изменений и ожидаемые результаты",
   "Как меняем", "Перезакрепление клиентской базы", "Новый порядок закрепления клиентской базы",
-  "Работа со смежными подразделениями", "Как меняем кампании продаж", "Проводится пилот",
+  "Работа со смежными подразделениями", "Как меняем кампании продаж", "Проводим пилот",
 ];
 export const presentationSections: { id: PresentationSection; label: string; short?: string }[] = [
   { id: "title", label: "Приветствие" },

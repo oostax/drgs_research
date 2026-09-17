@@ -181,8 +181,7 @@ const slides = [
   </div>,
   <div className="deck-pilot" key="pilot">
     <div className="pilot-heading">
-      <span className="pilot-status"><i/>Пилот в работе</span>
-      <h2>Проводится пилот</h2>
+      <h2>Проводим пилот</h2>
     </div>
     <div className="pilot-network" role="list" aria-label="Участники пилота">
       {["ВВБ","ПБ","СЗБ","СИБ","СРБ"].map((name,index)=><article key={name} role="listitem" style={{ "--pilot-index": index } as CSSProperties}>
