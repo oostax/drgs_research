@@ -127,15 +127,13 @@ export function AcademyPage({ c, change }: { c: Context; change: (patch: Partial
   const root = useRef<HTMLElement>(null);
   const view = normalizeAcademyView(c.academyView);
   const [ready, setReady] = useState(() => fontsReady || !document.fonts);
-  const [hidden, setHidden] = useState(() => document.hidden);
   const [zoom, setZoom] = useState<MediaKey | null>(null);
   usePresentationHeight(root);
   useLayoutEffect(() => { let disposed = false; void settleFonts().then(() => { if (!disposed) setReady(true); }); return () => { disposed = true; }; }, []);
-  useEffect(() => { const update = () => setHidden(document.hidden); document.addEventListener("visibilitychange", update); return () => document.removeEventListener("visibilitychange", update); }, []);
   useEffect(() => { setZoom(null); }, [view]);
   const go = (direction: -1 | 1) => { const destination = adjacentPresentation(c, direction); if (destination) change(destination.patch); };
   const gestures = usePresentationInput({ previous: () => go(-1), next: () => go(1), keyboard: !zoom });
-  return <section ref={root} className="academy-page" data-ready={ready} data-motion-paused={hidden || undefined} aria-label="Академия гибридных лидеров" aria-busy={!ready} {...gestures}>
+  return <section ref={root} className="academy-page" data-ready={ready} aria-label="Академия гибридных лидеров" aria-busy={!ready} {...gestures}>
     {view === "essence" && <header className="academy-hero">
       <div className="academy-hero-ambient" aria-hidden="true"><i /><i /><i /></div>
       <p className="academy-kicker">Академия гибридных лидеров. ДРГС совместно с лабораторией А. Курпатова·</p>

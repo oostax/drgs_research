@@ -10,6 +10,7 @@
   }
   let filtersVisible = false;
   let extrasVisible = false;
+  let renderSequence = 0;
   let mainView = mainViews.includes(document.body.dataset.smoView) ? document.body.dataset.smoView : 'market';
   const extraNav = document.createElement('nav');
   extraNav.className = 'pulse-extra-materials';
@@ -24,6 +25,10 @@
   document.getElementById('content').before(extraNav);
   const icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19h16"/><path class="pulse-icon-segment p1" d="M7 15v-4"/><path class="pulse-icon-segment p2" d="M12 15V7"/><path class="pulse-icon-segment p3" d="M17 15V4"/></svg>';
   function decorate() {
+    renderSequence += 1;
+    document.body.dataset.pulseRender = String(renderSequence);
+    document.getElementById('content')?.classList.remove('pulse-rendering');
+    requestAnimationFrame(() => document.getElementById('content')?.classList.add('pulse-rendering'));
     document.querySelectorAll('#content > .card > h2, #content > .card > summary > h2, #content .grid > .card > h2, #content .grid > .card > summary > h2').forEach(heading => {
       if (heading.querySelector('.pulse-panel-icon')) return;
       const badge = document.createElement('span');
@@ -31,7 +36,13 @@
       heading.prepend(badge);
     });
     document.querySelectorAll('#content > .card, #content > .grid').forEach((card, index) => {
-      card.style.setProperty('--pulse-enter-order', String(Math.min(index, 5)));
+      card.style.setProperty('--pulse-enter-order', String(Math.min(index, 8)));
+    });
+    document.querySelectorAll('#content .bar-row, #content tr, #content .kpi').forEach((item, index) => {
+      item.style.setProperty('--pulse-row-order', String(Math.min(index, 10)));
+    });
+    document.querySelectorAll('#content .presentation-fold > .fold-body > *').forEach((item, index) => {
+      item.style.setProperty('--pulse-detail-order', String(Math.min(index, 8)));
     });
     document.querySelector('.filters').hidden = !filtersVisible;
     document.body.dataset.smoFilters = String(filtersVisible);
