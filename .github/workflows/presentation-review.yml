@@ -1,0 +1,54 @@
+name: Presentation review
+on:
+  push:
+    branches: [fix/presentation-responsive-navigation]
+  pull_request:
+    paths:
+      - 'src/dashboard/**'
+      - 'scripts/presentation-*.mjs'
+      - '.github/workflows/presentation-review.yml'
+permissions:
+  contents: read
+concurrency:
+  group: presentation-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Source review snapshot
+        run: |
+          mkdir -p review-artifacts
+          tar -czf review-artifacts/source.tgz src scripts docs package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig*.json vite.config.ts vitest.config.ts index.html README.md DESIGN.md PRODUCT.md public/images public/fonts
+      - uses: actions/upload-artifact@v4
+        with:
+          name: presentation-source
+          path: review-artifacts/source.tgz
+          retention-days: 3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - name: Install locked dependencies
+        run: pnpm install --frozen-lockfile --force
+      - name: Unit tests
+        run: pnpm test
+      - name: Type check and production build
+        run: pnpm build
+      - name: Browser regression tests
+        if: ${{ hashFiles('scripts/presentation-review.mjs') != '' }}
+        run: |
+          npm install --no-save --package-lock=false --force playwright@1.55.1
+          npx playwright install --with-deps chromium webkit
+          pnpm exec vite preview --host 127.0.0.1 --port 4176 > /tmp/presentation-preview.log 2>&1 &
+          node scripts/presentation-review.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: presentation-review
+          path: review-artifacts
+          retention-days: 7
