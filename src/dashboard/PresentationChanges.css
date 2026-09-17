@@ -46,3 +46,14 @@
   .sales-deck.is-responsive .deck-changes .change-columns li { font-size: 20px; padding: 6px 10px; line-height: 1.25; }
   .sales-deck.is-responsive .deck-changes .change-current { grid-template-rows: repeat(5, minmax(0, 1fr)); gap: 6px; padding: 50px 0 10px; }
 }
+/* Compact the chrome on the smallest phones before reducing the slide itself. */
+@media (max-width: 360px) {
+  .sales-deck.is-responsive .deck-changes { padding: 12px 10px; }
+  .sales-deck.is-responsive .deck-changes > h2 { font-size: 26px; }
+  .sales-deck.is-responsive .deck-changes .change-columns { margin-top: 8px; gap: 8px; }
+  .sales-deck.is-responsive .deck-changes .change-columns section { padding: 8px; }
+  .sales-deck.is-responsive .deck-changes .change-columns header { min-height: 28px; margin-bottom: 8px; }
+  .sales-deck.is-responsive .deck-changes .change-columns header .deck-icon { width: 28px; height: 28px; }
+  .sales-deck.is-responsive .deck-changes .change-columns ol { gap: 4px; }
+  .sales-deck.is-responsive .deck-changes .change-columns li { padding: 5px 8px; }
+}

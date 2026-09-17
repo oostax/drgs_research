@@ -43,6 +43,7 @@ for (const [engine, type] of [['chromium', chromium], ['webkit', webkit]]) {
       await page.locator('.deck-stage[data-fit-ready="true"]').waitFor();
       const result = await page.evaluate(audit);
       report.layouts.push({ engine, width, height, ...result });
+      try {
       assert.deepEqual(result.rows.map(r => r.copy), copy, 'Slide copy changed');
       assert(result.rows.every(r => r.contained), `Clipped copy: ${engine} ${width}x${height}`);
       assert(result.rows.every(r => r.fontPx >= minFont), `Small text: ${engine} ${width}x${height}: ${result.rows[0].fontPx}`);
@@ -50,7 +51,8 @@ for (const [engine, type] of [['chromium', chromium], ['webkit', webkit]]) {
       if (width > 680) for (let row = 0; row < 5; row++) {
         assert(Math.abs(result.rows[row].center - result.rows[row + 5].center) < 1, 'Paired rows are misaligned');
       }
-      if ([390,1366,1440,1857].includes(width)) await page.screenshot({path:`${output}/${engine}-${width}x${height}-slide3.png`});
+      } catch (error) { report.errors.push(`${engine} ${width}x${height}: ${error}`); }
+      if ([320,390,1366,1440,1857].includes(width)) await page.screenshot({path:`${output}/${engine}-${width}x${height}-slide3.png`});
       await context.close();
     }
   } catch (error) { report.errors.push(String(error)); throw error; }
