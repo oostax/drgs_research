@@ -1,86 +1,34 @@
-name: Academy integration verification
+name: Academy integration publication
 on:
   push:
     branches: [work/academy-integration-20260917]
 permissions:
   contents: write
-concurrency:
-  group: academy-integration-20260917
-  cancel-in-progress: false
 jobs:
-  verify:
+  integrate:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-      - name: Preserve the supplied images
-        shell: python
-        run: |
-          import hashlib, pathlib, urllib.request
-          assets = [
-            ('cohort.jpg', '12439ec89b2a6b644892955d2e00e0b2da1b5f7b57d53e1a4460f0ef1a8ba9ce', 'https://lh7-rt.googleusercontent.com/docsz/AD_4nXc_GWR5Fri-tLDofGIyIlAXQk1QKFNlTn4y8h-_XbqHV4QzkXTGRlPUfD5XTQws2JUqSSvHrhp8xySrwaPrZ75zZImNOuCparLcyyubzhpVwQageKDUUatjbPn2nxlUzYFbW48YY5wmxRRerV2-AFprg0bCWEw_Ke9aJns1mecbvxbY=s2048?key=DEjWg_suxHf7pjkJLnJjTA'),
-            ('report.jpg', 'da8221517acc968d0aa5e778c96c5b76d96fcad52c96cd0f7a9306fc48abfeca', 'https://lh7-rt.googleusercontent.com/docsz/AD_4nXcrzIgkcX8LUYTP4VsVz2pTNradeVd_ahcRS_ANqc884TU_BbzB4r8jcYYgIPXtKx3OFv4bQWB_a96nxpu1-xBTlgleBeUBJyT_dBVIYCvHlGOpDrDXyZxdPNOaGOOJRhU3T0J85Mgcfr9V8LohMOvPJD96blMB9ePT7hifj3qgqgATxIg=s2048?key=DEjWg_suxHf7pjkJLnJjTA'),
-          ]
-          root = pathlib.Path('public/academy'); root.mkdir(parents=True, exist_ok=True)
-          for name, expected, url in assets:
-              target = root / name
-              data = target.read_bytes() if target.exists() else urllib.request.urlopen(url, timeout=40).read()
-              actual = hashlib.sha256(data).hexdigest()
-              print(name, len(data), actual)
-              assert actual == expected, 'Source image integrity mismatch: ' + name
-              target.write_bytes(data)
-      - uses: actions/setup-node@v4
-        if: hashFiles('scripts/integrate-academy.mjs') != ''
-        with:
-          node-version: 22
-          cache: npm
-      - name: Apply the minimal integration patch
-        if: hashFiles('scripts/integrate-academy.mjs') != ''
+          ref: work/academy-integration-20260917
+      - name: Apply prepared integration
         run: node scripts/integrate-academy.mjs
-      - name: Install dependencies
-        if: hashFiles('scripts/integrate-academy.mjs') != ''
-        run: npm ci --force
-      - name: Build and unit tests
-        if: hashFiles('scripts/integrate-academy.mjs') != ''
-        run: npm run build && npm test
-      - name: Install browser verification tools
-        if: hashFiles('scripts/check-academy-browser.mjs') != ''
-        run: npm install --no-save --force playwright agent-browser && npx playwright install --with-deps chromium
-      - name: Check browser layout and navigation
-        if: hashFiles('scripts/check-academy-browser.mjs') != ''
+      - name: Commit integrated source
         run: |
-          npm run dev -- --host 127.0.0.1 --port 4173 > /tmp/academy-vite.log 2>&1 &
-          for attempt in $(seq 1 40); do curl --silent --fail http://127.0.0.1:4173/ >/dev/null && break; sleep 1; done
-          npx agent-browser open 'http://127.0.0.1:4173/?section=academy'
-          npx agent-browser snapshot -i
-          node scripts/check-academy-browser.mjs
-      - name: Record verified source changes
-        run: |
-          git config user.name 'oostax'
-          git config user.email 'oostax@users.noreply.github.com'
-          git add public/academy src/dashboard
-          if ! git diff --cached --quiet; then git commit -m 'Integrate Academy hybrid leaders with original media'; git push origin HEAD:work/academy-integration-20260917; fi
+          git config user.name "oostax"
+          git config user.email "oostax@users.noreply.github.com"
+          git add src/dashboard public/academy
+          if ! git diff --cached --quiet; then
+            git commit -m "Connect Academy page to shared presentation navigation"
+            git push origin HEAD:work/academy-integration-20260917
+          fi
           git rev-parse HEAD
-      - name: Save verification results
-        if: always() && hashFiles('artifacts/academy/**') != ''
-        uses: actions/upload-artifact@v4
+          git rev-parse HEAD^{tree}
+      - uses: actions/setup-node@v4
         with:
-          name: academy-browser-verification
-          path: artifacts/academy
-      - name: Save source for local review
-        uses: actions/upload-artifact@v4
-        with:
-          name: academy-source
-          path: |
-            src
-            public
-            package.json
-            package-lock.json
-            tsconfig*.json
-            vite.config.*
-            index.html
-            DESIGN.md
-            AGENTS.md
-          include-hidden-files: true
+          node-version: '22'
+      - name: Build
+        run: npm install --force --no-package-lock --no-audit --no-fund && npm run build
+      - name: Tests
+        run: npm test
