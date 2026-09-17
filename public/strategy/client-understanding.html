@@ -848,6 +848,8 @@ body{background:var(--bg);color:var(--ink);font-family:"Manrope",system-ui,-appl
       var s = Math.min(2, Math.max(0, +e.data.view || 0));
       show(s, 0, true);
     }
+    if (e.data.command === "next") next();
+    if (e.data.command === "prev") prev();
   });
   document.addEventListener("keydown", function (e) {
     if (e.key === "ArrowRight") next();

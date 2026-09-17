@@ -58,6 +58,19 @@ export function StrategyDashboard() {
     return () => window.removeEventListener("strategy:navigate", navigate);
   }, []);
 
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.defaultPrevented || (event.key !== "ArrowLeft" && event.key !== "ArrowRight")) return;
+      event.preventDefault();
+      frame.current?.contentWindow?.postMessage(
+        { type: "pulse:strategy", command: event.key === "ArrowRight" ? "next" : "prev" },
+        window.location.origin,
+      );
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
   return (
     <section className="strategy-dashboard" aria-label="Глубокое понимание клиента">
       {!loaded && (

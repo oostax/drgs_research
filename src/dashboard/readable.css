@@ -350,6 +350,6 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible, input:focus-vis
 }
 /* Keyboard navigation stays still across dashboard controls. Presentation surfaces
    are deliberate exceptions: their motion must not depend on a pointer click. */
-html[data-input="keyboard"] *:not(.sales-deck):not(.sales-deck *):not(.welcome-page):not(.welcome-page *):not(.next-steps-slide):not(.next-steps-slide *),
-html[data-input="keyboard"] *:not(.sales-deck):not(.sales-deck *):not(.welcome-page):not(.welcome-page *):not(.next-steps-slide):not(.next-steps-slide *)::before,
-html[data-input="keyboard"] *:not(.sales-deck):not(.sales-deck *):not(.welcome-page):not(.welcome-page *):not(.next-steps-slide):not(.next-steps-slide *)::after { animation: none !important; transition: none !important; }
+html[data-input="keyboard"] *:not(.sales-deck):not(.sales-deck *):not(.welcome-page):not(.welcome-page *):not(.next-steps-slide):not(.next-steps-slide *):not(.strategy-dashboard):not(.strategy-dashboard *),
+html[data-input="keyboard"] *:not(.sales-deck):not(.sales-deck *):not(.welcome-page):not(.welcome-page *):not(.next-steps-slide):not(.next-steps-slide *):not(.strategy-dashboard):not(.strategy-dashboard *)::before,
+html[data-input="keyboard"] *:not(.sales-deck):not(.sales-deck *):not(.welcome-page):not(.welcome-page *):not(.next-steps-slide):not(.next-steps-slide *):not(.strategy-dashboard):not(.strategy-dashboard *)::after { animation: none !important; transition: none !important; }
