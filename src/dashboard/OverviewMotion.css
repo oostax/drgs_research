@@ -1,0 +1,233 @@
+/* Results screen entrance: the surface arrives immediately, while its
+   readable groups reveal in a short, directional cascade. This is scoped to
+   Sales Model → Results so analysis and the other sections keep their own
+   motion language. */
+.section-sales-model.page-overview .overview-controls {
+  animation: results-controls-settle 420ms var(--ease-out) both;
+}
+
+.section-sales-model.page-overview .overview-heading {
+  animation: results-heading-in 420ms var(--ease-out) both;
+}
+
+.section-sales-model.page-overview .overview-period {
+  animation: results-period-in 420ms var(--ease-out) 70ms both;
+}
+
+.section-sales-model.page-overview .filter-bar-compact {
+  animation: results-filter-in 480ms var(--ease-out) 110ms both;
+}
+
+.section-sales-model.page-overview .metrics-grid > .metric-card {
+  animation-duration: 620ms;
+  animation-timing-function: var(--ease-out);
+  animation-fill-mode: both;
+}
+
+.section-sales-model.page-overview .metrics-grid > .metric-card:nth-child(1) {
+  animation-name: results-card-from-left;
+  animation-delay: 80ms;
+}
+
+.section-sales-model.page-overview .metrics-grid > .metric-card:nth-child(2) {
+  animation-name: results-card-from-center;
+  animation-delay: 125ms;
+}
+
+.section-sales-model.page-overview .metrics-grid > .metric-card:nth-child(3) {
+  animation-name: results-card-from-right;
+  animation-delay: 170ms;
+}
+
+.section-sales-model.page-overview .metric-card > :is(
+  .sales-heading,
+  .card-heading,
+  .supplemental-heading
+) {
+  animation: results-content-in 430ms var(--ease-out) 180ms both;
+}
+
+.section-sales-model.page-overview .metric-card > :is(
+  .sales-period,
+  .supplemental-period,
+  .supplemental-mode,
+  .supplemental-month-controls,
+  .metric-headline,
+  .sales-summary,
+  .card-subtitle,
+  .card-status-row,
+  .waiting-state,
+  .share-inline,
+  .funnel-stages
+) {
+  animation: results-content-in 430ms var(--ease-out) 250ms both;
+}
+
+.section-sales-model.page-overview .metrics-grid > .metric-card:nth-child(2) > :is(
+  .sales-heading,
+  .card-heading,
+  .supplemental-heading,
+  .sales-period,
+  .supplemental-period,
+  .supplemental-mode,
+  .supplemental-month-controls,
+  .metric-headline,
+  .sales-summary,
+  .card-subtitle,
+  .card-status-row,
+  .waiting-state,
+  .share-inline,
+  .funnel-stages
+) {
+  animation-delay: 295ms;
+}
+
+.section-sales-model.page-overview .metrics-grid > .metric-card:nth-child(3) > :is(
+  .sales-heading,
+  .card-heading,
+  .supplemental-heading,
+  .sales-period,
+  .supplemental-period,
+  .supplemental-mode,
+  .supplemental-month-controls,
+  .metric-headline,
+  .sales-summary,
+  .card-subtitle,
+  .card-status-row,
+  .waiting-state,
+  .share-inline,
+  .funnel-stages
+) {
+  animation-delay: 340ms;
+}
+
+/* Each card has a different visual anchor: the funnel grows from its plot,
+   complex products resolve through the rings, and meetings draw its trend. */
+.section-sales-model.page-overview .metric-sales > .sales-plot,
+.section-sales-model.page-overview .metric-sales > .funnel-chart-heading {
+  animation: results-plot-in 520ms var(--ease-out) 390ms both;
+}
+
+.section-sales-model.page-overview .complex-card > .complex-rings {
+  animation: results-rings-in 640ms var(--ease-out) 410ms both;
+}
+
+.section-sales-model.page-overview .meetings-card > .meetings-trend {
+  animation: results-trend-in 580ms var(--ease-out) 390ms both;
+}
+
+.section-sales-model.page-overview .meetings-card > .meetings-coverage,
+.section-sales-model.page-overview .meetings-card > .meetings-quarter-tabs,
+.section-sales-model.page-overview .metric-card > .submetric,
+.section-sales-model.page-overview .metric-card > .quarter-chart,
+.section-sales-model.page-overview .metric-card > .sales-notes,
+.section-sales-model.page-overview .metric-card > .supplemental-notes {
+  animation: results-content-in 460ms var(--ease-out) 480ms both;
+}
+
+.section-sales-model.page-overview .overview-details {
+  animation: results-section-in 560ms var(--ease-out) 430ms both;
+}
+
+.section-sales-model.page-overview .supplemental-grid {
+  animation: results-section-in 560ms var(--ease-out) 500ms both;
+}
+
+.section-sales-model.page-overview .supplemental-card:nth-child(1) {
+  animation: results-supplemental-left 560ms var(--ease-out) 530ms both;
+}
+
+.section-sales-model.page-overview .supplemental-card:nth-child(2) {
+  animation: results-supplemental-right 560ms var(--ease-out) 590ms both;
+}
+
+.section-sales-model.page-overview .fikri-ranking,
+.section-sales-model.page-overview .payroll-changes {
+  animation: results-content-in 460ms var(--ease-out) 650ms both;
+}
+
+@keyframes results-controls-settle {
+  from { transform: translateY(-8px); }
+  to { transform: translateY(0); }
+}
+
+@keyframes results-heading-in {
+  from { opacity: 0; transform: translateX(-12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes results-period-in {
+  from { opacity: 0; transform: translateX(10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes results-filter-in {
+  from { opacity: 0; transform: translateY(9px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes results-card-from-left {
+  from { transform: translateX(-18px); }
+  to { transform: translateX(0); }
+}
+
+@keyframes results-card-from-center {
+  from { transform: translateY(14px) scale(.985); }
+  to { transform: translateY(0) scale(1); }
+}
+
+@keyframes results-card-from-right {
+  from { transform: translateX(18px); }
+  to { transform: translateX(0); }
+}
+
+@keyframes results-content-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes results-plot-in {
+  from { opacity: 0; transform: translateY(16px) scaleY(.96); transform-origin: 50% 100%; }
+  to { opacity: 1; transform: translateY(0) scaleY(1); transform-origin: 50% 100%; }
+}
+
+@keyframes results-rings-in {
+  from { opacity: 0; transform: scale(.88); transform-origin: 50% 58%; }
+  to { opacity: 1; transform: scale(1); transform-origin: 50% 58%; }
+}
+
+@keyframes results-trend-in {
+  from { opacity: 0; transform: translateX(18px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes results-section-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes results-supplemental-left {
+  from { transform: translateX(-14px); }
+  to { transform: translateX(0); }
+}
+
+@keyframes results-supplemental-right {
+  from { transform: translateX(14px); }
+  to { transform: translateX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section-sales-model.page-overview .overview-controls,
+  .section-sales-model.page-overview .overview-heading,
+  .section-sales-model.page-overview .overview-period,
+  .section-sales-model.page-overview .filter-bar-compact,
+  .section-sales-model.page-overview .metrics-grid > .metric-card,
+  .section-sales-model.page-overview .metric-card > *,
+  .section-sales-model.page-overview .overview-details,
+  .section-sales-model.page-overview .supplemental-grid,
+  .section-sales-model.page-overview .supplemental-card,
+  .section-sales-model.page-overview .fikri-ranking,
+  .section-sales-model.page-overview .payroll-changes {
+    animation: none;
+  }
+}
