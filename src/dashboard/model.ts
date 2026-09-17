@@ -1,3 +1,4 @@
+import { normalizeSlide } from "./presentationModel";
 import type { Context, Evidence, Group, Manifest, Metric, Role, Stat } from "./types";
 export const defaults: Context = {
   section: "sales-model",
@@ -75,7 +76,7 @@ export function parseContext(search: string, data?: Manifest): Context {
   return normalizeMetricContext({
     section: valid("section", ["title", "smo", "sales-model", "strategy", "academy", "tb-tasks"], "sales-model"),
     modelView: valid("modelView", ["premises", "results", "next"], "results"),
-    slide: Math.max(1, Math.min(9, Number(p.get("slide") || 1))),
+    slide: normalizeSlide(p.get("slide")),
     page: valid("page", ["overview", "analysis", "map"], "overview"),
     branch:
       !data || branch === "all" || data.branches.some((b) => b.id === branch)

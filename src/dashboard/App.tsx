@@ -40,6 +40,8 @@ import { SupplementalCard, SupplementalDetail, useSupplemental } from './Supplem
 import type { SupplementalLoad } from './SupplementalCard';
 import { isSupplemental, type Supplemental } from './supplementalModel';
 import { SalesModelDeck } from './SalesModelDeck';
+import { PresentationFlow, PresentationPlaceholder } from './PresentationFlow';
+import { adjacentSection } from './presentationModel';
 
 type Change = (patch: Partial<Context>) => void;
 const mainMetrics: Metric[] = [
@@ -1257,7 +1259,7 @@ export default function App() {
     const next = normalizeMetricContext({ ...c, ...patch }, data || undefined);
     window.history.pushState({}, "", contextUrl(next));
     setC(next);
-    if (patch.page && patch.page !== c.page)
+    if ((patch.page && patch.page !== c.page) || (patch.section && patch.section !== c.section) || (patch.modelView && patch.modelView !== c.modelView))
       window.scrollTo({ top: 0, behavior: "instant" });
   };
   useEffect(() => {
@@ -1299,11 +1301,13 @@ export default function App() {
       <DashboardHeader c={c} change={change} />
       <main id="main" className={`app-main page-${c.page} section-${c.section} model-${c.modelView}`}>
         {c.section !== "sales-model" ? (
-          <section className="empty-presentation-section" aria-label="Раздел будет наполнен данными" />
+          <PresentationPlaceholder c={c} change={change} />
         ) : c.modelView === "premises" ? (
-          <SalesModelDeck slide={c.slide} onSlideChange={(slide) => change({ slide })} />
+          <SalesModelDeck slide={c.slide} onSlideChange={(slide) => change({ slide })}
+            onNextSection={() => { const next = adjacentSection(c, 1); if (next) change(next.patch); }}
+            onPreviousSection={() => { const previous = adjacentSection(c, -1); if (previous) change(previous.patch); }} />
         ) : c.modelView === "next" ? (
-          <section className="empty-presentation-section" aria-label="Раздел будет наполнен данными" />
+          <PresentationPlaceholder c={c} change={change} />
         ) : c.page === "overview" ? (
           <Overview {...{ data, c, change, supplemental }} />
         ) : c.page === "analysis" ? (
@@ -1314,6 +1318,7 @@ export default function App() {
         ) : (
           <MapPage {...{ data, c, change }} />
         )}
+        {c.section === "sales-model" && c.modelView === "results" && <PresentationFlow c={c} change={change}/>}
       </main>
       {c.section === "sales-model" && c.modelView === "results" && c.page !== "overview" && <footer className="app-footer">
         <span>2026 · Результаты пилота</span>
