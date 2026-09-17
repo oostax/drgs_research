@@ -1,0 +1,54 @@
+name: Presentation regression
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'src/**'
+      - 'scripts/presentation-review.mjs'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/presentation-review.yml'
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'scripts/presentation-review.mjs'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/presentation-review.yml'
+permissions:
+  contents: read
+concurrency:
+  group: presentation-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - name: Install locked dependencies
+        run: pnpm install --frozen-lockfile --force
+      - name: Unit tests and production build
+        run: |
+          mkdir -p review-artifacts
+          pnpm test 2>&1 | tee review-artifacts/unit-tests.txt
+          pnpm build 2>&1 | tee review-artifacts/build.txt
+      - name: Browser, gesture and layout regression
+        run: |
+          npm install --prefix /tmp/presentation-browser --no-package-lock playwright@1.55.1
+          /tmp/presentation-browser/node_modules/.bin/playwright install --with-deps chromium webkit
+          pnpm exec vite preview --host 127.0.0.1 --port 4176 > /tmp/presentation-preview.log 2>&1 &
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4176/ > /dev/null && break; sleep 1; done
+          node scripts/presentation-review.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: presentation-review
+          path: review-artifacts
+          retention-days: 7

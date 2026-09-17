@@ -1,0 +1,229 @@
+/* Presentation-only layout. Analytics retain their existing grids and calculations. */
+.sales-deck.is-responsive {
+  height: var(--deck-height, calc(100dvh - 132px));
+  min-height: 0;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 14px;
+  padding: 24px clamp(12px, 2.6vw, 44px) max(14px, env(safe-area-inset-bottom));
+}
+.is-responsive .deck-stage-stack { width: min(1840px, 100%); height: 100%; min-height: 0; touch-action: pan-y pinch-zoom; }
+.is-responsive .deck-stage { position: absolute; inset: 0; height: 100%; min-height: 0; }
+.is-responsive .deck-fit-content {
+  position: absolute; top: 50%; left: 50%; min-height: 0;
+  transform: translate(-50%, -50%) scale(var(--slide-scale, 1));
+  transform-origin: center; visibility: hidden;
+}
+.deck-fit-content > div { min-height: var(--slide-available-height); }
+.is-responsive .deck-standard { padding: clamp(22px, 3vw, 52px); }
+.is-responsive .deck-standard > h2 { font-size: clamp(28px, 3.3vw, 56px); }
+.is-responsive .deck-cover { height: var(--slide-available-height); min-height: 0; grid-template-columns: 60% 40%; }
+.is-responsive .cover-copy { padding: clamp(28px, 6vw, 110px); min-height: 0; }
+.is-responsive .cover-media { height: 100%; min-height: 0; }
+.is-responsive .deck-cover h1 { font-size: clamp(52px, 7.6vw, 146px); }
+.is-responsive .premise-grid { gap: 18px; margin-top: clamp(20px, 3vw, 44px); }
+.is-responsive .premise-item { padding: 24px; min-height: 136px; }
+.is-responsive .premise-item h3 { font-size: clamp(19px, 2vw, 32px); }
+.is-responsive .premise-item p { font-size: clamp(14px, 1.25vw, 20px); }
+.is-responsive .change-columns { grid-template-columns: minmax(0,1fr) 40px minmax(0,1fr); gap: 20px; }
+.is-responsive .change-columns section { padding: 22px; }
+.is-responsive .change-columns ol { grid-template-rows: repeat(5, minmax(52px, 1fr)); }
+.is-responsive .change-columns li { min-height: 52px; padding: 10px 14px; }
+.is-responsive .change-current { display: grid; padding: 90px 0 22px; }
+.is-responsive .deck-question { gap: 40px; padding: clamp(28px, 5vw, 84px); }
+.is-responsive .question-orbit { width: min(32vw, 460px); }
+.is-responsive .deck-question h2 { font-size: clamp(52px, 7vw, 126px); }
+.is-responsive .pyramid-layout { height: clamp(350px, 50vh, 610px); flex: none; }
+.is-responsive .pyramid-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.is-responsive .pyramid-note { padding: 18px; }
+.is-responsive .note-rkm { top: 22%; }
+.is-responsive .note-km { top: 70%; }
+.is-responsive .assignment-roles { flex: auto; grid-template-rows: auto auto; overflow: visible; }
+.is-responsive .assignment-role { min-height: 0; padding: 16px; }
+.is-responsive .assignment-rule { padding: 12px; }
+.is-responsive .assignment-rule p { font-size: clamp(14px, 1.08vw, 19px); }
+.is-responsive .adjacent-slide { grid-template-columns: minmax(0,1fr) minmax(110px,.4fr) minmax(0,1.2fr); gap: 24px; }
+.is-responsive .adjacent-copy h2 { font-size: clamp(30px,3.3vw,54px); }
+.is-responsive .adjacent-copy h2 span { white-space: normal; }
+.is-responsive .adjacent-action { min-height: 150px; gap: 18px; padding: 24px; }
+.is-responsive .adjacent-action > .deck-icon { width: 68px; height: 68px; }
+.is-responsive .adjacent-action > .deck-icon svg { width: 38px; height: 38px; }
+.is-responsive .adjacent-action h3 { font-size: clamp(18px,1.6vw,27px); }
+.is-responsive .campaign-slide { grid-template-columns: minmax(0,.85fr) minmax(0,1.15fr); gap: 26px; }
+.is-responsive .radar { width: min(31vw,450px); }
+.is-responsive .campaign-goal { min-height: 150px; padding: 24px; gap: 20px; }
+.is-responsive .campaign-goal > .deck-icon { width: 70px; height: 70px; }
+.is-responsive .pilot-network { grid-template-columns: repeat(5,minmax(0,1fr)); }
+.is-responsive .pilot-network article { min-height: 0; }
+.is-responsive .deck-controls {
+  position: static; transform: none; justify-self: center; width: max-content; max-width: 100%;
+  gap: 12px; margin: 0; padding: 4px 6px; box-shadow: 0 6px 20px rgba(31,104,78,.09);
+}
+.is-responsive .deck-controls > button { min-width: 44px; height: 44px; }
+.is-responsive .deck-controls .deck-previous svg { transform: rotate(180deg); }
+.is-responsive .deck-controls .deck-next svg { transform: none; }
+.is-responsive .deck-counter { min-width: 54px; text-align: center; font-size: 13px; }
+.is-responsive .deck-dots { gap: 0; }
+.is-responsive .deck-dots button { position: relative; width: 26px; height: 32px; background: transparent; border-radius: 8px; }
+.is-responsive .deck-dots button::before { content: ''; position: absolute; width: 6px; height: 6px; top: 13px; left: 10px; background: #b7cbc0; border-radius: 9px; transition: width 160ms, left 160ms, background 160ms; }
+.is-responsive .deck-dots button[aria-current='step']::before { width: 18px; left: 4px; background: #298463; }
+.deck-controls button:focus-visible, .presentation-section-controls button:focus-visible { outline: 2px solid #298463; outline-offset: 2px; }
+.is-responsive .deck-controls > button:hover:not(:disabled) { color: #176f4f; background: #e1f0e7; }
+/* Decorative motion stays semantic and does not move text or touch targets. */
+.semantic-analysis svg { animation: semantic-focus 3.6s ease-in-out infinite; }
+.semantic-complex svg { animation: semantic-people 4.4s ease-in-out infinite; }
+.semantic-appeals svg { animation: semantic-focus 4s .5s ease-in-out infinite; }
+.semantic-sales svg { animation: semantic-people 4.6s .7s ease-in-out infinite; }
+@keyframes semantic-focus { 0%,70%,100% { transform: scale(1); } 35% { transform: scale(1.13); } }
+@keyframes semantic-people { 0%,70%,100% { transform: translateY(0); } 35% { transform: translateY(-3px); } }
+/* Assembly followed by a quicker, clearly separated tier wave. The apex has room in the SVG viewBox. */
+.is-responsive .pyramid-tier {
+  transform-box: fill-box; transform-origin: center;
+  animation: pyramid-assemble 700ms var(--tier-delay) cubic-bezier(.18,.8,.25,1) both,
+    pyramid-dynamic-wave 3.8s calc(var(--tier-delay) + 700ms) cubic-bezier(.65,0,.25,1) infinite;
+}
+.is-responsive .tier-akm { --lift: 4px; --tier-delay: .15s; }
+.is-responsive .tier-km { --lift: -12px; --tier-delay: .28s; }
+.is-responsive .tier-gkm { --lift: -30px; --tier-delay: .41s; }
+.is-responsive .tier-rkm { --lift: -52px; --tier-delay: .54s; }
+.is-responsive .pyramid-rim { animation: pyramid-light 3.8s ease-in-out infinite; }
+.is-responsive .pyramid-ground-shadow { transform-box: fill-box; transform-origin: center; animation: pyramid-shadow-wave 3.8s .85s ease-in-out infinite; }
+@keyframes pyramid-assemble { from { opacity: 0; transform: translateY(58px) scale(.93); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes pyramid-dynamic-wave { 0%,15%,100% { transform: translateY(0); } 42%,55% { transform: translateY(var(--lift)); } 78% { transform: translateY(calc(var(--lift) * -.1)); } }
+@keyframes pyramid-shadow-wave { 0%,100% { opacity: 1; transform: scaleX(1); } 48% { opacity: .65; transform: scaleX(.85); } }
+.sales-deck[data-motion-paused='true'] *, .sales-deck[data-motion-paused='true'] *::before, .sales-deck[data-motion-paused='true'] *::after { animation-play-state: paused !important; }
+.presentation-section-controls {
+  display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  width: min(1480px, calc(100% - 32px)); margin: 12px auto 20px; padding: 8px;
+  background: #f3faf6; border: 1px solid #cfe3d8; border-radius: 14px;
+}
+.presentation-section-controls button { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 10px 14px; border-radius: 8px; color: #1f684e; font-size: 13px; }
+.presentation-section-controls button:last-child { margin-left: auto; }
+.presentation-section-controls button:first-child svg { transform: rotate(180deg); }
+.presentation-section-controls button:last-child svg { transform: none; }
+.empty-presentation-section { display: grid; place-content: center; min-height: calc(100dvh - 270px); text-align: center; }
+.empty-presentation-section h1 { font-size: clamp(28px,4vw,52px); font-weight: 550; color: #24352f; }
+.empty-presentation-section p { margin-top: 16px; color: #64746b; }
+@media (min-width: 681px) and (max-width: 1050px) {
+  .is-responsive .premise-item { padding: 18px; gap: 14px; }
+  .is-responsive .change-columns { gap: 14px; grid-template-columns: minmax(0,1fr) 22px minmax(0,1fr); }
+  .is-responsive .change-columns section { padding: 14px; }
+  .is-responsive .change-columns header { gap: 10px; }
+  .is-responsive .change-columns h3 { font-size: 22px; }
+  .is-responsive .pyramid-layout { grid-template-columns: 27% 39% 34%; height: 400px; }
+  .is-responsive .client-pyramid { grid-column: auto; grid-row: auto; height: 100%; width: 100%; }
+  .is-responsive .pyramid-callouts { display: block; }
+  .is-responsive .pyramid-callouts .pyramid-note { position: absolute; padding: 14px; transform: translateY(-50%); }
+  .is-responsive .assignment-roles { grid-template-columns: 1fr 1fr; }
+  .is-responsive .adjacent-slide { grid-template-columns: minmax(0,.85fr) minmax(0,1.15fr); }
+  .is-responsive .adjacent-hub { display: none; }
+  .is-responsive .adjacent-outcome { grid-column: 1/-1; }
+  .is-responsive .adjacent-action { min-height: 130px; padding: 18px; }
+  .is-responsive .campaign-goal { min-height: 130px; padding: 18px; }
+}
+@media (max-width: 680px) {
+  .sales-deck.is-responsive { padding: 12px 8px max(8px,env(safe-area-inset-bottom)); gap: 10px; }
+  .is-responsive .deck-stage { border-radius: 16px; }
+  .is-responsive .deck-standard { padding: 22px 18px; }
+  .is-responsive .deck-standard > h2 { font-size: 28px; line-height: 1.12; }
+  .is-responsive .deck-cover { grid-template-columns: 1fr; grid-template-rows: 42% 58%; }
+  .is-responsive .cover-copy { padding: 28px; }
+  .is-responsive .deck-cover h1 { font-size: clamp(46px,11vw,72px); letter-spacing: -.05em; }
+  .is-responsive .premise-typewriter { min-height: 0; }
+  .is-responsive .premise-grid { grid-template-columns: 1fr; margin-top: 22px; gap: 12px; }
+  .is-responsive .premise-item { min-height: 0; gap: 14px; padding: 16px; }
+  .is-responsive .premise-item h3 { font-size: 19px; }
+  .is-responsive .premise-item p { font-size: 14px; }
+  .is-responsive .premise-loop-icon { width: 46px; height: 46px; border-radius: 13px; }
+  .is-responsive .premise-loop-icon svg { width: 27px; height: 27px; }
+  .is-responsive .change-columns { grid-template-columns: 1fr; gap: 14px; margin-top: 16px; }
+  .is-responsive .change-current { display: none; }
+  .is-responsive .change-columns section { padding: 14px; }
+  .is-responsive .change-columns header { min-height: 32px; margin-bottom: 10px; gap: 10px; }
+  .is-responsive .change-columns header .deck-icon { width: 34px; height: 34px; }
+  .is-responsive .change-columns header svg { width: 23px; height: 23px; }
+  .is-responsive .change-columns h3 { font-size: 21px; }
+  .is-responsive .change-columns ol { grid-template-rows: none; gap: 6px; }
+  .is-responsive .change-columns li { min-height: 0; padding: 8px 10px; font-size: 14px; line-height: 1.3; }
+  .is-responsive .deck-question { grid-template-columns: 1fr; align-content: center; justify-items: center; gap: 30px; padding: 32px 20px; }
+  .is-responsive .question-orbit { width: min(62vw,260px); }
+  .is-responsive .deck-question h2 { font-size: 52px; text-align: center; }
+  .is-responsive .pyramid-layout { height: auto; min-height: 0; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+  .is-responsive .client-pyramid { grid-row: 1; grid-column: 1/-1; width: 100%; height: 200px; }
+  .is-responsive .pyramid-callouts { display: contents; }
+  .is-responsive .pyramid-callouts .pyramid-note { position: relative; top: auto; width: auto; padding: 12px; transform: none; animation: mobile-note-in 500ms var(--note-delay) both; }
+  .is-responsive .note-rkm { grid-column: 1/-1; grid-row: 2; }
+  .is-responsive .note-gkm { grid-column: 1; grid-row: 3; }
+  .is-responsive .note-km { grid-column: 2; grid-row: 3; }
+  .is-responsive .note-akm { grid-column: 1/-1; grid-row: 4; }
+  .is-responsive .pyramid-note b { font-size: 17px; }
+  .is-responsive .pyramid-note span { font-size: 13px; line-height: 1.35; margin-top: 5px; }
+  .is-responsive .pyramid-note::before, .is-responsive .pyramid-note::after { display: none; }
+  .is-responsive .assignment-roles { grid-template-columns: 1fr; gap: 10px; margin-top: 16px; }
+  .is-responsive .assignment-role { padding: 12px; gap: 8px; }
+  .is-responsive .assignment-role header { gap: 6px; }
+  .is-responsive .role-badge { font-size: 16px; }
+  .is-responsive .role-limit { font-size: 12px; }
+  .is-responsive .assignment-role header em { font-size: 11px; margin-left: 0; }
+  .is-responsive .assignment-rule { padding: 10px; }
+  .is-responsive .assignment-rule b { font-size: 10px; margin-bottom: 7px; gap: 6px; }
+  .is-responsive .assignment-rule p { font-size: 13px; line-height: 1.35; }
+  .is-responsive .table-note { font-size: 11px; padding: 10px; gap: 8px; }
+  .is-responsive .adjacent-slide { grid-template-columns: 1fr; gap: 20px; }
+  .is-responsive .adjacent-copy h2 { font-size: 28px; }
+  .is-responsive .adjacent-copy p { margin-top: 14px; font-size: 14px; }
+  .is-responsive .adjacent-hub { display: none; }
+  .is-responsive .adjacent-actions { gap: 12px; }
+  .is-responsive .adjacent-action { grid-template-columns: auto minmax(0,1fr); min-height: 0; padding: 16px; gap: 14px; }
+  .is-responsive .adjacent-action > .deck-icon { display: grid; width: 48px; height: 48px; border-radius: 12px; }
+  .is-responsive .adjacent-action > .deck-icon svg { width: 28px; height: 28px; }
+  .is-responsive .adjacent-action b { font-size: 22px; }
+  .is-responsive .adjacent-action h3 { font-size: 18px; }
+  .is-responsive .adjacent-action p { font-size: 14px; }
+  .is-responsive .adjacent-outcome { grid-column: 1; padding: 14px; gap: 10px; font-size: 13px; min-height: 0; }
+  .is-responsive .campaign-slide { grid-template-columns: 1fr; gap: 18px; }
+  .is-responsive .radar { width: 210px; }
+  .is-responsive .campaign-goals { gap: 12px; }
+  .is-responsive .campaign-goal { min-height: 0; gap: 14px; padding: 18px; }
+  .is-responsive .campaign-goal > .deck-icon { width: 50px; height: 50px; border-radius: 12px; }
+  .is-responsive .campaign-goal > .deck-icon svg { width: 30px; height: 30px; }
+  .is-responsive .campaign-goal h3 { font-size: 20px; }
+  .is-responsive .campaign-goal b { font-size: 13px; }
+  .is-responsive .deck-pilot { padding: 26px 20px; gap: 22px; }
+  .is-responsive .pilot-heading h2 { font-size: 38px; line-height: 1.03; }
+  .is-responsive .pilot-network { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+  .is-responsive .pilot-network article { aspect-ratio: auto; min-height: 84px; padding: 14px 8px; }
+  .is-responsive .pilot-network article:last-child { grid-column: 1/-1; }
+  .is-responsive .pilot-network article span { font-size: 28px; }
+  .is-responsive .pilot-network article i { margin-top: 10px; }
+  .is-responsive .pilot-scope { font-size: 15px; padding: 14px; }
+  .is-responsive .deck-dots { display: none; }
+  .is-responsive .deck-controls { gap: 20px; }
+  .presentation-section-controls { gap: 8px; width: calc(100% - 16px); }
+  .presentation-section-controls button { font-size: 12px; padding: 8px; }
+}
+@keyframes mobile-note-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@media (max-height: 500px) and (min-width: 681px) {
+  .sales-deck.is-responsive { padding: 10px 18px 6px; gap: 6px; }
+  .is-responsive .deck-controls { padding: 0 4px; }
+  .is-responsive .deck-controls > button { min-width: 40px; height: 40px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .is-responsive *, .is-responsive *::before, .is-responsive *::after { animation: none !important; transition: none !important; }
+  .is-responsive .premise-typeletter, .is-responsive .premise-item, .is-responsive .changes-word,
+  .is-responsive .change-columns section, .is-responsive .change-columns li, .is-responsive .question-word,
+  .is-responsive .deck-pyramid > h2, .is-responsive .pyramid-tier, .is-responsive .pyramid-note,
+  .is-responsive .deck-table-slide > h2, .is-responsive .assignment-role, .is-responsive .assignment-rule,
+  .is-responsive .table-note, .is-responsive .adjacent-copy, .is-responsive .adjacent-hub,
+  .is-responsive .adjacent-action, .is-responsive .adjacent-outcome, .is-responsive .campaign-slide > h2,
+  .is-responsive .radar, .is-responsive .campaign-goal, .is-responsive .pilot-heading,
+  .is-responsive .pilot-network article, .is-responsive .pilot-scope { opacity: 1; transform: none; filter: none; }
+  .is-responsive .pyramid-callouts .pyramid-note { transform: translateY(-50%); }
+  .is-responsive .pyramid-rim { opacity: .6; }
+  .is-responsive .radar strong { transform: translate(-50%,-50%); }
+  .is-responsive .premise-typewriter > i { display: none; }
+}
+@media (prefers-reduced-motion: reduce) and (max-width: 680px) {
+  .is-responsive .pyramid-callouts .pyramid-note { transform: none; }
+}
+.deck-controls .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }

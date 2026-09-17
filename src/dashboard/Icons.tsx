@@ -54,6 +54,8 @@ export function Icon({
         <path d="M3 12h4l3-7 4 14 3-7h4" />
       </>
     ),
+    outflow: (<><path d="M3 7h13v13H3zM3 11h13"/><path d="M13 4h8v8m0-8-8 8"/></>),
+    hierarchy: (<><rect x="9" y="2" width="6" height="5" rx="1"/><path d="M12 7v5M5 12h14M5 12v4m14-4v4"/><rect x="2" y="16" width="6" height="5" rx="1"/><rect x="16" y="16" width="6" height="5" rx="1"/></>),
     target: (
       <>
         <circle className="icon-target-ring" cx="12" cy="12" r="8" />
