@@ -1,0 +1,48 @@
+/* Slide 3: presentation-scale copy, independent of the dashboard's small body type. */
+.sales-deck.is-responsive .deck-changes .change-columns { flex: 1 0 auto; min-height: min-content; }
+.sales-deck.is-responsive .deck-changes .change-columns section { min-height: min-content; }
+.sales-deck.is-responsive .deck-changes .change-columns ol {
+  min-height: min-content;
+  grid-template-rows: repeat(5, minmax(min-content, 1fr));
+}
+.sales-deck.is-responsive .deck-changes .change-columns li {
+  min-height: min-content;
+  font-size: clamp(24px, 1.65vw, 32px);
+  font-weight: 450;
+  line-height: 1.32;
+  padding: 12px 18px;
+}
+@media (max-width: 1050px) {
+  .sales-deck.is-responsive .deck-changes .change-columns li { font-size: 22px; padding: 10px 12px; }
+}
+@media (max-width: 680px) {
+  .sales-deck.is-responsive .deck-changes { padding: 18px 14px; }
+  .sales-deck.is-responsive .deck-changes .change-columns { margin-top: 12px; gap: 10px; }
+  .sales-deck.is-responsive .deck-changes .change-columns section { padding: 10px; }
+  .sales-deck.is-responsive .deck-changes .change-columns ol { grid-template-rows: none; }
+  .sales-deck.is-responsive .deck-changes .change-columns li { font-size: 18px; padding: 7px 10px; line-height: 1.28; }
+}
+/* Recover reading space on laptop-height viewports instead of shrinking the copy. */
+@media (min-width: 681px) and (min-height: 501px) and (max-height: 850px) {
+  .sales-deck.is-responsive .deck-changes { padding: 24px; }
+  .sales-deck.is-responsive .deck-changes .change-columns { margin-top: 16px; }
+  .sales-deck.is-responsive .deck-changes .change-columns section { padding: 14px; }
+  .sales-deck.is-responsive .deck-changes .change-columns header { min-height: 40px; margin-bottom: 10px; }
+  .sales-deck.is-responsive .deck-changes .change-columns header .deck-icon { width: 40px; height: 40px; }
+  .sales-deck.is-responsive .deck-changes .change-columns header svg { width: 26px; height: 26px; }
+  .sales-deck.is-responsive .deck-changes .change-columns li { padding: 8px 14px; }
+  .sales-deck.is-responsive .deck-changes .change-current { padding: 64px 0 14px; }
+}
+@media (max-height: 500px) and (min-width: 681px) {
+  .sales-deck.is-responsive .deck-changes { padding: 12px 18px; }
+  .sales-deck.is-responsive .deck-changes > h2 { font-size: 28px; }
+  .sales-deck.is-responsive .deck-changes .change-columns { margin-top: 10px; gap: 12px; }
+  .sales-deck.is-responsive .deck-changes .change-columns section { padding: 10px; }
+  .sales-deck.is-responsive .deck-changes .change-columns header { min-height: 32px; margin-bottom: 8px; gap: 10px; }
+  .sales-deck.is-responsive .deck-changes .change-columns header .deck-icon { width: 32px; height: 32px; }
+  .sales-deck.is-responsive .deck-changes .change-columns header svg { width: 22px; height: 22px; }
+  .sales-deck.is-responsive .deck-changes .change-columns h3 { font-size: 22px; }
+  .sales-deck.is-responsive .deck-changes .change-columns ol { gap: 6px; }
+  .sales-deck.is-responsive .deck-changes .change-columns li { font-size: 20px; padding: 6px 10px; line-height: 1.25; }
+  .sales-deck.is-responsive .deck-changes .change-current { grid-template-rows: repeat(5, minmax(0, 1fr)); gap: 6px; padding: 50px 0 10px; }
+}

@@ -1,5 +1,6 @@
 import { type ReactNode, type RefObject, useLayoutEffect, useRef } from "react";
 import "./PresentationStability.css";
+import "./PresentationChanges.css";
 
 const fontSpecs = [400, 500, 600, 700].map(weight => `${weight} 16px "Golos Text"`);
 let pendingFonts: Promise<void> | undefined;
