@@ -1,22 +1,9 @@
 import { useEffect, useState, type CSSProperties, type MouseEvent } from "react";
-import type { Context, PresentationSection, SalesModelView } from "./types";
+import type { Context, PresentationSection } from "./types";
 import { contextUrl } from "./model";
 import "./DashboardHeader.css";
-
-const sections: { id: PresentationSection; label: string; short?: string }[] = [
-  { id: "title", label: "Титульный лист", short: "Титул" },
-  { id: "smo", label: "Кредитование СМО", short: "СМО" },
-  { id: "sales-model", label: "Модель продаж" },
-  { id: "strategy", label: "Страт. диалог" },
-  { id: "academy", label: "Академия гибридных лидеров", short: "Академия" },
-  { id: "tb-tasks", label: "Задачи ТБ" },
-];
-
-const modelViews: { id: SalesModelView; label: string }[] = [
-  { id: "premises", label: "Предпосылки изменений" },
-  { id: "results", label: "Результаты" },
-  { id: "next", label: "Дальнейшие шаги" },
-];
+import "./PresentationHeader.css";
+import { presentationSections as sections, salesModelViews as modelViews } from "./presentationNavigation";
 
 function LucideLoopIcon({ name }: { name: PresentationSection }) {
   const content = name === "title" ? <>
@@ -36,10 +23,9 @@ function LucideLoopIcon({ name }: { name: PresentationSection }) {
     <path className="lucide-part part-3" d="M22 20c0-3.4-2-6.5-4-8" />
     <circle className="lucide-part part-4" cx="10" cy="8" r="5" />
   </> : name === "academy" ? <>
-    <path className="lucide-part part-1" d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2" />
+    <path className="lucide-part part-1" d="m2 9 10-5 10 5-10 5Z M6 11v6c4 3 8 3 12 0v-6" /><path className="lucide-part part-2" d="M22 9v8" />
   </> : <>
-    <path className="lucide-part part-1" d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
-    <path className="lucide-part part-2" d="m9 12 2 2 4-4" />
+    <path className="lucide-part part-1" d="M11 6h10M11 12h10M11 18h10" /><path className="lucide-part part-2" d="m3 6 2 2 3-4m-5 8 2 2 3-4m-5 8 2 2 3-4" />
   </>;
   return <svg className={`lucide-loop-icon lucide-loop-${name}`} width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{content}</svg>;
 }
@@ -66,6 +52,7 @@ export function DashboardHeader({ c, change }: { c: Context; change: (patch: Par
             <a
               key={section.id}
               className="presentation-nav-link"
+              aria-label={section.label}
               aria-current={c.section === section.id ? "page" : undefined}
               href={contextUrl({ ...c, section: section.id, ...(section.id === "sales-model" ? {} : { slide: 1 }) })}
               onClick={(event) => navigate(event, { section: section.id, ...(section.id === "sales-model" ? {} : { slide: 1 }) })}
@@ -84,11 +71,13 @@ export function DashboardHeader({ c, change }: { c: Context; change: (patch: Par
               <a
                 key={view.id}
                 style={{ "--item-index": index } as CSSProperties}
+                aria-label={view.label}
                 aria-current={c.modelView === view.id ? "page" : undefined}
-                href={contextUrl({ ...c, modelView: view.id, ...(view.id === "premises" ? { slide: 1 } : {}) })}
-                onClick={(event) => navigate(event, { modelView: view.id, ...(view.id === "premises" ? { slide: 1 } : {}) })}
+                href={contextUrl({ ...c, modelView: view.id, ...(view.id === "premises" ? { slide: 1 } : view.id === "results" ? { page: "overview" as const } : {}) })}
+                onClick={(event) => navigate(event, { modelView: view.id, ...(view.id === "premises" ? { slide: 1 } : view.id === "results" ? { page: "overview" as const } : {}) })}
               >
-                <span>{view.label}</span>
+                <span className="model-step-number" aria-hidden="true">{String(index + 1).padStart(2,"0")}</span>
+                <span className="model-step-label" data-short={view.short}>{view.label}</span>
               </a>
             ))}
           </nav>

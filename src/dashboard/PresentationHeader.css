@@ -1,0 +1,51 @@
+/* Three clearly ordered, equal-width steps, without hidden horizontal menus. */
+.pulse-header .model-nav-shell { width: min(820px,100%); max-width: 100%; padding: 5px; margin: 10px auto 2px; overflow: visible; border: 1px solid #e1ebe5; border-radius: 14px; background: #f4f8f5; }
+.pulse-header .model-navigation { display: grid; width: 100%; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 5px; }
+.pulse-header .model-navigation a { display: flex; align-items: center; justify-content: center; gap: 10px; min-width: 0; min-height: 44px; padding: 8px 12px; white-space: normal; font-size: 12px; line-height: 1.2; background: transparent; border: 1px solid transparent; }
+.pulse-header .model-navigation a::after, .pulse-header .model-navigation a[aria-current='page'] span::before { display: none; }
+.pulse-header .model-navigation a[aria-current='page'] { background: #fff; border-color: #c4ded0; box-shadow: 0 3px 10px #203b2e0a; }
+.model-step-number { display: grid; place-items: center; flex: none; width: 25px; height: 25px; border-radius: 8px; color: #718379; background: #e9f0eb; font-size: 10px; font-variant-numeric: tabular-nums; }
+.model-navigation a[aria-current='page'] .model-step-number { color: #fff; background: #298463; }
+.model-step-label { text-align: center; }
+.pulse-header .lucide-loop-academy .part-1 { animation: academy-cap 4.8s ease-in-out infinite; stroke-dasharray: none; }
+.pulse-header .lucide-loop-academy .part-2 { transform-origin: top; animation: academy-tassel 4.8s ease-in-out infinite; }
+.pulse-header .lucide-loop-tb-tasks .part-1 { animation: none; }
+@keyframes academy-cap { 0%,70%,100% { transform: translateY(0); } 35% { transform: translateY(-1.5px); } }
+@keyframes academy-tassel { 0%,70%,100% { transform: rotate(0); } 35% { transform: rotate(12deg); } }
+@media (max-width: 1180px) {
+  .pulse-header .presentation-navigation { grid-template-columns: repeat(6,minmax(0,1fr)); overflow: visible; }
+  .pulse-header .presentation-nav-link { padding: 6px; gap: 5px; font-size: 11px; }
+  .pulse-header .presentation-nav-label[data-short] { font-size: 0; }
+  .pulse-header .presentation-nav-label[data-short]::after { content: attr(data-short); font-size: 11px; }
+}
+@media (max-width: 760px) {
+  .pulse-header { padding: 7px 8px 6px; }
+  .pulse-header .presentation-nav-shell { padding: 4px; }
+  .pulse-header .presentation-navigation { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 5px; }
+  .pulse-header .presentation-nav-link { min-height: 44px; padding: 5px 6px; font-size: 11px; }
+  .pulse-header .presentation-nav-icon { width: 26px; height: 26px; border-radius: 7px; }
+  .pulse-header .presentation-nav-icon svg { width: 18px; height: 18px; }
+  .pulse-header .model-nav-shell { margin-top: 7px; padding: 3px; border-radius: 12px; }
+  .pulse-header .model-navigation { gap: 3px; }
+  .pulse-header .model-navigation a { min-height: 44px; gap: 5px; padding: 6px 4px; }
+  .model-step-number { width: 20px; height: 20px; font-size: 9px; border-radius: 6px; }
+  .model-step-label { font-size: 0; }
+  .model-step-label::after { content: attr(data-short); font-size: 11px; }
+}
+@media (max-width: 360px) {
+  .pulse-header .presentation-nav-icon { width: 22px; height: 24px; }
+  .pulse-header .presentation-nav-link { font-size: 10px; gap: 4px; padding: 5px 3px; }
+  .pulse-header .presentation-nav-label[data-short]::after { font-size: 10px; }
+  .model-step-number { width: 18px; height: 18px; }
+  .model-step-label::after { font-size: 10px; }
+}
+@media (max-height: 500px) and (min-width: 681px) {
+  .pulse-header { padding: 4px 8px; }
+  .pulse-header .presentation-navigation { grid-template-columns: repeat(6,minmax(0,1fr)); }
+  .pulse-header .presentation-nav-link { min-height: 34px; padding: 3px 4px; }
+  .pulse-header .model-nav-shell { margin-top: 4px; padding: 3px; }
+  .pulse-header .model-navigation a { min-height: 34px; padding: 4px 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pulse-header .lucide-loop-icon, .pulse-header .lucide-part { animation: none !important; }
+}

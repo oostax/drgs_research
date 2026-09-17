@@ -40,6 +40,8 @@ import { SupplementalCard, SupplementalDetail, useSupplemental } from './Supplem
 import type { SupplementalLoad } from './SupplementalCard';
 import { isSupplemental, type Supplemental } from './supplementalModel';
 import { SalesModelDeck } from './SalesModelDeck';
+import { PresentationSectionControls } from './PresentationSectionControls';
+import { adjacentPresentation, presentationSections } from './presentationNavigation';
 
 type Change = (patch: Partial<Context>) => void;
 const mainMetrics: Metric[] = [
@@ -1257,7 +1259,7 @@ export default function App() {
     const next = normalizeMetricContext({ ...c, ...patch }, data || undefined);
     window.history.pushState({}, "", contextUrl(next));
     setC(next);
-    if (patch.page && patch.page !== c.page)
+    if ((patch.page && patch.page !== c.page) || (patch.section && patch.section !== c.section) || (patch.modelView && patch.modelView !== c.modelView))
       window.scrollTo({ top: 0, behavior: "instant" });
   };
   useEffect(() => {
@@ -1299,11 +1301,13 @@ export default function App() {
       <DashboardHeader c={c} change={change} />
       <main id="main" className={`app-main page-${c.page} section-${c.section} model-${c.modelView}`}>
         {c.section !== "sales-model" ? (
-          <section className="empty-presentation-section" aria-label="Раздел будет наполнен данными" />
+          <section className="empty-presentation-section" aria-label="Раздел будет наполнен данными"><h1>{presentationSections.find(section => section.id === c.section)?.label}</h1><p>Материалы раздела пока не добавлены.</p></section>
         ) : c.modelView === "premises" ? (
-          <SalesModelDeck slide={c.slide} onSlideChange={(slide) => change({ slide })} />
+          <SalesModelDeck slide={c.slide} onSlideChange={(slide) => change({ slide })}
+            onPreviousSection={() => { const destination = adjacentPresentation(c, -1); if (destination) change(destination.patch); }}
+            onNextSection={() => { const destination = adjacentPresentation(c, 1); if (destination) change(destination.patch); }} />
         ) : c.modelView === "next" ? (
-          <section className="empty-presentation-section" aria-label="Раздел будет наполнен данными" />
+          <section className="empty-presentation-section" aria-label="Раздел будет наполнен данными"><h1>Дальнейшие шаги</h1><p>Материалы раздела пока не добавлены.</p></section>
         ) : c.page === "overview" ? (
           <Overview {...{ data, c, change, supplemental }} />
         ) : c.page === "analysis" ? (
@@ -1315,6 +1319,7 @@ export default function App() {
           <MapPage {...{ data, c, change }} />
         )}
       </main>
+      {(c.section !== "sales-model" || c.modelView !== "premises") && <PresentationSectionControls c={c} change={change} />}
       {c.section === "sales-model" && c.modelView === "results" && c.page !== "overview" && <footer className="app-footer">
         <span>2026 · Результаты пилота</span>
         <span>{isSupplemental(c.metric) ? "Месячные данные" : c.metric === "coverage" ? "С 1 апреля · накопительно" : `${quarters[c.quarter - 1]}${data.periods[c.quarter - 1].partial ? " · неполный период" : ""}`}</span>

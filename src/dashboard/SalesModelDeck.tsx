@@ -1,20 +1,18 @@
-import { type CSSProperties, useEffect, useState } from "react";
+import { type CSSProperties, useEffect, useRef, useState } from "react";
 import { Icon } from "./Icons";
 import "./SalesModelDeck.css";
+import "./PresentationResponsive.css";
+import { PresentationFrame, usePresentationHeight } from "./PresentationFrame";
+import { useReducedMotion } from "./Motion";
+import { usePresentationInput } from "./usePresentationInput";
+import { normalizeSlide, slideTitles as titles } from "./presentationNavigation";
 
-type Props = { slide: number; onSlideChange: (slide: number) => void };
-
-const titles = [
-  "Модель продаж",
-  "Предпосылки изменений",
-  "Суть изменений и ожидаемые результаты",
-  "Как меняем",
-  "Перезакрепление клиентской базы",
-  "Новый порядок закрепления клиентской базы",
-  "Работа со смежными подразделениями",
-  "Как меняем кампании продаж",
-  "Проводится пилот",
-];
+type Props = {
+  slide: number;
+  onSlideChange: (slide: number) => void;
+  onPreviousSection?: () => void;
+  onNextSection?: () => void;
+};
 
 const LineIcon = ({ name }: { name: string }) => <span className="deck-icon"><Icon name={name} size={28} /></span>;
 const ChangeLoopIcon = ({ name }: { name: "reset" | "sales" }) => <span className={`deck-icon change-loop-icon is-loop-${name}`} aria-hidden="true"><Icon name={name} size={32}/></span>;
@@ -59,10 +57,8 @@ function QuestionHeading() {
 }
 
 function PremiseLoopIcon({ kind }: { kind: string }) {
-  if (kind === "analysis") return <span className="premise-loop-icon is-analysis" aria-hidden="true"><svg viewBox="0 0 32 32"><path className="loop-mark mark-a" d="M7 24V17"/><path className="loop-mark mark-b" d="M16 24V10"/><path className="loop-mark mark-c" d="M25 24V14"/></svg></span>;
-  if (kind === "complex") return <span className="premise-loop-icon is-complex" aria-hidden="true"><svg viewBox="0 0 32 32"><path className="loop-mark mark-a" pathLength="1" d="m16 5 10 6-10 6L6 11Z"/><path className="loop-mark mark-b" pathLength="1" d="m6 17 10 6 10-6"/><path className="loop-mark mark-c" pathLength="1" d="m6 22 10 6 10-6"/></svg></span>;
-  if (kind === "appeals") return <span className="premise-loop-icon is-appeals" aria-hidden="true"><svg viewBox="0 0 32 32"><path className="loop-mark mark-a" pathLength="1" d="M6 7h20v14H13l-6 5V7Z"/><path className="loop-mark mark-b" d="M11 13h10M11 17h7"/></svg></span>;
-  return <span className="premise-loop-icon is-sales" aria-hidden="true"><svg viewBox="0 0 32 32"><path className="loop-mark mark-a" pathLength="1" d="m6 23 8-8 5 5 7-10"/><path className="loop-mark mark-b" pathLength="1" d="M20 10h6v6"/></svg></span>;
+  const name = kind === "analysis" ? "target" : kind === "complex" ? "meetings" : kind === "appeals" ? "filter" : "handshake";
+  return <span className={`premise-loop-icon semantic-${kind}`} aria-hidden="true"><Icon name={name} size={32}/></span>;
 }
 
 function ControlOrbitIcon() {
@@ -113,14 +109,14 @@ const slides = [
         <article className="pyramid-note note-akm"><b>АКМ</b><span>Низкодоходные клиенты</span></article>
       </div>
       <div className="client-pyramid" aria-label="Пирамида закрепления клиентов">
-        <svg className="pyramid-svg" viewBox="0 0 600 610" role="img" aria-label="Четыре отдельных объёмных яруса: снизу АКМ, КМ / СКМ, ГКМ / СКМ и РКМ">
+        <svg className="pyramid-svg" viewBox="0 -70 600 690" role="img" aria-label="Четыре отдельных объёмных яруса: снизу АКМ, КМ / СКМ, ГКМ / СКМ и РКМ">
           <defs>
             <linearGradient id="pyramid-glass-left" x1="0" y1="0" x2="1" y2=".8"><stop stopColor="#d8f2e4"/><stop offset=".48" stopColor="#79c19e"/><stop offset="1" stopColor="#27825f"/></linearGradient>
             <linearGradient id="pyramid-glass-right" x1="0" y1="0" x2="1" y2="1"><stop stopColor="#39a175"/><stop offset="1" stopColor="#11583d"/></linearGradient>
             <linearGradient id="pyramid-glass-top" x1="0" y1="0" x2="0" y2="1"><stop stopColor="#14724f"/><stop offset="1" stopColor="#8ed1ae"/></linearGradient>
             <radialGradient id="pyramid-shadow"><stop stopColor="#176f4f" stopOpacity=".32"/><stop offset="1" stopColor="#176f4f" stopOpacity="0"/></radialGradient>
           </defs>
-          <ellipse cx="300" cy="563" rx="274" ry="40" fill="url(#pyramid-shadow)"/>
+          <ellipse className="pyramid-ground-shadow" cx="300" cy="563" rx="274" ry="40" fill="url(#pyramid-shadow)"/>
           {[
             { name: "akm", top: "300,380 90,441 300,511 510,441", left: "90,441 300,511 300,582 32,494", right: "300,511 510,441 568,494 300,582", rim: "32,494 300,582 568,494" },
             { name: "km", top: "300,256 153,302 300,350 447,302", left: "153,302 300,350 300,461 97,393", right: "300,350 447,302 503,393 300,461", rim: "97,393 300,461 503,393" },
@@ -171,7 +167,7 @@ const slides = [
     <div className="adjacent-hub" aria-hidden="true"><i className="adjacent-orbit orbit-one"/><i className="adjacent-orbit orbit-two"/><LineIcon name="handshake"/><span className="adjacent-port port-top"/><span className="adjacent-port port-bottom"/></div>
     <div className="adjacent-actions">
       <article className="adjacent-action action-process"><LineIcon name="reset"/><div><b>01</b><h3>Пересмотр процессов<br/>взаимодействия</h3><p>по эквайрингу, ФОТ и ЦКР</p></div></article>
-      <article className="adjacent-action action-outflow"><LineIcon name="meetings"/><div><b>02</b><h3>Изменение модели работы<br/>с оттоками ФОТ</h3></div></article>
+      <article className="adjacent-action action-outflow"><LineIcon name="outflow"/><div><b>02</b><h3>Изменение модели работы<br/>с оттоками ФОТ</h3></div></article>
     </div>
     <p className="adjacent-outcome"><Icon name="sales" size={24}/><span>Согласованные процессы и единые подходы с партнёрами помогают оперативнее решать задачи клиентов и достигать лучших результатов.</span></p>
   </div>,
@@ -193,45 +189,44 @@ const slides = [
         <span>{name}</span><i aria-hidden="true"/>
       </article>)}
     </div>
-    <div className="pilot-scope"><Icon name="sales" size={25}/><span>ГОСБ 1–3 категории</span></div>
+    <div className="pilot-scope"><Icon name="hierarchy" size={25}/><span>ГОСБ 1–3 категории</span></div>
   </div>,
 ];
 
-export function SalesModelDeck({ slide, onSlideChange }: Props) {
-  const [overview, setOverview] = useState(false);
+export function SalesModelDeck({ slide: rawSlide, onSlideChange, onPreviousSection, onNextSection }: Props) {
+  const slide = normalizeSlide(rawSlide);
+  const total = slides.length;
+  const root = useRef<HTMLElement>(null);
+  usePresentationHeight(root);
+  const reducedMotion = useReducedMotion();
+  const [hidden, setHidden] = useState(() => document.hidden);
+  const current = useRef(slide);
   const [renderedSlide, setRenderedSlide] = useState(slide);
   const [leavingSlide, setLeavingSlide] = useState<number | null>(null);
   const [direction, setDirection] = useState<"forward" | "backward">("forward");
-  const total = slides.length;
   const goTo = (next: number) => {
-    const target = Math.min(total, Math.max(1, next));
-    if (target === slide) return;
-    setDirection(target > slide ? "forward" : "backward");
-    onSlideChange(target);
+    const target = normalizeSlide(next);
+    if (target !== slide) onSlideChange(target);
   };
+  const previous = () => slide > 1 ? goTo(slide - 1) : onPreviousSection?.();
+  const next = () => slide < total ? goTo(slide + 1) : onNextSection?.();
+  const gestures = usePresentationInput({ previous, next, first: () => goTo(1), last: () => goTo(total) });
   useEffect(() => {
-    if (slide === renderedSlide) return;
-    const isGridWipe = renderedSlide === 2 && slide === 3;
-    const isIrisWipe = renderedSlide === 3 && slide === 4;
-    const isPyramidZoom = renderedSlide === 4 && slide === 5;
-    const isRoleStack = renderedSlide === 5 && slide === 6;
-    const isCollaboration = renderedSlide === 6 && slide === 7;
-    const isRadarScan = renderedSlide === 7 && slide === 8;
-    setLeavingSlide(renderedSlide);
+    const update = () => setHidden(document.hidden);
+    document.addEventListener("visibilitychange", update);
+    return () => document.removeEventListener("visibilitychange", update);
+  }, []);
+  useEffect(() => {
+    if (slide === current.current) { if (reducedMotion) setLeavingSlide(null); return; }
+    const old = current.current;
+    current.current = slide;
+    setDirection(slide > old ? "forward" : "backward");
+    setLeavingSlide(reducedMotion ? null : old);
     setRenderedSlide(slide);
-    const timer = window.setTimeout(() => setLeavingSlide(null), isGridWipe || isRoleStack || isCollaboration || isRadarScan ? 1400 : isPyramidZoom ? 1420 : isIrisWipe ? 1240 : 860);
+    // The rendered state must not be a dependency: it used to cancel its own cleanup timer.
+    const timer = window.setTimeout(() => setLeavingSlide(null), 1450);
     return () => window.clearTimeout(timer);
-  }, [slide, renderedSlide]);
-  useEffect(() => {
-    const key = (event: KeyboardEvent) => {
-      if (event.key === "ArrowRight" || event.key === "PageDown") goTo(slide + 1);
-      if (event.key === "ArrowLeft" || event.key === "PageUp") goTo(slide - 1);
-      if (event.key.toLowerCase() === "o") setOverview((value) => !value);
-      if (event.key === "Escape") setOverview(false);
-    };
-    window.addEventListener("keydown", key);
-    return () => window.removeEventListener("keydown", key);
-  }, [slide, total]);
+  }, [slide, reducedMotion]);
 
   const isGridWipe = leavingSlide === 2 && renderedSlide === 3;
   const isIrisWipe = leavingSlide === 3 && renderedSlide === 4;
@@ -239,12 +234,11 @@ export function SalesModelDeck({ slide, onSlideChange }: Props) {
   const isRoleStack = leavingSlide === 5 && renderedSlide === 6;
   const isCollaboration = leavingSlide === 6 && renderedSlide === 7;
   const isRadarScan = leavingSlide === 7 && renderedSlide === 8;
-
-  return <section className="sales-deck" aria-label="Презентация «Модель продаж»">
+  return <section ref={root} className="sales-deck is-responsive" aria-label="Презентация «Модель продаж»" data-motion-paused={hidden || undefined}>
     <div className="deck-progress" aria-hidden="true"><i style={{ width: `${slide / total * 100}%` }}/></div>
-    <div className={`deck-stage-stack ${leavingSlide !== null ? `is-transitioning is-${direction}` : ""} ${isGridWipe ? "is-grid-wipe" : ""} ${isIrisWipe ? "is-iris-wipe" : ""} ${isPyramidZoom ? "is-pyramid-zoom" : ""} ${isRoleStack ? "is-role-stack" : ""} ${isCollaboration ? "is-collaboration" : ""} ${isRadarScan ? "is-radar-scan" : ""}`} aria-live="polite">
-      {leavingSlide !== null && <div className="deck-stage deck-stage-leave" aria-hidden="true">{slides[leavingSlide - 1]}</div>}
-      <div className={`deck-stage ${leavingSlide !== null ? "deck-stage-enter" : ""}`} key={renderedSlide}>{slides[renderedSlide - 1]}</div>
+    <div {...gestures} className={`deck-stage-stack ${leavingSlide !== null ? `is-transitioning is-${direction}` : ""} ${isGridWipe ? "is-grid-wipe" : ""} ${isIrisWipe ? "is-iris-wipe" : ""} ${isPyramidZoom ? "is-pyramid-zoom" : ""} ${isRoleStack ? "is-role-stack" : ""} ${isCollaboration ? "is-collaboration" : ""} ${isRadarScan ? "is-radar-scan" : ""}`}>
+      {leavingSlide !== null && <PresentationFrame key={`leave-${leavingSlide}`} className="deck-stage-leave" hidden slide={leavingSlide}>{slides[leavingSlide - 1]}</PresentationFrame>}
+      <PresentationFrame key={renderedSlide} className={leavingSlide !== null ? "deck-stage-enter" : ""} slide={renderedSlide}>{slides[renderedSlide - 1]}</PresentationFrame>
       {isGridWipe && <div className="deck-grid-wipe" aria-hidden="true">{Array.from({ length: 32 }, (_, index) => <i style={{ "--grid-index": index } as CSSProperties} key={index}/>)}</div>}
       {isPyramidZoom && <div className="deck-zoom-flare" aria-hidden="true"/>}
       {isRoleStack && <div className="deck-role-wipe" aria-hidden="true">{Array.from({ length: 4 }, (_, index) => <i style={{ "--role-band": index } as CSSProperties} key={index}/>)}</div>}
@@ -252,13 +246,11 @@ export function SalesModelDeck({ slide, onSlideChange }: Props) {
       {isRadarScan && <div className="deck-radar-wipe" aria-hidden="true"><i/><b/></div>}
       {leavingSlide !== null && !isGridWipe && !isIrisWipe && !isPyramidZoom && !isRoleStack && !isCollaboration && !isRadarScan && <div className="deck-transition-flash" aria-hidden="true"/>}
     </div>
-    <div className="deck-controls">
-      <button aria-label="Предыдущий слайд" disabled={slide === 1} onClick={() => goTo(slide - 1)}><Icon name="chevron" size={18}/></button>
-      <div className="deck-dots" aria-label="Слайды">{titles.map((title, index) => <button key={title} aria-label={`${index + 1}. ${title}`} aria-current={slide === index + 1 ? "step" : undefined} onClick={() => goTo(index + 1)}/>)}</div>
-      <button aria-label="Следующий слайд" disabled={slide === total} onClick={() => goTo(slide + 1)}><Icon name="chevron" size={18}/></button>
-      <span>{String(slide).padStart(2,"0")} / {String(total).padStart(2,"0")}</span>
-      <button className="deck-overview-button" onClick={() => setOverview(true)}>Все слайды</button>
+    <div className="deck-controls" role="group" aria-label="Управление слайдами">
+      <button className="deck-previous" aria-label={slide === 1 && onPreviousSection ? "Предыдущий раздел" : "Предыдущий слайд"} title={slide === 1 && onPreviousSection ? "К предыдущему разделу" : "Предыдущий слайд"} disabled={slide === 1 && !onPreviousSection} onClick={previous}><Icon name="chevron" size={20}/></button>
+      <div className="deck-dots" aria-label="Слайды">{titles.map((title, index) => <button key={title} aria-label={`${index + 1}. ${title}`} title={title} aria-current={slide === index + 1 ? "step" : undefined} onClick={() => goTo(index + 1)}/>)}</div>
+      <span className="deck-counter" aria-live="polite" aria-atomic="true"><span className="sr-only">Слайд </span>{String(slide).padStart(2,"0")} / {String(total).padStart(2,"0")}<span className="sr-only">. {titles[slide - 1]}</span></span>
+      <button className="deck-next" aria-label={slide === total && onNextSection ? "К результатам" : "Следующий слайд"} title={slide === total && onNextSection ? "Далее: результаты" : "Следующий слайд"} disabled={slide === total && !onNextSection} onClick={next}><Icon name="chevron" size={20}/></button>
     </div>
-    {overview && <div className="deck-overview" role="dialog" aria-modal="true" aria-label="Все слайды"><header><h2>Все слайды</h2><button onClick={() => setOverview(false)} aria-label="Закрыть"><Icon name="close"/></button></header><div>{titles.map((title,index)=><button key={title} onClick={()=>{goTo(index+1);setOverview(false)}} aria-current={slide===index+1?"true":undefined}><b>{String(index+1).padStart(2,"0")}</b><span>{title}</span></button>)}</div></div>}
   </section>;
 }
