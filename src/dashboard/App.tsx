@@ -45,7 +45,6 @@ import { isSupplemental, type Supplemental } from './supplementalModel';
 import { WelcomePage } from "./WelcomePage";
 import { SalesModelDeck } from './SalesModelDeck';
 import { NextStepsSlide } from './NextStepsSlide';
-import { PresentationSectionControls } from './PresentationSectionControls';
 import { adjacentPresentation, presentationSections } from './presentationNavigation';
 
 type Change = (patch: Partial<Context>) => void;
@@ -1288,7 +1287,6 @@ export default function App() {
       <main id="main" className="app-main section-smo">
         <SmoCreditDashboard view={normalizeSmoView(c.smoView)} onViewChange={(smoView) => change({ smoView })} />
       </main>
-      <PresentationSectionControls c={c} change={change} />
     </>
   );
   if (c.section === "strategy") return (
@@ -1298,7 +1296,6 @@ export default function App() {
       <main id="main" className="app-main section-strategy">
         <StrategyDashboard />
       </main>
-      <PresentationSectionControls c={c} change={change} />
     </>
   );
   if (error)
@@ -1351,7 +1348,6 @@ export default function App() {
           <MapPage {...{ data, c, change }} />
         )}
       </main>
-      {(c.section !== "sales-model" || c.modelView !== "premises") && <PresentationSectionControls c={c} change={change} />}
       {c.section === "sales-model" && c.modelView === "results" && c.page !== "overview" && <footer className="app-footer">
         <span>2026 · Результаты пилота</span>
         <span>{isSupplemental(c.metric) ? "Месячные данные" : c.metric === "coverage" ? "С 1 апреля · накопительно" : `${quarters[c.quarter - 1]}${data.periods[c.quarter - 1].partial ? " · неполный период" : ""}`}</span>
