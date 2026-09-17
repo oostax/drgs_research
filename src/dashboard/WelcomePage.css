@@ -25,7 +25,7 @@
 .welcome-heading { font-size: clamp(42px,5.65vw,104px); line-height: 1.04; letter-spacing: -.052em; font-weight: 600; }
 .welcome-title-line { display: block; white-space: nowrap; }
 .welcome-title-accent, .welcome-heading em { color: #099a57; background: linear-gradient(100deg, #076644 0%, #11964f 27%, #4dac39 48%, #0b8851 72%, #076644 100%); background-size: 240% 100%; background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: welcome-text-light 12s ease-in-out infinite; }
-.welcome-heading em { font-style: normal; }
+.welcome-heading em { display: inline-block; padding-right: .07em; margin-right: -.07em; font-style: normal; }
 .welcome-speaker { display: flex; align-items: center; gap: 18px; margin-top: clamp(28px,5vh,62px); font-size: clamp(20px,1.9vw,30px); font-weight: 500; letter-spacing: -.025em; }
 .welcome-speaker > span { width: 40px; height: 1px; background: #4c9d75; }
 .welcome-art { min-width: 0; min-height: 0; display: grid; place-items: center; padding: 0 1% 0 0; pointer-events: none; }
