@@ -6,7 +6,7 @@
 .strategy-dashboard {
   position: relative;
   width: 100%;
-  height: calc(100svh - 124px);
+  height: calc(100svh - 204px);
   min-height: 620px;
   overflow: hidden;
   background: #f5f7f4;
@@ -45,7 +45,7 @@
 
 @media (max-width: 680px) {
   .strategy-dashboard {
-    height: calc(100svh - 178px);
+    height: calc(100svh - 240px);
     min-height: 560px;
   }
 }

@@ -46,6 +46,7 @@ body{background:var(--bg);color:var(--ink);font-family:"Manrope",system-ui,-appl
 .seg button:focus-visible,.pager button:focus-visible{outline:2px solid var(--violet);outline-offset:2px}
 .progress{height:4px;background:var(--line-2);border-radius:2px;margin:10px 2px;overflow:hidden}
 .progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--green-2),var(--violet));transition:width .4s ease}
+.head,.seg{display:none!important}
 
 /* Сцена */
 .stage{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:28px;overflow:hidden}
@@ -352,22 +353,6 @@ body{background:var(--bg);color:var(--ink);font-family:"Manrope",system-ui,-appl
 </svg>
 
 <div class="app">
-  <header class="head">
-    <div class="tab">
-      <div class="tile"><svg class="i"><use href="#i-users"/></svg></div>
-      <div>
-        <div class="t1">Глубокое понимание клиента</div>
-        <div class="t2">Стратегический диалог и отраслевое лидерство</div>
-      </div>
-    </div>
-  </header>
-
-  <nav class="seg" role="tablist" aria-label="Разделы">
-    <button role="tab" data-sub="0" aria-selected="true"><span class="n">01</span><span>Новый формат</span></button>
-    <button role="tab" data-sub="1" aria-selected="false"><span class="n">02</span><span>Текущие результаты</span></button>
-    <button role="tab" data-sub="2" aria-selected="false"><span class="n">03</span><span>Что дальше?</span></button>
-  </nav>
-
   <div class="progress" aria-hidden="true"><span id="prog"></span></div>
 
   <div class="stage-wrap">
@@ -811,6 +796,7 @@ body{background:var(--bg);color:var(--ink);font-family:"Manrope",system-ui,-appl
       u.searchParams.set("slide", i + 1);
       history.replaceState(null, "", u);
     } catch (e) {}
+    try { parent.postMessage({ type: "pulse:strategy", event: "view", view: s }, location.origin); } catch (e) {}
   }
   function next() {
     if (cur.i < bySub[cur.s].length - 1) show(cur.s, cur.i + 1, true);
@@ -830,6 +816,13 @@ body{background:var(--bg);color:var(--ink);font-family:"Manrope",system-ui,-appl
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
   Array.prototype.forEach.call(document.querySelectorAll(".seg button"), function (b) {
     b.addEventListener("click", function () { show(+b.getAttribute("data-sub"), 0, true); });
+  });
+  window.addEventListener("message", function (e) {
+    if (e.origin !== location.origin || !e.data || e.data.type !== "pulse:strategy") return;
+    if (e.data.command === "view") {
+      var s = Math.min(2, Math.max(0, +e.data.view || 0));
+      show(s, 0, true);
+    }
   });
   document.addEventListener("keydown", function (e) {
     if (e.key === "ArrowRight") next();
