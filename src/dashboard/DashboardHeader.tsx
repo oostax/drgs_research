@@ -1,4 +1,4 @@
-import { AcademyNavigation } from "./AcademyNavigation";
+import { AcademyNavigation } from "./AcademySectionNavigation";
 import { useEffect, useState, type CSSProperties, type MouseEvent } from "react";
 import type { Context, PresentationSection } from "./types";
 import { contextUrl } from "./model";

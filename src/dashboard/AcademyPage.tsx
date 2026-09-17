@@ -47,15 +47,9 @@ function AcademyGlyph({ kind }: { kind: "research" | "practice" | "project" }) {
 }
 
 function MediaDialog({ item, close }: { item: MediaKey; close: () => void }) {
-  const ref = useRef<HTMLDialogElement>(null);
   const image = media[item];
-  useEffect(() => {
-    const dialog = ref.current;
-    dialog?.showModal();
-    return () => { if (dialog?.open) dialog.close(); };
-  }, []);
-  return <dialog className="academy-dialog" ref={ref} onClose={close}
-    onClick={event => { if (event.target === event.currentTarget) close(); }} aria-label={image.alt}>
+  return <div className="academy-dialog" role="dialog" aria-modal="true" aria-label={image.alt}
+    onClick={event => { if (event.target === event.currentTarget) close(); }}>
     <div className="academy-dialog-content">
       <button className="academy-dialog-close" onClick={close} aria-label="Закрыть изображение" autoFocus>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6" /></svg>
@@ -63,7 +57,7 @@ function MediaDialog({ item, close }: { item: MediaKey; close: () => void }) {
       <img {...{ src: image.src, alt: image.alt, width: image.width, height: image.height }} />
       <p>{image.caption}</p>
     </div>
-  </dialog>;
+  </div>;
 }
 
 function Essence({ open }: { open: (item: MediaKey) => void }) {
@@ -93,7 +87,7 @@ function Essence({ open }: { open: (item: MediaKey) => void }) {
           <img src={media.report.src} alt={media.report.alt} width={827} height={1170} />
           <span className="academy-report-zoom" aria-hidden="true"><img src={media.report.src} alt="" width={827} height={1170} /></span>
         </button>
-        <figcaption><b>Лаборатория нейронаук<br />Андрея Курпатова</b><span>{media.report.caption}</span><small>наведите — крупнее</small></figcaption>
+        <figcaption><b>Лаборатория нейронаук<br />Андрея Курпатова</b><span>{media.report.caption}</span><small>нажмите — открыть крупнее</small></figcaption>
       </figure>
     </div>
   </div>;
@@ -142,14 +136,13 @@ export function AcademyPage({ c, change }: { c: Context; change: (patch: Partial
   const go = (direction: -1 | 1) => { const destination = adjacentPresentation(c, direction); if (destination) change(destination.patch); };
   const gestures = usePresentationInput({ previous: () => go(-1), next: () => go(1), keyboard: !zoom });
   return <section ref={root} className="academy-page" data-ready={ready} data-motion-paused={hidden || undefined} aria-label="Академия гибридных лидеров" aria-busy={!ready} {...gestures}>
-    <header className="academy-hero">
+    {view === "essence" && <header className="academy-hero">
       <div className="academy-hero-ambient" aria-hidden="true"><i /><i /><i /></div>
       <p className="academy-kicker">Академия гибридных лидеров. ДРГС совместно с лабораторией А. Курпатова·</p>
       <h1 aria-label={title}>{title.split(" ").map((word, index) => <Fragment key={index}><span className="academy-title-word" style={{ "--order": index } as CSSProperties} aria-hidden="true">{word}</span>{" "}</Fragment>)}</h1>
       <p className="academy-lead">Уверенность, которую даёт ИИ, — не правота. Машина производит скорость и гладкость решений, человек отвечает за их направление. Гибридное лидерство — навык удерживать эту разницу.</p>
-    </header>
+    </header>}
     <div className="academy-view" key={view} data-view={view}>{view === "essence" ? <Essence open={setZoom} /> : view === "results" ? <Results /> : <Next />}</div>
-    <footer className="academy-footer">Академия гибридных лидеров · стратегическая инициатива РГС</footer>
     {zoom && <MediaDialog item={zoom} close={() => setZoom(null)} />}
   </section>;
 }
