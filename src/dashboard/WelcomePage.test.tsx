@@ -40,6 +40,12 @@ describe("Приветствие квартальной встречи", () => {
     expect(link.getAttribute("aria-current")).toBe("page");
     expect(screen.queryByText("Титульный лист")).toBeNull();
   });
+  it("всегда открывает первый подпункт модели продаж из главной навигации", () => {
+    const change = vi.fn();
+    render(<DashboardHeader c={{ ...context, modelView: "results", slide: 7 }} change={change} />);
+    fireEvent.click(screen.getByRole("link", { name: "Модель продаж" }));
+    expect(change).toHaveBeenCalledWith({ section: "sales-model", modelView: "premises", slide: 1 });
+  });
   it("не показывает текст до готовности всех начертаний", async () => {
     let release!: () => void;
     const font = new Promise<void>(r => { release = r; });

@@ -54,8 +54,8 @@ export function DashboardHeader({ c, change }: { c: Context; change: (patch: Par
               className="presentation-nav-link"
               aria-label={section.label}
               aria-current={c.section === section.id ? "page" : undefined}
-              href={contextUrl({ ...c, section: section.id, ...(section.id === "sales-model" ? {} : { slide: 1 }) })}
-              onClick={(event) => navigate(event, { section: section.id, ...(section.id === "sales-model" ? {} : { slide: 1 }) })}
+              href={contextUrl({ ...c, section: section.id, ...(section.id === "sales-model" ? { modelView: "premises", slide: 1 } : { slide: 1 }) })}
+              onClick={(event) => navigate(event, { section: section.id, ...(section.id === "sales-model" ? { modelView: "premises", slide: 1 } : { slide: 1 }) })}
             >
               <span className="presentation-nav-icon"><LucideLoopIcon name={section.id} /></span>
               <span className="presentation-nav-label" data-short={section.short}>{section.label}</span>

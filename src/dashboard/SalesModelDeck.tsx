@@ -73,7 +73,7 @@ function ControlOrbitIcon() {
 
 const slides = [
   <div className="deck-cover" key="cover">
-    <div className="cover-copy"><h1>Модель продаж</h1></div>
+    <div className="cover-copy"><h1>Меняем модель продаж</h1></div>
     <div className="cover-media"><img src="/images/sales-model-road.png" alt="Извилистая дорога среди зелёных холмов и леса"/></div>
   </div>,
   <div className="deck-standard deck-premises" key="premises">
