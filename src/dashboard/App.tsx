@@ -1,3 +1,5 @@
+import { SmoCreditDashboard } from "./SmoCreditDashboard";
+import { normalizeSmoView } from "./smoNavigation";
 import { CardAmbient } from "./CardAmbient";
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import type { Context, Evidence, Group, Manifest, Metric, Stat } from "./types";
@@ -1261,7 +1263,7 @@ export default function App() {
     const next = normalizeMetricContext({ ...c, ...patch }, data || undefined);
     window.history.pushState({}, "", contextUrl(next));
     setC(next);
-    if ((patch.page && patch.page !== c.page) || (patch.section && patch.section !== c.section) || (patch.modelView && patch.modelView !== c.modelView))
+    if ((patch.page && patch.page !== c.page) || (patch.section && patch.section !== c.section) || (patch.modelView && patch.modelView !== c.modelView) || (patch.smoView && patch.smoView !== c.smoView))
       window.scrollTo({ top: 0, behavior: "instant" });
   };
   useEffect(() => {
@@ -1276,6 +1278,16 @@ export default function App() {
       <a className="skip-link" href="#main">Перейти к содержимому</a>
       <DashboardHeader c={c} change={change} />
       <main id="main" className="app-main section-title"><WelcomePage c={c} change={change} /></main>
+    </>
+  );
+  if (c.section === "smo") return (
+    <>
+      <a className="skip-link" href="#main">Перейти к содержимому</a>
+      <DashboardHeader c={c} change={change} />
+      <main id="main" className="app-main section-smo">
+        <SmoCreditDashboard view={normalizeSmoView(c.smoView)} onViewChange={(smoView) => change({ smoView })} />
+      </main>
+      <PresentationSectionControls c={c} change={change} />
     </>
   );
   if (error)

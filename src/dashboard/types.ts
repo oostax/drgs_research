@@ -118,6 +118,7 @@ export type Manifest = {
 export type Context = {
   section: PresentationSection;
   modelView: SalesModelView;
+  smoView?: import("./smoNavigation").SmoView;
   slide: number;
   page: Page;
   branch: string;

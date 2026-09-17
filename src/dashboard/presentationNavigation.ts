@@ -1,4 +1,5 @@
 import type { Context, PresentationSection, SalesModelView } from "./types";
+import { normalizeSmoView, smoViews } from "./smoNavigation";
 
 export const slideTitles = [
   "Меняем модель продаж", "Предпосылки изменений", "Суть изменений и ожидаемые результаты",
@@ -24,6 +25,11 @@ export function normalizeSlide(value: number): number {
 export type PresentationDestination = { label: string; patch: Partial<Context> };
 /** One sequence for arrow buttons and swipes; analytical filters are never replaced. */
 export function adjacentPresentation(c: Context, direction: -1 | 1): PresentationDestination | null {
+  if (c.section === "smo") {
+    const index = smoViews.findIndex(item => item.id === normalizeSmoView(c.smoView));
+    const destination = smoViews[index + direction];
+    if (destination) return { label: destination.label, patch: { smoView: destination.id } };
+  }
   if (c.section === "sales-model") {
     if (c.modelView === "premises" && direction === 1) return { label: "Результаты", patch: { modelView: "results", page: "overview" } };
     if (c.modelView === "results") return direction === 1
@@ -35,6 +41,6 @@ export function adjacentPresentation(c: Context, direction: -1 | 1): Presentatio
   if (!section) return null;
   return {
     label: section.label,
-    patch: { section: section.id, slide: 1, ...(section.id === "sales-model" ? { modelView: direction === 1 ? "premises" : "next" } as const : {}) },
+    patch: { section: section.id, slide: 1, ...(section.id === "smo" ? { smoView: direction === 1 ? "market" : "risk" } as const : {}), ...(section.id === "sales-model" ? { modelView: direction === 1 ? "premises" : "next" } as const : {}) },
   };
 }
