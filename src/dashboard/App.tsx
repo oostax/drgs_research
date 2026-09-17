@@ -39,6 +39,7 @@ import { SupplementalPeriods } from "./SupplementalAnalysis";
 import { SupplementalCard, SupplementalDetail, useSupplemental } from './SupplementalCard';
 import type { SupplementalLoad } from './SupplementalCard';
 import { isSupplemental, type Supplemental } from './supplementalModel';
+import { WelcomePage } from "./WelcomePage";
 import { SalesModelDeck } from './SalesModelDeck';
 import { PresentationSectionControls } from './PresentationSectionControls';
 import { adjacentPresentation, presentationSections } from './presentationNavigation';
@@ -1263,12 +1264,19 @@ export default function App() {
       window.scrollTo({ top: 0, behavior: "instant" });
   };
   useEffect(() => {
-    const sectionTitle = c.section === "title" ? "Титульный лист" : c.section === "smo" ? "Кредитование СМО" : c.section === "strategy" ? "Стратегический диалог" : c.section === "academy" ? "Академия гибридных лидеров" : c.section === "tb-tasks" ? "Задачи ТБ" : c.modelView === "premises" ? "Предпосылки изменений" : c.modelView === "next" ? "Дальнейшие шаги" : c.page === "overview" ? "Результаты пилота" : c.page === "map" ? "Карта ГОСБ" : metricNames[c.metric];
+    const sectionTitle = c.section === "title" ? "Приветствие" : c.section === "smo" ? "Кредитование СМО" : c.section === "strategy" ? "Стратегический диалог" : c.section === "academy" ? "Академия гибридных лидеров" : c.section === "tb-tasks" ? "Задачи ТБ" : c.modelView === "premises" ? "Предпосылки изменений" : c.modelView === "next" ? "Дальнейшие шаги" : c.page === "overview" ? "Результаты пилота" : c.page === "map" ? "Карта ГОСБ" : metricNames[c.metric];
     document.title = `${sectionTitle} · Пульс`;
   }, [c.section, c.modelView, c.page, c.metric]);
   useEffect(() => {
     if (data) window.history.replaceState({}, "", contextUrl(c));
   }, [data, c]);
+  if (c.section === "title") return (
+    <>
+      <a className="skip-link" href="#main">Перейти к содержимому</a>
+      <DashboardHeader c={c} change={change} />
+      <main id="main" className="app-main section-title"><WelcomePage c={c} change={change} /></main>
+    </>
+  );
   if (error)
     return (
       <div className="app-error">

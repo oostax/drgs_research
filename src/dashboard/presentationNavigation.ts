@@ -6,7 +6,7 @@ export const slideTitles = [
   "Работа со смежными подразделениями", "Как меняем кампании продаж", "Проводится пилот",
 ];
 export const presentationSections: { id: PresentationSection; label: string; short?: string }[] = [
-  { id: "title", label: "Титульный лист", short: "Титул" },
+  { id: "title", label: "Приветствие" },
   { id: "smo", label: "Кредитование СМО", short: "СМО" },
   { id: "sales-model", label: "Модель продаж" },
   { id: "strategy", label: "Страт. диалог" },
