@@ -53,11 +53,6 @@ export function SmoCreditDashboard({ view, onViewChange }: { view: SmoView; onVi
   const [ready, setReady] = useState(false);
   const [error, setError] = useState('');
   const [retry, setRetry] = useState(0);
-  const [sourceMeta, setSourceMeta] = useState('');
-  const [dark, setDark] = useState(false);
-  const [filters, setFilters] = useState(false);
-  const [extras, setExtras] = useState(false);
-  const send = (command: string, payload: Record<string, unknown> = {}) => frame.current?.contentWindow?.postMessage({ type: 'pulse:smo', command, ...payload }, window.location.origin);
   useEffect(() => {
     let active = true;
     setError(''); setReady(false);
@@ -70,12 +65,10 @@ export function SmoCreditDashboard({ view, onViewChange }: { view: SmoView; onVi
       if (event.origin !== window.location.origin || event.source !== frame.current?.contentWindow || event.data?.type !== 'smo:pulse') return;
       if (event.data.event === 'ready') {
         setReady(true);
-        if (typeof event.data.source === 'string') setSourceMeta(event.data.source);
         frame.current?.contentWindow?.postMessage({ type: 'pulse:smo', command: 'view', view: viewRef.current }, window.location.origin);
       } else if (event.data.event === 'view' && smoViews.some(item => item.id === event.data.view)) {
         if (viewRef.current !== event.data.view) onViewRef.current(event.data.view as SmoView);
-      } else if (event.data.event === 'theme') setDark(event.data.dark === true);
-      else if (event.data.event === 'error') setError('Не удалось открыть содержимое исходного дашборда.');
+      } else if (event.data.event === 'error') setError('Не удалось открыть содержимое исходного дашборда.');
     };
     window.addEventListener('message', receive);
     return () => window.removeEventListener('message', receive);
@@ -88,23 +81,11 @@ export function SmoCreditDashboard({ view, onViewChange }: { view: SmoView; onVi
     const timeout = window.setTimeout(() => setError('Дашборд не завершил загрузку. Повторите открытие или используйте исходный HTML.'), 30000);
     return () => window.clearTimeout(timeout);
   }, [documentHtml, ready, error]);
-  const label = smoViews.find(item => item.id === view)!.label;
   return <section className="smo-dashboard" aria-label="Кредитование СМО">
-    <div className="smo-page-heading">
-      <div className="smo-page-identity"><span className="smo-heading-icon"><SmoIcon view={view}/></span><div><p className="smo-eyebrow">Кредитование СМО</p><h1>{label}</h1></div></div>
-      <div className="smo-actions" aria-label="Инструменты дашборда">
-        <button disabled={!ready} aria-pressed={filters} onClick={() => { const next = !filters; setFilters(next); send('filters', { visible: next }); }}>Фильтры</button>
-        <button disabled={!ready} aria-pressed={extras} onClick={() => { const next = !extras; setExtras(next); send('extras', { visible: next }); }}>Материалы</button>
-        <button disabled={!ready} onClick={() => send('theme')}>{dark ? 'Светлая тема' : 'Тёмная тема'}</button>
-        <button disabled={!ready} onClick={() => send('print')}>Печать / PDF</button>
-        <a href={SOURCE} target="_blank" rel="noreferrer">Исходный HTML <span aria-hidden="true">↗</span></a>
-      </div>
-    </div>
-    {sourceMeta && <p className="smo-source-meta">{sourceMeta}</p>}
     <div className="smo-frame-shell" aria-busy={!ready && !error}>
       {!ready && !error && <div className="smo-loading" role="status"><SmoIcon view={view}/><p>Загрузка данных кредитования</p><span>Карта, расчёты и подробные материалы</span></div>}
       {error && <div className="smo-load-error" role="alert"><h2>Материалы пока недоступны</h2><p>{error}</p><button onClick={() => { setDocumentHtml(''); setRetry(value => value + 1); }}>Повторить загрузку</button></div>}
-      {documentHtml && <iframe ref={frame} className={`smo-frame${ready && !error ? ' is-ready' : ''}`} title={`Кредитование СМО · ${label}`} srcDoc={documentHtml} sandbox="allow-scripts allow-same-origin allow-downloads allow-modals" />}
+      {documentHtml && <iframe ref={frame} className={`smo-frame${ready && !error ? ' is-ready' : ''}`} title="Кредитование СМО" srcDoc={documentHtml} sandbox="allow-scripts allow-same-origin allow-downloads allow-modals" />}
     </div>
   </section>;
 }
