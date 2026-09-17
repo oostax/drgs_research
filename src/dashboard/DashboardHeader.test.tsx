@@ -9,7 +9,7 @@ describe('Общий хедер', () => {
     render(<DashboardHeader c={{ ...defaults, page: 'map', branch: '8610', metric: 'complexShare', group: 'pilot' }} change={change} />);
     const nav = screen.getByRole('navigation', { name: 'Разделы презентации' });
     expect(within(nav).getByRole('link', { name: 'Модель продаж' }).getAttribute('aria-current')).toBe('page');
-    const link = within(nav).getByRole('link', { name: 'Страт. диалог' });
+    const link = within(nav).getByRole('link', { name: 'Глубокое понимание клиента' });
     expect(link.getAttribute('href')).toContain('branch=8610');
     expect(link.getAttribute('href')).toContain('metric=complexShare');
     fireEvent.click(link);

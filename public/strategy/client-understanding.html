@@ -1,0 +1,857 @@
+<!doctype html>
+<html lang="ru" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#F5F7F4">
+<title>Глубокое понимание клиента</title>
+<script>document.documentElement.className = "js";</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F5F7F4; --surface:#FFFFFF; --surface-2:#F5F8F5; --line:#DCE8E1; --line-2:#E9EFEB;
+  --ink:#24342D; --muted:#56675D; --faint:#8A9A91;
+  --green-strong:#346D51; --green:#346D51; --green-2:#3E8462; --green-3:#4C9679;
+  --mint:#E6F3EB; --mint-2:#D5E8DD; --mint-3:#EEF5F0;
+  --violet:#5849D4; --lav:#EFEDFD; --lav-2:#E1DDFB;
+  --amber-bg:#F6EFDB; --amber-ink:#715421;
+  --dot:#D3DFD8;
+  --shadow:0 1px 2px rgba(36,52,45,.04),0 10px 28px rgba(36,52,45,.06);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font-family:"Manrope",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.4;-webkit-tap-highlight-color:transparent}
+.app{max-width:1180px;margin:0 auto;padding:20px 20px 28px;padding-left:max(20px,env(safe-area-inset-left));padding-right:max(20px,env(safe-area-inset-right))}
+.i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* Шапка */
+.head{display:flex;margin-bottom:10px}
+.tab{position:relative;display:flex;align-items:center;gap:14px;background:var(--green-strong);color:#fff;border-radius:20px;padding:12px 26px 16px 12px;box-shadow:var(--shadow)}
+.tab .tile{width:50px;height:50px;border-radius:14px;background:rgba(255,255,255,.15);display:grid;place-items:center}
+.tab .tile .i{width:26px;height:26px}
+.tab .t1{font-weight:800;font-size:20px;letter-spacing:-.01em;line-height:1.15}
+.tab .t2{font-size:13px;font-weight:500;opacity:.8}
+.tab::after{content:"";position:absolute;left:50%;bottom:7px;width:24px;height:3px;border-radius:2px;background:rgba(255,255,255,.85);transform:translateX(-50%)}
+
+/* Подвкладки */
+.seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;background:var(--surface-2);border:1px solid var(--line);border-radius:20px;padding:6px}
+.seg button{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;padding:12px 10px;border-radius:15px;border:1px solid transparent;color:var(--muted);font-weight:700;font-size:17px;line-height:1.15}
+.seg button .n{min-width:32px;height:32px;border-radius:9px;background:var(--mint-3);color:var(--faint);display:grid;place-items:center;font-size:13px;font-weight:800;flex:none}
+.seg button[aria-selected="true"]{background:var(--surface);border-color:var(--line);color:var(--green);box-shadow:var(--shadow)}
+.seg button[aria-selected="true"] .n{background:var(--green-2);color:#fff}
+.seg button:focus-visible,.pager button:focus-visible{outline:2px solid var(--violet);outline-offset:2px}
+.progress{height:4px;background:var(--line-2);border-radius:2px;margin:10px 2px;overflow:hidden}
+.progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--green-2),var(--violet));transition:width .4s ease}
+
+/* Сцена */
+.stage{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:28px;overflow:hidden}
+.stage-wrap{position:relative}
+.side{display:none}
+.js body{height:100%;overflow:hidden}
+.js .app{height:100vh;height:100dvh;display:flex;flex-direction:column;padding-top:14px;padding-bottom:12px}
+.js .head,.js .seg,.js .progress,.js .pager{flex:none}
+.js .stage-wrap{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center}
+.js .stage{height:100%;min-height:0;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.js .side{all:unset;box-sizing:border-box;width:50px;height:50px;border-radius:50%;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line);color:var(--green);cursor:pointer;box-shadow:var(--shadow)}
+.js .side:hover{background:var(--mint)}
+.js .side:disabled{opacity:.3;cursor:default}
+.js .side:focus-visible{outline:2px solid var(--violet);outline-offset:2px}
+.stage::before{content:"";position:absolute;inset:0;background-image:radial-gradient(var(--dot) 1.2px,transparent 1.4px);background-size:24px 24px;-webkit-mask-image:linear-gradient(180deg,rgba(0,0,0,.85),rgba(0,0,0,.15));mask-image:linear-gradient(180deg,rgba(0,0,0,.85),rgba(0,0,0,.15));pointer-events:none}
+.slide{position:relative;padding:34px 40px 34px}
+.js .slide{display:none}
+.js .slide.is-active{display:block;animation:enter .45s ease both}
+.no-js .slide+.slide{border-top:1px solid var(--line)}
+.sub-h{display:none}
+.no-js .sub-h{display:block;position:relative;margin:0;padding:22px 44px 0;font-size:14px;font-weight:800;color:var(--green)}
+.no-js .seg,.no-js .progress,.no-js .pager{display:none}
+@keyframes enter{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.t{margin:0 0 6px;font-weight:800;font-size:clamp(28px,3.6vw,44px);letter-spacing:-.03em;line-height:1.06}
+.t.xl{font-size:clamp(34px,5.4vw,64px);max-width:16ch}
+.lead{margin:0 0 26px;color:var(--muted);font-size:18px;font-weight:500;max-width:60ch}
+.kick{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:var(--green);background:var(--mint);padding:6px 12px;border-radius:999px;margin-bottom:14px}
+.kick.v{color:var(--violet);background:var(--lav)}
+.kick::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+
+.grid{display:grid;gap:14px}
+.c2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+
+.plate{position:relative;min-width:0;border-radius:20px;padding:20px;background:var(--surface-2);border:1px solid var(--line-2)}
+.plate.m{background:var(--mint);border-color:transparent}
+.plate.l{background:var(--lav);border-color:transparent}
+.plate.s{background:var(--green-strong);border-color:transparent;color:#fff}
+.plate h3{margin:12px 0 6px;font-size:19px;font-weight:800;letter-spacing:-.01em;line-height:1.2}
+.plate p{margin:0;color:var(--muted);font-size:15px;font-weight:500;line-height:1.45}
+.plate.s p{color:rgba(255,255,255,.86)}
+.lab{font-size:13px;font-weight:700;color:var(--green)}
+.plate.l .lab{color:var(--violet)}
+.plate.s .lab{color:rgba(255,255,255,.75)}
+.ico{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;color:#fff;background:var(--green-2)}
+.ico.v{background:var(--violet)}
+.ico.w{background:rgba(255,255,255,.16)}
+.ico.soft{background:var(--mint-2);color:var(--green)}
+.note{display:flex;gap:12px;align-items:flex-start;background:var(--mint);border-radius:16px;padding:14px 18px;font-size:15px;font-weight:600;line-height:1.4}
+.note .i{color:var(--green-2);width:20px;height:20px;margin-top:1px}
+.op{display:grid;place-items:center;color:var(--green-2);font-size:30px;font-weight:700;min-width:26px}
+.op .i{width:26px;height:26px}
+.chip{display:inline-flex;align-items:center;padding:6px 12px;border-radius:999px;font-size:14px;font-weight:700;background:var(--surface);border:1px solid var(--line);color:var(--ink)}
+.plate.s .chip{background:rgba(255,255,255,.14);border-color:transparent;color:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.wait{display:inline-flex;align-items:center;gap:6px;background:var(--amber-bg);color:var(--amber-ink);border-radius:999px;padding:5px 12px;font-size:13px;font-weight:700}
+.wait .i{width:15px;height:15px}
+.big-n{font-size:52px;font-weight:800;letter-spacing:-.03em;line-height:1;color:var(--green);font-variant-numeric:tabular-nums}
+.plate.s .big-n{color:#fff}
+
+/* 1. Формула */
+.rings{position:absolute;right:-60px;top:-60px;width:360px;height:360px;pointer-events:none}
+.rings span{position:absolute;inset:0;border-radius:50%;border:1px solid var(--line)}
+.rings span:nth-child(2){inset:50px}
+.rings span:nth-child(3){inset:100px;background:radial-gradient(var(--mint-3),transparent 70%)}
+.eq{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1.15fr);gap:12px;align-items:stretch;margin-top:34px}
+
+/* 2. Клиенты мечты */
+.dflow{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr);gap:12px;align-items:stretch;margin-top:22px}
+.dflow .plate{padding:26px;display:flex;flex-direction:column;gap:20px}
+.dflow .plate .def{font-size:clamp(18px,1.6vw,22px);font-weight:800;letter-spacing:-.02em;line-height:1.2;color:var(--ink);margin:0}
+.dflow .plate.s .def{color:#fff}
+.arr{display:grid;place-items:center;color:var(--green-2)}
+
+/* 3. СД */
+.tall .plate{min-height:220px;padding:26px}
+.tall .plate h3{font-size:23px;margin-top:22px}
+.tall .plate p{font-size:17px}
+
+/* 4. Инновация */
+.fx{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1.2fr);gap:8px;align-items:stretch}
+.fx .plate{padding:16px}
+.fx .ico{width:38px;height:38px;border-radius:11px}
+.fx .ico .i{width:19px;height:19px}
+.fx .plate h3{font-size:16px;margin:10px 0 4px}
+.fx .plate p{font-size:13px;line-height:1.4}
+.fx .op{font-size:26px}
+.accent{margin-top:18px;display:flex;gap:20px;align-items:center;padding:28px 30px;border-radius:24px;background:var(--lav)}
+.accent .ico{width:58px;height:58px;border-radius:16px}
+.accent .ico .i{width:28px;height:28px}
+.accent p{margin:0;font-size:clamp(22px,2.7vw,34px);font-weight:800;letter-spacing:-.02em;line-height:1.15;color:var(--ink)}
+.minor{margin:12px 4px 0;font-size:13px;color:var(--faint);font-weight:600}
+
+/* 5. Отраслевое лидерство */
+.ba{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:12px;align-items:stretch;margin-bottom:14px}
+
+/* 6. Инструменты */
+.tools{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:22px;align-items:center}
+.diagram{position:relative}
+.diagram svg{display:block;width:100%;height:auto;max-width:520px;margin:0 auto}
+.diagram .tag{position:absolute;left:0;top:0}
+.legend{display:grid;gap:12px}
+.legend .plate{display:flex;gap:16px;align-items:flex-start}
+.legend .plate h3{margin:0 0 2px}
+.legend .cnt{font-size:14px;font-weight:800;color:var(--green);margin-bottom:4px}
+.legend .plate.s .cnt{color:#fff}
+.thesis{margin-top:18px;padding:18px 22px;border-radius:18px;background:var(--surface-2);border:1px solid var(--line);font-size:18px;font-weight:800;letter-spacing:-.01em;display:flex;gap:12px;align-items:center}
+.thesis .i{color:var(--violet)}
+
+/* 7. Пилот */
+.pilot{display:grid;grid-template-columns:minmax(0,.85fr) 1px minmax(0,1.15fr);gap:36px;align-items:start;margin-top:10px}
+.pilot .vline{align-self:stretch;background:var(--line)}
+.kpis{display:grid;gap:12px}
+.kpis .plate{display:flex;align-items:center;gap:18px;padding:16px 20px}
+.kpis .big-n{font-size:46px;min-width:96px}
+.kpis .plate p{font-size:16px;font-weight:700;color:var(--ink)}
+.cap{margin:12px 2px 0;color:var(--muted);font-weight:600;font-size:15px}
+.leaders-h{display:flex;align-items:baseline;gap:12px;margin-bottom:10px}
+.leaders-h .big-n{font-size:46px}
+.leaders-h span{font-size:18px;font-weight:800}
+.llist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:6px}
+.llist li{background:var(--surface-2);border:1px solid var(--line-2);border-radius:12px;padding:8px 14px;font-weight:700;font-size:15px;line-height:1.3}
+.llist li span{color:var(--muted);font-weight:500}
+
+/* 8. Проекты */
+.proj{display:flex;flex-direction:column;gap:12px;padding:24px}
+.proj-top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.status{font-size:13px;font-weight:700;color:var(--violet);background:var(--lav);padding:5px 10px;border-radius:999px}
+.proj h3{margin:2px 0 0;font-size:22px}
+.who{margin:0;color:var(--muted);font-size:14px;font-weight:600}
+.pr{margin:4px 0 0;display:grid;gap:10px}
+.pr div{display:grid;grid-template-columns:92px minmax(0,1fr);gap:10px}
+.pr dt{font-size:13px;font-weight:800;color:var(--green);padding-top:2px}
+.pr dd{margin:0;font-size:15px;font-weight:500;line-height:1.4}
+.hl{margin-top:auto;display:flex;align-items:center;gap:14px;background:var(--mint);border-radius:14px;padding:14px 16px}
+.hl b{font-size:24px;font-weight:800;letter-spacing:-.02em;color:var(--green);white-space:nowrap}
+.hl span{font-size:14px;font-weight:600;color:var(--muted);line-height:1.3}
+
+/* 9. Достижения лидеров */
+.lt{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--surface)}
+.lt-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr) minmax(0,1.4fr)}
+.lt-row>div{padding:9px 16px;border-top:1px solid var(--line-2);font-size:15px;line-height:1.35;min-width:0}
+.lt-row>div+div{border-left:1px solid var(--line-2)}
+.lt-head>div{border-top:0;background:var(--surface-2);font-size:13px;font-weight:800;color:var(--green)}
+.lt-ind{font-weight:800}
+.lt-ind span{font-weight:500;color:var(--muted);font-size:14px;margin-left:6px}
+.lt .ml{display:none}
+.empty{color:var(--faint);font-weight:700}
+.done{font-weight:600}
+.il .bl{margin-top:8px;gap:6px}
+.il .bl li{font-size:15px;font-weight:500;color:var(--muted)}
+.il .bl li::before{margin-top:7px}
+.ach .plate{min-height:230px;padding:26px;display:flex;flex-direction:column}
+.ach .lab{margin-top:22px}
+.ach .plate h3{font-size:22px;margin:6px 0 0}
+.plate.pend{background:var(--amber-bg);border:2px dashed #E2CF9C}
+.plate.pend .ico{background:#EBDCB3;color:var(--amber-ink)}
+.plate.pend .lab,.plate.pend h3{color:var(--amber-ink)}
+.lt-top .lead{margin:0}
+
+/* 10. ЧОД */
+.chod{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr);gap:10px;align-items:stretch}
+.cc{display:flex;flex-direction:column;gap:10px;padding:20px}
+.cc .share{font-size:46px;font-weight:800;letter-spacing:-.03em;line-height:1;color:var(--green)}
+.cc .col{height:120px;display:flex;align-items:flex-end;border-bottom:2px solid var(--line)}
+.cc .col i{display:block;width:100%;border-radius:10px 10px 0 0;background:var(--green-3);transition:height .9s cubic-bezier(.2,.7,.2,1)}
+.cc .sum{font-size:20px;font-weight:800}
+.cc .base{font-size:14px;color:var(--muted);font-weight:600;margin-top:-6px}
+.cc.exp{background:var(--surface);border:2px dashed var(--mint-2)}
+.cc.exp .col i{background:repeating-linear-gradient(135deg,var(--mint-2) 0 8px,var(--mint) 8px 16px)}
+.cc.exp .share{color:var(--green-2)}
+.rows{display:grid;gap:10px}
+.row{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:center;padding:16px 22px;border-radius:18px;background:var(--surface-2);border:1px solid var(--line-2)}
+.row.m{background:var(--mint);border-color:transparent}
+.row.exp{background:var(--surface);border:2px dashed var(--mint-2)}
+.hd{display:flex;align-items:baseline;gap:10px;flex-wrap:nowrap;white-space:nowrap}
+.hd .yr{font-size:clamp(18px,1.8vw,24px);font-weight:800;letter-spacing:-.01em;color:var(--ink)}
+.hd .pc{font-size:clamp(34px,3.6vw,46px);font-weight:800;letter-spacing:-.03em;line-height:1;color:var(--green)}
+.row.exp .pc{color:var(--green-2)}
+.bar{height:16px;border-radius:8px;background:var(--line-2);overflow:hidden}
+.bar i{display:block;height:100%;width:0;border-radius:8px;background:var(--green-3);transition:width .9s cubic-bezier(.2,.7,.2,1)}
+.row.exp .bar i{background:repeating-linear-gradient(135deg,#BFDCCB 0 8px,var(--mint-2) 8px 16px)}
+.amt b{display:block;font-size:20px;font-weight:800}
+.amt span{font-size:14px;color:var(--muted);font-weight:600}
+.win{margin-top:16px;padding:24px 28px;border-radius:24px;background:var(--green-strong);color:#fff;display:grid;grid-template-columns:auto minmax(0,1fr);gap:22px;align-items:center}
+.win .ico{width:58px;height:58px;border-radius:16px}
+.win .ico .i{width:28px;height:28px}
+.win h2{margin:0 0 10px;font-size:clamp(22px,2.6vw,32px);font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.win .chips{margin-top:0}
+.win .chip{background:rgba(255,255,255,.14);border-color:transparent;color:#fff;font-size:15px}
+
+/* 11. Тираж */
+.tl{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1.25fr);gap:12px;align-items:stretch;margin-top:10px}
+.split{display:flex;flex-direction:column;align-items:flex-start;margin-top:8px}
+.split .down{margin:8px 0 8px 70px;color:rgba(255,255,255,.85)}
+.bl{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:8px}
+.bl li{display:flex;gap:10px;font-size:16px;font-weight:600;line-height:1.35}
+.bl li::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.7;margin-top:8px;flex:none}
+.mini{background:rgba(255,255,255,.12);border-radius:12px;padding:10px 12px;font-size:14px;font-weight:600;line-height:1.3}
+.mini b{display:block;font-size:13px;font-weight:700;opacity:.8}
+
+/* 12. Зампред */
+.opt .plate{padding:26px;min-height:240px}
+.opt .plate h3{font-size:23px;margin:18px 0 8px}
+.opt .plate p{font-size:17px}
+.opt .ex{margin-top:16px;padding-top:14px;border-top:1px solid rgba(36,52,45,.1);font-size:15px;font-weight:600;color:var(--ink)}
+
+/* Пагинатор */
+.pager{display:flex;justify-content:center;margin-top:10px}
+.pager-in{display:flex;align-items:center;gap:6px;background:rgba(230,243,235,.92);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:22px;padding:6px;box-shadow:var(--shadow)}
+.pager button{all:unset;box-sizing:border-box;width:56px;height:48px;border-radius:16px;display:grid;place-items:center;cursor:pointer;color:var(--green)}
+.pager button.next{background:var(--mint-2)}
+.pager button:disabled{opacity:.35;cursor:default}
+.count{min-width:100px;text-align:center;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums;font-size:18px}
+
+@media (max-width: 960px){
+  .eq,.dflow,.fx,.ba,.tl,.chod,.tools{grid-template-columns:minmax(0,1fr)}
+  .op.rot .i,.arr .i{transform:rotate(90deg)}
+  .c3,.c2{grid-template-columns:minmax(0,1fr)}
+  .rings{display:none}
+  .js .stage-wrap{grid-template-columns:minmax(0,1fr)}
+  .js .side{display:none}
+  .pilot{grid-template-columns:minmax(0,1fr);gap:22px}
+  .pilot .vline{height:1px;width:100%}
+  .cc .col{height:90px}
+  .row{grid-template-columns:minmax(0,1fr);gap:10px}
+  .hd{flex-wrap:wrap;white-space:normal}
+  .ach .plate{min-height:0}
+  .opt .plate,.tall .plate{min-height:0}
+  .fx{gap:4px}
+  .fx .plate{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:12px;align-items:center;padding:12px 14px}
+  .fx .plate .ico{grid-row:span 2}
+  .fx .plate h3{margin:0}
+  .fx .plate.s .ico{grid-row:auto}
+  .fx .op{font-size:22px;min-height:22px}
+}
+@media (max-width: 600px){
+  .app{padding:12px 12px 16px}
+  .slide{padding:26px 18px 28px}
+  .no-js .sub-h{padding:18px 18px 0}
+  .tab{padding:10px 20px 14px 10px}
+  .tab .t1{font-size:17px}
+  .tab .tile{width:44px;height:44px}
+  .seg button{flex-direction:column;gap:6px;font-size:13px;text-align:center;padding:10px 4px}
+  .seg button .n{min-width:26px;height:26px;font-size:12px}
+  .lead{font-size:16px;margin-bottom:20px}
+  .llist{grid-template-columns:minmax(0,1fr)}
+  .accent{padding:20px;gap:14px}
+  .accent .ico{width:46px;height:46px}
+  .pr div{grid-template-columns:minmax(0,1fr);gap:2px}
+  .lt{border:0;background:transparent;display:grid;gap:10px}
+  .lt-head{display:none}
+  .lt-row{grid-template-columns:minmax(0,1fr);background:var(--surface-2);border:1px solid var(--line-2);border-radius:14px}
+  .lt-row>div{border:0;padding:8px 14px}
+  .lt-row>div+div{border-left:0}
+  .lt-row>div:first-child{padding-top:12px}
+  .lt-row>div:last-child{padding-bottom:12px}
+  .lt .ml{display:block;font-size:12px;font-weight:800;color:var(--green);margin-bottom:2px}
+  .win{grid-template-columns:minmax(0,1fr);padding:20px}
+  .split .down{margin-left:60px}
+  .thesis{font-size:16px}
+  .hl{flex-wrap:wrap;gap:4px 12px}
+  .hl b{white-space:normal;font-size:22px}
+  .lt-row>div{padding:5px 14px}
+  .lt-row>div:not(:first-child){display:flex;gap:10px;align-items:baseline}
+  .lt .ml{flex:none;width:66px;margin:0}
+  .lt-ind span{display:block;margin-left:0}
+  .lt-row>div:not(:first-child)>span:last-child{min-width:0;overflow-wrap:break-word}
+  .cc .col{height:60px}
+  .cc .share{font-size:40px}
+  .t{font-size:28px}
+  .t.xl{font-size:36px}
+}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-msg" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
+  <symbol id="i-trend" viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15v4"/><path d="M17 17h4"/></symbol>
+  <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></symbol>
+  <symbol id="i-chev-r" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></symbol>
+  <symbol id="i-chev-l" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></symbol>
+  <symbol id="i-flag" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></symbol>
+  <symbol id="i-ucheck" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></symbol>
+</svg>
+
+<div class="app">
+  <header class="head">
+    <div class="tab">
+      <div class="tile"><svg class="i"><use href="#i-users"/></svg></div>
+      <div>
+        <div class="t1">Глубокое понимание клиента</div>
+        <div class="t2">Стратегический диалог и отраслевое лидерство</div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="seg" role="tablist" aria-label="Разделы">
+    <button role="tab" data-sub="0" aria-selected="true"><span class="n">01</span><span>Новый формат</span></button>
+    <button role="tab" data-sub="1" aria-selected="false"><span class="n">02</span><span>Текущие результаты</span></button>
+    <button role="tab" data-sub="2" aria-selected="false"><span class="n">03</span><span>Что дальше?</span></button>
+  </nav>
+
+  <div class="progress" aria-hidden="true"><span id="prog"></span></div>
+
+  <div class="stage-wrap">
+  <button class="side" id="sprev" aria-label="Предыдущий слайд"><svg class="i"><use href="#i-chev-l"/></svg></button>
+  <main class="stage" id="stage">
+
+    <p class="sub-h">01 · Новый формат</p>
+
+    <!-- 1 -->
+    <section class="slide" data-sub="0">
+      <div class="rings" aria-hidden="true"><span></span><span></span><span></span></div>
+      <h1 class="t xl">Глубокое понимание клиента</h1>
+      <p class="lead">Два изменения, которые работают вместе</p>
+      <div class="eq">
+        <div class="plate l">
+          <div class="ico v"><svg class="i"><use href="#i-msg"/></svg></div>
+          <h3><span class="lab">Внешний контур</span><br>Стратегический диалог</h3>
+          <p>Новый формат работы с клиентом</p>
+        </div>
+        <div class="op">+</div>
+        <div class="plate m">
+          <div class="ico"><svg class="i"><use href="#i-layers"/></svg></div>
+          <h3><span class="lab">Внутренний контур</span><br>Отраслевое лидерство</h3>
+          <p>Внутрибанковская экспертиза</p>
+        </div>
+        <div class="op rot"><svg class="i"><use href="#i-right"/></svg></div>
+        <div class="plate s">
+          <div class="ico w"><svg class="i"><use href="#i-target"/></svg></div>
+          <h3><span class="lab">Вместе</span><br>Новый формат взаимодействия</h3>
+          <p>От потребности клиента к трансформационным проектам и отраслевым решениям</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section class="slide" data-sub="0">
+      <h1 class="t">Стратегический диалог проводим с клиентами мечты</h1>
+      <div class="dflow">
+        <div class="plate">
+          <div class="ico soft"><svg class="i"><use href="#i-cal"/></svg></div>
+          <p class="def">Раз в год каждый ГОСБ отбирает по 5–10 клиентов мечты</p>
+        </div>
+        <div class="arr"><svg class="i"><use href="#i-right"/></svg></div>
+        <div class="plate s">
+          <div class="ico w"><svg class="i"><use href="#i-star"/></svg></div>
+          <p class="def">Клиенты мечты — это перспективные клиенты по росту ЧОД</p>
+        </div>
+        <div class="arr"><svg class="i"><use href="#i-right"/></svg></div>
+        <div class="plate l">
+          <div class="ico v"><svg class="i"><use href="#i-msg"/></svg></div>
+          <p class="def">С каждым клиентом мечты проводим стратегический диалог</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section class="slide" data-sub="0">
+      <span class="kick v">Внешний контур</span>
+      <h1 class="t">Стратегический диалог</h1>
+      <p class="lead">От продаж к совместной трансформации бизнеса</p>
+      <div class="grid c3 tall">
+        <div class="plate l">
+          <div class="ico v"><svg class="i"><use href="#i-search"/></svg></div>
+          <h3>Без продаж</h3>
+          <p>Цель — понять проблему клиента</p>
+        </div>
+        <div class="plate l">
+          <div class="ico v"><svg class="i"><use href="#i-users"/></svg></div>
+          <h3>Диалог на уровне первых лиц</h3>
+          <p>С ЛПР клиента встречается спонсор — руководитель банка</p>
+        </div>
+        <div class="plate l">
+          <div class="ico v"><svg class="i"><use href="#i-trend"/></svg></div>
+          <h3>Результат — проект, который меняет клиента, банк, отрасль</h3>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section class="slide" data-sub="0">
+      <span class="kick v">Внешний контур</span>
+      <h1 class="t">Что делает подход инновационным</h1>
+      <p class="lead">Формула стратегического диалога</p>
+      <div class="fx">
+        <div class="plate l">
+          <div class="ico v"><svg class="i"><use href="#i-mic"/></svg></div>
+          <h3>Голос клиента</h3>
+          <p>Аудиозапись, дословная расшифровка и рефлексия команды</p>
+        </div>
+        <div class="op">+</div>
+        <div class="plate l">
+          <div class="ico v"><svg class="i"><use href="#i-spark"/></svg></div>
+          <h3>ИИ-стратег</h3>
+          <p>Подсвечивает противоречия, слепые зоны и гипотезы трансформации</p>
+        </div>
+        <div class="op">+</div>
+        <div class="plate l">
+          <div class="ico v"><svg class="i"><use href="#i-compass"/></svg></div>
+          <h3>Контекст спонсора</h3>
+          <p>Ситуация в банке и на рынке</p>
+        </div>
+        <div class="op">=</div>
+        <div class="plate s">
+          <div class="ico w"><svg class="i"><use href="#i-target"/></svg></div>
+          <h3>Трансформационный проект</h3>
+        </div>
+      </div>
+      <div class="accent">
+        <div class="ico v"><svg class="i"><use href="#i-spark"/></svg></div>
+        <p>ИИ не для автоматизации, а для усиления человеческого суждения</p>
+      </div>
+      <p class="minor">Похожие диалоги есть в других подразделениях. Наше отличие — ИИ для выработки решений</p>
+    </section>
+
+    <!-- 5 -->
+    <section class="slide" data-sub="0">
+      <span class="kick">Внутренний контур</span>
+      <h1 class="t">Отраслевое лидерство</h1>
+      <p class="lead">Через отраслевую экспертизу лучше понимаем клиента</p>
+      <div class="ba">
+        <div class="plate l">
+          <span class="lab">Продуктовый подход</span>
+          <h3>Продаем продукты ради продуктов</h3>
+        </div>
+        <div class="op rot"><svg class="i"><use href="#i-right"/></svg></div>
+        <div class="plate m">
+          <span class="lab">Отраслевой подход</span>
+          <h3>Решаем задачи отрасли</h3>
+        </div>
+      </div>
+      <div class="grid c3 il">
+        <div class="plate">
+          <div class="ico soft"><svg class="i"><use href="#i-globe"/></svg></div>
+          <h3>Глубокая отраслевая экспертиза</h3>
+          <p>Федеральная и региональная повестка</p>
+        </div>
+        <div class="plate">
+          <div class="ico soft"><svg class="i"><use href="#i-target"/></svg></div>
+          <h3>Смена фокуса</h3>
+          <p>Уход от внутренней продуктовой конкуренции к единой отраслевой структуре</p>
+        </div>
+        <div class="plate">
+          <div class="ico soft"><svg class="i"><use href="#i-layers"/></svg></div>
+          <h3>Механика кросс- и мета-идей</h3>
+          <ul class="bl">
+            <li>Кросс-трансфер: лучшие практики между отраслями</li>
+            <li>Мета-идеи: синтез общих бизнес-моделей</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 -->
+    <section class="slide" data-sub="0">
+      <h1 class="t">Как инструменты дополняют друг друга</h1>
+      <p class="lead">Условный пример: отрасль «Школы»</p>
+      <div class="tools">
+        <div class="diagram">
+          <svg viewBox="0 0 520 500" role="img" aria-label="Отрасль из 10 000 школ, внутри нее 50 клиентов мечты; в центре — клиент">
+            <defs>
+              <g id="pp"><circle cx="0" cy="-6" r="4.2"/><path d="M-7.5 10.5c0-5.8 3.3-9 7.5-9s7.5 3.2 7.5 9z"/></g>
+            </defs>
+            <circle cx="260" cy="250" r="232" fill="var(--mint)"/>
+            <circle cx="260" cy="250" r="232" fill="none" stroke="var(--mint-2)" stroke-width="2"/>
+            <g fill="var(--green-3)" opacity=".55"><g transform="translate(410 263) scale(1.1)"><use href="#pp"/></g><g transform="translate(393 321) scale(0.9)"><use href="#pp"/></g><g transform="translate(361 360) scale(1.1)"><use href="#pp"/></g><g transform="translate(312 390) scale(1.0)"><use href="#pp"/></g><g transform="translate(256 400) scale(1.0)"><use href="#pp"/></g><g transform="translate(201 392) scale(0.9)"><use href="#pp"/></g><g transform="translate(158 362) scale(0.9)"><use href="#pp"/></g><g transform="translate(124 316) scale(0.9)"><use href="#pp"/></g><g transform="translate(106 265) scale(1.0)"><use href="#pp"/></g><g transform="translate(114 208) scale(1.1)"><use href="#pp"/></g><g transform="translate(138 159) scale(0.9)"><use href="#pp"/></g><g transform="translate(179 121) scale(0.9)"><use href="#pp"/></g><g transform="translate(232 101) scale(0.9)"><use href="#pp"/></g><g transform="translate(289 102) scale(1.0)"><use href="#pp"/></g><g transform="translate(342 121) scale(1.0)"><use href="#pp"/></g><g transform="translate(382 162) scale(1.0)"><use href="#pp"/></g><g transform="translate(405 211) scale(1.1)"><use href="#pp"/></g><g transform="translate(436 292) scale(1.0)"><use href="#pp"/></g><g transform="translate(415 344) scale(1.1)"><use href="#pp"/></g><g transform="translate(382 382) scale(0.9)"><use href="#pp"/></g><g transform="translate(338 410) scale(1.0)"><use href="#pp"/></g><g transform="translate(290 427) scale(0.9)"><use href="#pp"/></g><g transform="translate(244 426) scale(1.1)"><use href="#pp"/></g><g transform="translate(192 419) scale(1.0)"><use href="#pp"/></g><g transform="translate(146 389) scale(1.0)"><use href="#pp"/></g><g transform="translate(113 352) scale(0.9)"><use href="#pp"/></g><g transform="translate(92 307) scale(1.1)"><use href="#pp"/></g><g transform="translate(78 258) scale(1.0)"><use href="#pp"/></g><g transform="translate(86 208) scale(1.0)"><use href="#pp"/></g><g transform="translate(104 157) scale(1.1)"><use href="#pp"/></g><g transform="translate(136 121) scale(1.0)"><use href="#pp"/></g><g transform="translate(370 110) scale(1.1)"><use href="#pp"/></g><g transform="translate(407 145) scale(1.0)"><use href="#pp"/></g><g transform="translate(433 192) scale(1.0)"><use href="#pp"/></g><g transform="translate(443 245) scale(1.0)"><use href="#pp"/></g><g transform="translate(468 258) scale(0.9)"><use href="#pp"/></g><g transform="translate(455 310) scale(0.9)"><use href="#pp"/></g><g transform="translate(437 355) scale(1.0)"><use href="#pp"/></g><g transform="translate(406 392) scale(1.1)"><use href="#pp"/></g><g transform="translate(368 426) scale(0.9)"><use href="#pp"/></g><g transform="translate(324 446) scale(1.1)"><use href="#pp"/></g><g transform="translate(276 457) scale(1.0)"><use href="#pp"/></g><g transform="translate(227 455) scale(1.1)"><use href="#pp"/></g><g transform="translate(179 438) scale(1.0)"><use href="#pp"/></g><g transform="translate(134 413) scale(1.0)"><use href="#pp"/></g><g transform="translate(97 376) scale(0.9)"><use href="#pp"/></g><g transform="translate(73 334) scale(1.1)"><use href="#pp"/></g><g transform="translate(55 286) scale(0.9)"><use href="#pp"/></g><g transform="translate(54 242) scale(1.1)"><use href="#pp"/></g><g transform="translate(60 193) scale(1.1)"><use href="#pp"/></g><g transform="translate(82 146) scale(1.0)"><use href="#pp"/></g><g transform="translate(113 106) scale(0.9)"><use href="#pp"/></g><g transform="translate(154 78) scale(1.0)"><use href="#pp"/></g><g transform="translate(384 89) scale(1.0)"><use href="#pp"/></g><g transform="translate(419 122) scale(0.9)"><use href="#pp"/></g><g transform="translate(449 162) scale(1.1)"><use href="#pp"/></g><g transform="translate(464 212) scale(1.0)"><use href="#pp"/></g></g>
+            <rect x="170" y="44" width="180" height="40" rx="20" fill="#fff"/>
+            <text x="260" y="70" text-anchor="middle" font-size="19" font-weight="800" fill="var(--green)">10 000 школ</text>
+            <circle cx="260" cy="250" r="112" fill="var(--green-strong)"/>
+            <circle cx="260" cy="250" r="124" fill="none" stroke="var(--green-3)" stroke-width="2" stroke-dasharray="4 7"/>
+            <text x="260" y="186" text-anchor="middle" font-size="30" font-weight="800" fill="#fff">50</text>
+            <text x="260" y="208" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" opacity=".9">клиентов мечты</text>
+            <g fill="#fff" transform="translate(260 258) scale(2.9)"><use href="#pp"/></g>
+            <g fill="#fff" opacity=".45" transform="translate(200 266) scale(1.4)"><use href="#pp"/></g>
+            <g fill="#fff" opacity=".45" transform="translate(320 266) scale(1.4)"><use href="#pp"/></g>
+            <rect x="214" y="296" width="92" height="30" rx="15" fill="#fff"/>
+            <text x="260" y="317" text-anchor="middle" font-size="16" font-weight="800" fill="var(--green)">Клиент</text>
+          </svg>
+        </div>
+        <div class="legend">
+          <div class="plate m">
+            <div class="ico"><svg class="i"><use href="#i-layers"/></svg></div>
+            <div>
+              <div class="cnt">Все 10 000 школ</div>
+              <h3>Отраслевое лидерство</h3>
+              <p>На основе знания отрасли — типовой продукт или новая модель продаж</p>
+            </div>
+          </div>
+          <div class="plate s">
+            <div class="ico w"><svg class="i"><use href="#i-msg"/></svg></div>
+            <div>
+              <div class="cnt">50 клиентов мечты</div>
+              <h3>Стратегический диалог</h3>
+              <p>Глубокое понимание каждого клиента и трансформационный проект</p>
+            </div>
+          </div>
+          <div class="note"><svg class="i"><use href="#i-info"/></svg><span>Клиенты мечты — зона, где работают оба инструмента</span></div>
+        </div>
+      </div>
+    </section>
+
+    <p class="sub-h">02 · Текущие результаты</p>
+
+    <!-- 7 -->
+    <section class="slide" data-sub="1">
+      <h1 class="t">Пилот 2026</h1>
+      <div class="pilot">
+        <div>
+          <span class="kick v">Стратегический диалог</span>
+          <div class="kpis">
+            <div class="plate"><div class="big-n" data-count="5">5</div><p>территориальных банков</p></div>
+            <div class="plate"><div class="big-n" data-count="20">20</div><p>ГОСБ</p></div>
+            <div class="plate m"><div class="big-n" data-count="200">200</div><p>клиентов мечты</p></div>
+          </div>
+          <p class="cap">Участвуют в стратегическом диалоге</p>
+        </div>
+        <div class="vline" aria-hidden="true"></div>
+        <div>
+          <span class="kick">Отраслевое лидерство</span>
+          <div class="leaders-h"><span class="big-n" data-count="9">9</span><span>отраслевых лидеров</span></div>
+          <ul class="llist">
+            <li>Транспорт <span>(Седаков А.)</span></li>
+            <li>Здравоохранение <span>(Червяк И.)</span></li>
+            <li>ЖКХ <span>(Звездин Н.)</span></li>
+            <li>ВУЗы <span>(Тойкиева Н.)</span></li>
+            <li>ТКО <span>(Макаровский И.)</span></li>
+            <li>Школы <span>(Бакулин Э.)</span></li>
+            <li>Туризм <span>(Марков К.)</span></li>
+            <li>Спорт <span>(Турчанинова К.)</span></li>
+            <li>Культура <span>(Шокурова Д.)</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8 -->
+    <section class="slide" data-sub="1">
+      <h1 class="t">Яркие проекты из стратегических диалогов</h1>
+      <p class="lead">Идеи, которые не появились бы без СД</p>
+      <div class="grid c2">
+        <article class="plate proj">
+          <div class="proj-top"><span class="chip">АНО «ТВ-Новости» (Russia Today)</span><span class="status">Идея в проработке</span></div>
+          <h3>Интеллектуальный контур закупок</h3>
+          <dl class="pr">
+            <div><dt>Проблема</dt><dd>Закупка товарно-материальных ценностей (оборудование, материалы) — цикл 74 часа и около 2 часов ручной работы на позицию</dd></div>
+            <div><dt>Решение</dt><dd>ИИ-агент сам собирает цены, опрашивает поставщиков, разбирает ответы и готовит отчет</dd></div>
+            <div><dt>Эффект</dt><dd>До 85% ручной работы уходит из процесса. Выбор поставщика и подпись — за человеком</dd></div>
+          </dl>
+          <div class="hl"><b>2 ч → 15–20 мин</b><span>работа сотрудника на одну позицию</span></div>
+        </article>
+        <article class="plate proj">
+          <div class="proj-top"><span class="chip">ТФОМС Санкт-Петербурга</span><span class="status">Идея в проработке</span></div>
+          <h3>Юридический медицинский консультант на данных ТФОМС</h3>
+          <dl class="pr">
+            <div><dt>Проблема</dt><dd>Тарифы не успевают за изменениями, часть становится неэффективной. Ответы медорганизациям требуют долгого анализа</dd></div>
+            <div><dt>Решение</dt><dd>Платформа следит за эффективностью тарифов и ценами на лекарства. ИИ-агент готовит проекты ответов и юридические позиции</dd></div>
+            <div><dt>Эффект</dt><dd>Находим неэффективно используемые средства и направляем их на медпомощь населению</dd></div>
+          </dl>
+          <div class="hl"><b>Тираж</b><span>интерес сделать продукт для других ТФОМС</span></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 9 -->
+    <section class="slide" data-sub="1">
+      <h1 class="t">Достижения отраслевых лидеров</h1>
+      <p class="lead">Примеры того, что уже сделано</p>
+      <div class="grid c3 ach">
+        <div class="plate m">
+          <div class="ico"><svg class="i"><use href="#i-check"/></svg></div>
+          <span class="lab">ВУЗы · Тойкиева Н.</span>
+          <h3>Обособлены и обучены 15 специалистов по вузам</h3>
+        </div>
+        <div class="plate m">
+          <div class="ico"><svg class="i"><use href="#i-check"/></svg></div>
+          <span class="lab">Культура · Шокурова Д.</span>
+          <h3>Организовано взаимодействие по благотворительности</h3>
+        </div>
+        <div class="plate pend">
+          <div class="ico"><svg class="i"><use href="#i-clock"/></svg></div>
+          <span class="lab">Другие отрасли</span>
+          <h3>Текущие достижения уточняются</h3>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 -->
+    <section class="slide" data-sub="1">
+      <h1 class="t">Вклад клиентов мечты в ЧОД</h1>
+      <p class="lead">200 клиентов мечты в ЧОД сегмента РГС</p>
+      <div class="rows">
+        <div class="row">
+          <div class="hd"><span class="yr">2025 год —</span><span class="pc">6,5%</span></div>
+          <div class="bar"><i data-w="53.6" style="width:53.6%"></i></div>
+          <div class="amt"><b>7,5 млрд ₽</b><span>из 115 млрд ₽ ЧОД сегмента</span></div>
+        </div>
+        <div class="row m">
+          <div class="hd"><span class="yr">Сентябрь 2026 —</span><span class="pc">8%</span></div>
+          <div class="bar"><i data-w="67.9" style="width:67.9%"></i></div>
+          <div class="amt"><b>9,5 млрд ₽</b><span>из плана 120 млрд ₽ ЧОД сегмента</span></div>
+        </div>
+        <div class="row exp">
+          <div class="hd"><span class="yr">К концу года ожидаем</span><span class="pc">11%</span></div>
+          <div class="bar"><i data-w="100" style="width:100%"></i></div>
+          <div class="amt"><b>14 млрд ₽</b><span>из плана 120 млрд ₽ ЧОД сегмента</span></div>
+        </div>
+      </div>
+      <div class="win">
+        <div class="ico w"><svg class="i"><use href="#i-check"/></svg></div>
+        <div>
+          <h2>Новый формат уже показал эффективность</h2>
+          <div class="chips">
+            <span class="chip">К сентябрю — больше ЧОД, чем за весь 2025 год</span>
+            <span class="chip">Доля в ЧОД сегмента: 6,5% → 11%</span>
+            <span class="chip">Вклад почти вдвое: 7,5 → 14 млрд ₽</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <p class="sub-h">03 · Что дальше?</p>
+
+    <!-- 11 -->
+    <section class="slide" data-sub="2">
+      <h1 class="t">С 2027 года — во всех ТБ</h1>
+      <p class="lead">Стратегический диалог выходит из пилота</p>
+      <div class="tl">
+        <div class="plate">
+          <div class="ico soft"><svg class="i"><use href="#i-flag"/></svg></div>
+          <h3><span class="lab">2026</span><br>Пилот</h3>
+          <div class="chips"><span class="chip">5 ТБ</span><span class="chip">20 ГОСБ</span><span class="chip">200 клиентов мечты</span></div>
+        </div>
+        <div class="arr"><svg class="i"><use href="#i-right"/></svg></div>
+        <div class="plate s">
+          <div class="ico w"><svg class="i"><use href="#i-globe"/></svg></div>
+          <h3><span class="lab">С 1 января 2027</span><br>Тираж на все ТБ</h3>
+          <div class="chips"><span class="chip">11 ТБ</span><span class="chip">89 ГОСБ</span><span class="chip">615 клиентов мечты</span></div>
+          <ul class="bl">
+            <li>ГОСБ 1–2 категории — по 10 клиентов мечты</li>
+            <li>ГОСБ 3–5 категории — по 5 клиентов мечты</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12 -->
+    <section class="slide" data-sub="2">
+      <h1 class="t">Что это дает зампреду</h1>
+      <p class="lead">Сегмент РГС меняет бизнес-модель. У вас две возможности</p>
+      <div class="grid c2 opt">
+        <div class="plate m">
+          <div class="ico"><svg class="i"><use href="#i-layers"/></svg></div>
+          <h3>Отраслевая экспертиза ЦА</h3>
+          <p>Пользуйтесь знаниями отраслевых лидеров для своих проектов</p>
+        </div>
+        <div class="plate l">
+          <div class="ico v"><svg class="i"><use href="#i-ucheck"/></svg></div>
+          <h3>Стратегический проект в ваш портфель</h3>
+          <p>Станьте спонсором трансформационного проекта из тех, что вызревают в стратегических диалогах сегмента РГС</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+  <button class="side" id="snext" aria-label="Следующий слайд"><svg class="i"><use href="#i-chev-r"/></svg></button>
+  </div>
+
+  <div class="pager">
+    <div class="pager-in">
+      <button class="prev" id="prev" aria-label="Назад"><svg class="i"><use href="#i-chev-l"/></svg></button>
+      <div class="count" id="count">01 / 06</div>
+      <button class="next" id="next" aria-label="Вперед"><svg class="i"><use href="#i-chev-r"/></svg></button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var slides = Array.prototype.slice.call(document.querySelectorAll(".slide"));
+  var bySub = [0, 1, 2].map(function (s) { return slides.filter(function (el) { return +el.getAttribute("data-sub") === s; }); });
+  var cur = { s: 0, i: 0 };
+  var stage = document.getElementById("stage");
+
+  function fmt(v) { return Number(v).toLocaleString("ru-RU"); }
+
+  function enter(el) {
+    var cols = el.querySelectorAll("[data-h]"), bars = el.querySelectorAll("[data-w]");
+    Array.prototype.forEach.call(cols, function (c) { c.style.height = "0"; });
+    Array.prototype.forEach.call(bars, function (c) { c.style.width = "0"; });
+    requestAnimationFrame(function () { requestAnimationFrame(function () {
+      Array.prototype.forEach.call(cols, function (c) { c.style.height = c.getAttribute("data-h") + "%"; });
+      Array.prototype.forEach.call(bars, function (c) { c.style.width = c.getAttribute("data-w") + "%"; });
+    }); });
+    Array.prototype.forEach.call(el.querySelectorAll("[data-count]"), function (n) {
+      var to = +n.getAttribute("data-count");
+      if (reduce || !to) { n.textContent = fmt(to); return; }
+      var t0 = performance.now(), dur = 700;
+      function tick(t) {
+        var p = Math.min(1, (t - t0) / dur);
+        n.textContent = fmt(Math.round(to * (1 - Math.pow(1 - p, 3))));
+        if (p < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    });
+  }
+
+  function fit() {
+    var el = bySub[cur.s][cur.i];
+    if (!el) return;
+    el.style.zoom = "";
+    if (window.innerWidth <= 960) return;
+    var avail = stage.clientHeight - 2;
+    function h(z) { el.style.zoom = z; return el.getBoundingClientRect().height; }
+    if (avail <= 0 || h(1) <= avail) { el.style.zoom = ""; return; }
+    var lo = 0.5, hi = 1;
+    for (var k = 0; k < 8; k++) { var mid = (lo + hi) / 2; if (h(mid) <= avail) lo = mid; else hi = mid; }
+    el.style.zoom = lo;
+  }
+
+  function show(s, i, scroll) {
+    cur = { s: s, i: i };
+    slides.forEach(function (el) { el.classList.remove("is-active"); });
+    var el = bySub[s][i];
+    el.classList.add("is-active");
+    Array.prototype.forEach.call(document.querySelectorAll(".seg button"), function (b) {
+      b.setAttribute("aria-selected", +b.getAttribute("data-sub") === s ? "true" : "false");
+    });
+    var n = bySub[s].length;
+    document.getElementById("prog").style.width = ((i + 1) / n * 100) + "%";
+    document.getElementById("count").textContent = String(i + 1).padStart(2, "0") + " / " + String(n).padStart(2, "0");
+    document.getElementById("prev").disabled = (s === 0 && i === 0);
+    document.getElementById("next").disabled = (s === 2 && i === bySub[2].length - 1);
+    document.getElementById("sprev").disabled = document.getElementById("prev").disabled;
+    document.getElementById("snext").disabled = document.getElementById("next").disabled;
+    stage.scrollTop = 0;
+    fit();
+    enter(el);
+    try {
+      var u = new URL(location.href);
+      u.searchParams.set("tab", s + 1);
+      u.searchParams.set("slide", i + 1);
+      history.replaceState(null, "", u);
+    } catch (e) {}
+  }
+  function next() {
+    if (cur.i < bySub[cur.s].length - 1) show(cur.s, cur.i + 1, true);
+    else if (cur.s < 2) show(cur.s + 1, 0, true);
+  }
+  function prev() {
+    if (cur.i > 0) show(cur.s, cur.i - 1, true);
+    else if (cur.s > 0) show(cur.s - 1, bySub[cur.s - 1].length - 1, true);
+  }
+  document.getElementById("next").addEventListener("click", next);
+  document.getElementById("prev").addEventListener("click", prev);
+  document.getElementById("snext").addEventListener("click", next);
+  document.getElementById("sprev").addEventListener("click", prev);
+  var rt;
+  window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(fit, 120); });
+  window.addEventListener("load", fit);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+  Array.prototype.forEach.call(document.querySelectorAll(".seg button"), function (b) {
+    b.addEventListener("click", function () { show(+b.getAttribute("data-sub"), 0, true); });
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "ArrowRight") next();
+    if (e.key === "ArrowLeft") prev();
+  });
+  var tx = null, ty = null;
+  stage.addEventListener("touchstart", function (e) { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
+  stage.addEventListener("touchend", function (e) {
+    if (tx === null) return;
+    var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) { if (dx < 0) next(); else prev(); }
+    tx = ty = null;
+  });
+
+  var s0 = 0, i0 = 0;
+  try {
+    var q = new URLSearchParams(location.search);
+    s0 = Math.min(2, Math.max(0, (parseInt(q.get("tab"), 10) || 1) - 1));
+    i0 = Math.min(bySub[s0].length - 1, Math.max(0, (parseInt(q.get("slide"), 10) || 1) - 1));
+  } catch (e) {}
+  show(s0, i0, false);
+})();
+</script>
+</body>
+</html>

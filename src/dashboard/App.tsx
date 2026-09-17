@@ -1,4 +1,5 @@
 import { SmoCreditDashboard } from "./SmoCreditDashboard";
+import { StrategyDashboard } from "./StrategyDashboard";
 import { normalizeSmoView } from "./smoNavigation";
 import { CardAmbient } from "./CardAmbient";
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
@@ -1267,7 +1268,7 @@ export default function App() {
       window.scrollTo({ top: 0, behavior: "instant" });
   };
   useEffect(() => {
-    const sectionTitle = c.section === "title" ? "Приветствие" : c.section === "smo" ? "Кредитование СМО" : c.section === "strategy" ? "Стратегический диалог" : c.section === "academy" ? "Академия гибридных лидеров" : c.section === "tb-tasks" ? "Задачи ТБ" : c.modelView === "premises" ? "Предпосылки изменений" : c.modelView === "next" ? "Дальнейшие шаги" : c.page === "overview" ? "Результаты пилота" : c.page === "map" ? "Карта ГОСБ" : metricNames[c.metric];
+    const sectionTitle = c.section === "title" ? "Приветствие" : c.section === "smo" ? "Кредитование СМО" : c.section === "strategy" ? "Глубокое понимание клиента" : c.section === "academy" ? "Академия гибридных лидеров" : c.section === "tb-tasks" ? "Задачи ТБ" : c.modelView === "premises" ? "Предпосылки изменений" : c.modelView === "next" ? "Дальнейшие шаги" : c.page === "overview" ? "Результаты пилота" : c.page === "map" ? "Карта ГОСБ" : metricNames[c.metric];
     document.title = `${sectionTitle} · Пульс`;
   }, [c.section, c.modelView, c.page, c.metric]);
   useEffect(() => {
@@ -1286,6 +1287,16 @@ export default function App() {
       <DashboardHeader c={c} change={change} />
       <main id="main" className="app-main section-smo">
         <SmoCreditDashboard view={normalizeSmoView(c.smoView)} onViewChange={(smoView) => change({ smoView })} />
+      </main>
+      <PresentationSectionControls c={c} change={change} />
+    </>
+  );
+  if (c.section === "strategy") return (
+    <>
+      <a className="skip-link" href="#main">Перейти к содержимому</a>
+      <DashboardHeader c={c} change={change} />
+      <main id="main" className="app-main section-strategy">
+        <StrategyDashboard />
       </main>
       <PresentationSectionControls c={c} change={change} />
     </>

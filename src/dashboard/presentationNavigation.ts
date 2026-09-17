@@ -10,7 +10,7 @@ export const presentationSections: { id: PresentationSection; label: string; sho
   { id: "title", label: "Приветствие" },
   { id: "smo", label: "Кредитование СМО", short: "СМО" },
   { id: "sales-model", label: "Модель продаж" },
-  { id: "strategy", label: "Страт. диалог" },
+  { id: "strategy", label: "Глубокое понимание клиента" },
   { id: "academy", label: "Академия гибридных лидеров", short: "Академия" },
   { id: "tb-tasks", label: "Задачи ТБ" },
 ];

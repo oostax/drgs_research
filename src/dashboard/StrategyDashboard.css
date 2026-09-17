@@ -1,0 +1,57 @@
+.app-main.section-strategy {
+  max-width: none;
+  padding: 0;
+}
+
+.strategy-dashboard {
+  position: relative;
+  width: 100%;
+  height: calc(100svh - 124px);
+  min-height: 620px;
+  overflow: hidden;
+  background: #f5f7f4;
+}
+
+.strategy-dashboard-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  opacity: 0;
+  background: #f5f7f4;
+  transition: opacity 180ms ease;
+}
+
+.strategy-dashboard-frame.is-ready {
+  opacity: 1;
+}
+
+.strategy-dashboard-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 12px;
+  color: #56675d;
+}
+
+.strategy-dashboard-loading p {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+@media (max-width: 680px) {
+  .strategy-dashboard {
+    height: calc(100svh - 178px);
+    min-height: 560px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .strategy-dashboard-frame {
+    transition: none;
+  }
+}
