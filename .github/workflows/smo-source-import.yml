@@ -1,0 +1,36 @@
+name: Import complete SMO source
+on:
+  push:
+    branches: [feat/smo-credit-integration]
+    paths: [.github/workflows/smo-source-import.yml]
+permissions:
+  contents: write
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Preserve original HTML verbatim
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          from urllib.request import urlopen
+          source = 'https://sdmntprnortheu.oaiusercontent.com/files/00000000-d578-81f4-a26d-187120b46010/raw?se=2026-09-17T15%3A11%3A55Z&sp=r&sv=2026-02-06&sr=b&scid=3e6fcfb7-a5be-5a1d-8c18-485036d403cf&skoid=a4604a88-85e4-4562-b6ab-a5622268de80&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-17T06%3A32%3A25Z&ske=2026-09-18T06%3A32%3A25Z&sks=b&skv=2026-02-06&sig=/30Q/Tq2DgufEjb6ysSpl74glcQ2SPUO6HD0/pX7rO4%3D'
+          print('::add-mask::' + source)
+          target = Path('public/smo/competitive-presentation.html')
+          target.parent.mkdir(parents=True, exist_ok=True)
+          with urlopen(source, timeout=90) as response:
+              target.write_bytes(response.read())
+          PY
+      - name: Commit original source and remove one-time importer
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/smo-source-import.yml
+          git add public/smo/competitive-presentation.html
+          git commit -m 'feat(smo): preserve complete supplied dashboard and all embedded data [skip ci]'
+          git pull --rebase origin feat/smo-credit-integration
+          git push origin HEAD:feat/smo-credit-integration
