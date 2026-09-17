@@ -15,8 +15,8 @@ function recordFrames() {
     const frame = document.querySelector('.deck-stage:not(.deck-stage-leave)');
     const inner = frame?.querySelector('.deck-fit-content');
     if (inner && getComputedStyle(inner).visibility === 'visible') {
-      window.fitFrames.push({ source, time: performance.now(), slide: frame.dataset.slide, fonts: document.fonts.status,
-        key: [frame.clientWidth, frame.clientHeight, inner.offsetWidth, inner.offsetHeight,
+      window.fitFrames.push({ source, time: performance.now(), slide: frame.dataset.slide, fonts: document.fonts.status, contentHeight: inner.offsetHeight,
+        key: [frame.clientWidth, frame.clientHeight, inner.offsetWidth,
           inner.style.getPropertyValue('--slide-scale'), inner.style.getPropertyValue('--slide-available-height')].join('|') });
     }
   };
@@ -71,10 +71,13 @@ for (const [engine, browserType] of [['chromium',chromium],['webkit',webkit]]) {
       await page.goto(url(slide)); await ready(page); await page.waitForTimeout(3300);
       const frames = await page.evaluate(() => window.fitFrames);
       const layouts = [...new Set(frames.map(f => f.key))];
+      const contentHeightRange = [Math.min(...frames.map(f=>f.contentHeight)), Math.max(...frames.map(f=>f.contentHeight))];
       report.coldStarts.push({engine,width,height,slide,samples:frames.length,
-        paintCallbacks:frames.filter(f=>f.source==='animation-frame').length,visibleLayouts:layouts.length,layouts});
+        paintCallbacks:frames.filter(f=>f.source==='animation-frame').length,visibleLayouts:layouts.length,layouts,contentHeightRange});
       assert(frames.length > 20, `Insufficient visible-layout samples: ${engine} ${width} slide ${slide}: ${frames.length}`);
       assert.equal(new Set(frames.map(f => f.key)).size,1, `Visible refit: ${engine} ${width} slide ${slide}: ${JSON.stringify([...new Set(frames.map(f=>f.key))])}`);
+      // Integer-rounded heights allow one CSS pixel; scale and width must be exact.
+      assert(contentHeightRange[1]-contentHeightRange[0] <= 1, 'Content reflowed after reveal');
       assert(frames.every(f => f.fonts === 'loaded'), 'Revealed before fonts finished');
       if(slide===6) assert((await page.evaluate(cardAudit)).every(c=>c.contained && c.textContained));
       // A warm slide transition must also keep one layout throughout the entrance.
@@ -82,6 +85,7 @@ for (const [engine, browserType] of [['chromium',chromium],['webkit',webkit]]) {
         await page.getByRole('button',{name:'Следующий слайд',exact:true}).click(); await ready(page); await page.waitForTimeout(2000);
         const entering = await page.evaluate(() => window.fitFrames.filter(f=>f.slide==='7'));
         assert(entering.length > 10); assert.equal(new Set(entering.map(f=>f.key)).size,1,'Refit during warm transition');
+        assert(Math.max(...entering.map(f=>f.contentHeight))-Math.min(...entering.map(f=>f.contentHeight)) <= 1, 'Content reflowed during warm transition');
         report.checks.push(`${engine} ${width}: warm slide transition stays at final scale`);
       }
       await context.close();
@@ -93,6 +97,9 @@ for (const [engine, browserType] of [['chromium',chromium],['webkit',webkit]]) {
     assert((await page.evaluate(cardAudit)).every(c=>c.contained && c.textContained));
     report.checks.push(`${engine}: readable, contained fallback when fonts fail`);
     await context.close();
+  } catch (error) {
+    report.errors.push(String(error));
+    throw error;
   } finally {
     await browser.close();
     writeFileSync(`${output}/stability-report.json`,JSON.stringify(report,null,2));
