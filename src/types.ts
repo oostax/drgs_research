@@ -1,0 +1,292 @@
+export type SnapshotPeriod = "Q1" | "Q2" | "Q3";
+export type ComparisonKey = "Q1-Q2" | "Q2-Q3" | "Q1-Q3";
+export type ManagerScope = "all" | "pilot" | "nonPilot";
+export type ProductScope = "withoutFot" | "withFot";
+export type AnalyticsViewKey = `${ManagerScope}:${ProductScope}`;
+export type FunnelEntityType =
+  | "lead"
+  | "activeDeal"
+  | "completedDeal"
+  | "unknown";
+export type PercentageContext = {
+  value: number;
+  percentage: number;
+  denominator: number;
+  basis: string;
+};
+export type FunnelMetrics = {
+  leads: number;
+  activeDeals: number;
+  completedDeals: number;
+  allDeals: number;
+  leadShare: number;
+  completedShareOfDeals: number;
+  completedAmount: number;
+  completedOd: number;
+  completedAmountFilled: number;
+  completedOdFilled: number;
+};
+export type RegistryRecord = {
+  offerId: string;
+  dealId: string;
+  client: string;
+  product: string;
+  manager: string;
+  beforeProduct: string;
+  afterProduct: string;
+  beforeManager: string;
+  afterManager: string;
+  beforeStage: string;
+  afterStage: string;
+  entityType: FunnelEntityType;
+  change: string;
+  amount: number;
+  od: number;
+  stageDays: number;
+  comment: string;
+  isComplexDeal: boolean;
+};
+export type SourceProvenance = {
+  id: string;
+  file: string;
+  path: string;
+  asOf: string;
+  rows: number;
+  sha256: string;
+  partial: boolean;
+};
+export type MetricDefinition = Record<string, string>;
+export type DeltaRow = {
+  name: string;
+  before: number;
+  after: number;
+  delta: number;
+};
+export type ComplexDealGroup = {
+  name: string;
+  products: string[];
+};
+export type ComplexDealSnapshot = {
+  count: number;
+  share: number;
+  groups: [string, number][];
+};
+export type ComplexDealMovement = {
+  baseCount: number;
+  targetCount: number;
+  net: number;
+  baseShare: number;
+  targetShare: number;
+  shareDeltaPp: number;
+  retainedCount: number;
+  progressed: number;
+  progressRate: number;
+  enteredCount: number;
+  exitedCount: number;
+  productContributions: DeltaRow[];
+  groupContributions: DeltaRow[];
+};
+export type EvidenceRecord = {
+  offerId: string;
+  client: string;
+  clientInn: string;
+  product: string;
+  manager: string;
+  change: string;
+  beforeStage: string;
+  afterStage: string;
+  amount: number;
+  trigger: string;
+  comment: string;
+  isComplexDeal: boolean;
+};
+export type JulyActivity = {
+  manager: string;
+  role: string;
+  clients: number;
+  meetings: number;
+  uniqueMeetings: number;
+  coverage: number;
+  uniqueCoverage: number;
+};
+export type MoodQuestion = {
+  id: "week" | "model" | "clientTime" | "leads";
+  label: string;
+  answered: number;
+  mean: number;
+  highShare: number;
+  distribution: Record<"1" | "2" | "3", number>;
+};
+export type MoodSurvey = {
+  asOf: string;
+  invitations: number;
+  uniqueInvited: number;
+  responseRows: number;
+  uniqueRespondents: number;
+  completed: number;
+  partial: number;
+  responseRate: number;
+  uniqueResponseRate: number;
+  overallMean: number;
+  questions: MoodQuestion[];
+  waves: { week: string; invitations: number; responses: number; mean: number }[];
+  canMatchManagers: boolean;
+  linkageNote: string;
+};
+export type ManagerPerformance = {
+  name: string;
+  before: number;
+  after: number;
+  delta: number;
+  retained: number;
+  progressed: number;
+  progressRate: number;
+  complexDealBefore: number;
+  complexDealAfter: number;
+  complexDealDelta: number;
+  complexDealRetained: number;
+  complexDealProgressed: number;
+  complexDealProgressRate: number;
+  newCount: number;
+  goneCount: number;
+  retentionRate: number;
+  leads: number;
+  activeDeals: number;
+  completedDeals: number;
+  completedDelta: number;
+  stoppedOver90: number;
+  stuckRate: number;
+  ageMedian: number;
+  stageDaysMedian: number;
+  topProducts: [string, number][];
+  reliability: "Высокая" | "Средняя" | "Ограниченная";
+  isPilot: boolean;
+  meetings?: JulyActivity;
+};
+export type PortfolioTurnover = {
+  newCount: number;
+  goneCount: number;
+  retainedCount: number;
+  retentionRate: number;
+  replacementRate: number;
+  net: number;
+};
+export type NormalizedMovement = {
+  days: number;
+  progressed: number;
+  progressRate: number;
+  ratePer30Days: number;
+};
+export type DeepSignal = {
+  id: string;
+  type: "Факт" | "Аномалия" | "Вероятное объяснение" | "Ограничение данных";
+  severity: "growth" | "risk" | "attention";
+  title: string;
+  value: string;
+  explanation: string;
+  action: string;
+  evidenceFilter?: string;
+};
+export type SnapshotSummary = {
+  period: SnapshotPeriod;
+  asOf: string;
+  partial: boolean;
+  total: number;
+  stage: Record<string, number>;
+  products: [string, number][];
+  managers: [string, number][];
+  triggers: [string, number][];
+  triggerCodes: [string, number][];
+  saleFormats: [string, number][];
+  leaders: [string, number][];
+  labels: [string, number][];
+  hashtags: [string, number][];
+  themes: [string, number][];
+  quality: Record<string, { filled: number; coverage: number }>;
+  distribution: {
+    stageDaysMedian: number;
+    stageDaysP90: number;
+    ageDaysMedian: number;
+    ageDaysP90: number;
+    stuckOver90: number;
+    amountFilled: number;
+    amountMedian: number;
+    odFilled: number;
+    odMedian: number;
+  };
+  funnel: FunnelMetrics;
+  complexDeals: ComplexDealSnapshot;
+  topAmountEvidence: EvidenceRecord[];
+  topStaleEvidence: EvidenceRecord[];
+};
+export type ComparisonSummary = {
+  key: ComparisonKey;
+  base: SnapshotPeriod;
+  target: SnapshotPeriod;
+  baseTotal: number;
+  targetTotal: number;
+  net: number;
+  newCount: number;
+  retainedCount: number;
+  goneCount: number;
+  changedStage: number;
+  changedProduct: number;
+  changedManager: number;
+  changedLeader: number;
+  stageTransitions: { from: string; to: string; count: number }[];
+  productContributions: DeltaRow[];
+  stageContributions: DeltaRow[];
+  managerContributions: DeltaRow[];
+  formatContributions: DeltaRow[];
+  triggerContributions: DeltaRow[];
+  managerPerformance: ManagerPerformance[];
+  meetingRelation: {
+    matchedManagers: number;
+    correlationWithProgressed: number;
+    note: string;
+  };
+  evidence: EvidenceRecord[];
+  funnelMovement: {
+    leadToDeal: number;
+    completedTransitions: number;
+    backwardTransitions: number;
+    stoppedOver90: number;
+    leadConversionBase: number;
+    completionBase: number;
+  };
+  portfolioTurnover: PortfolioTurnover;
+  normalizedMovement: NormalizedMovement;
+  complexDealMovement: ComplexDealMovement;
+  concentration: { topFiveProductDelta: number; topFiveManagerDelta: number };
+  registryUrl: string;
+  registryCount: number;
+};
+export type AnalyticsView = {
+  managerScope: ManagerScope;
+  productScope: ProductScope;
+  snapshots: Record<SnapshotPeriod, SnapshotSummary>;
+  comparisons: Record<ComparisonKey, ComparisonSummary>;
+};
+export type AnalyticsDataset = {
+  generatedAt: string;
+  provenance: SourceProvenance[];
+  definitions: MetricDefinition;
+  defaultView: AnalyticsViewKey;
+  fotProduct: string;
+  complexDealGroups: ComplexDealGroup[];
+  pilotManagers: string[];
+  views: Record<AnalyticsViewKey, AnalyticsView>;
+  july: JulyActivity[];
+  moodSurvey: MoodSurvey;
+};
+export type ManagementSignal = {
+  id: string;
+  type: "Факт" | "Вероятное объяснение" | "Комментарий из данных";
+  severity: "growth" | "risk" | "attention";
+  confidence: "Высокая" | "Средняя" | "Ограниченная";
+  title: string;
+  fact: string;
+  interpretation: string;
+  action: string;
+  evidence: EvidenceRecord[];
+};

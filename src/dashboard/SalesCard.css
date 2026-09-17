@@ -1,0 +1,221 @@
+.page-overview .sales-card {
+  --sales-pilot: #00855e;
+  --sales-nonpilot: #5746d8;
+  --chart-sheen-cycle: 15s;
+  padding: 20px 18px 16px;
+  color: #191c22;
+  background: #fff;
+  border-color: #e3e5ea;
+  box-shadow: none;
+  container-type: inline-size;
+  position: relative;
+  isolation: isolate;
+}
+.sales-card .sales-heading { display: flex; align-items: center; gap: 10px; }
+.sales-card .sales-heading h2 { margin: 0; font-size: 21px; font-weight: 600; line-height: 1.2; letter-spacing: -.025em; }
+.funnel-heading-copy { min-width: 0; background: #fff; }
+.funnel-heading-copy p { margin: 4px 0 0; color: #656871; font-size: 12px; line-height: 1.4; font-weight: 400; }
+.sales-card .sales-glyph { width: 34px; height: 38px; padding: 0; flex: none; display: grid; place-items: center; border: 0; background: transparent; color: var(--sales-pilot); cursor: pointer; border-radius: 8px; }
+.sales-card .sales-open { display: grid; place-items: center; width: 38px; height: 38px; flex: none; margin-left: auto; border: 1px solid #e3e5ea; border-radius: 10px; color: #434751; transition: background 160ms ease, color 160ms ease; }
+.sales-card .sales-period { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin: 22px 0 14px; font-size: 14px; color: #656871; }
+.sales-card .sales-period strong { font-weight: 500; color: #333740; font-size: 16px; }
+.sales-card .sales-totals { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.sales-card .sales-totals[data-groups="1"] { grid-template-columns: 1fr; }
+.sales-card .sales-total { min-width: 0; }
+:is(.sales-card, .supplemental-card) .sales-group { display: flex; align-items: center; gap: 7px; font-size: 16px; font-weight: 500; }
+:is(.sales-card, .supplemental-card) .sales-group i { width: 9px; height: 9px; border-radius: 3px; background: var(--series-color); }
+.sales-card .sales-pilot { --series-color: var(--sales-pilot); --series-wash: #dff6ed; }
+.sales-card .sales-nonpilot { --series-color: var(--sales-nonpilot); --series-wash: #ece9ff; }
+:is(.sales-card, .supplemental-card) .sales-number { display: block; font-size: 40px; line-height: 1.25; font-weight: 650; letter-spacing: -.035em; font-variant-numeric: tabular-nums; white-space: nowrap; margin-top: 4px; }
+.sales-card .sales-number-missing { color: #72757f; }
+.quarter-number { display: inline-block; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.quarter-number number-flow-react { vertical-align: baseline; --number-flow-mask-height: .08em; --number-flow-mask-width: .05em; }
+:is(.sales-card, .supplemental-card) .sales-change { height: 34px; display: flex; align-items: center; margin-top: 3px; }
+:is(.sales-card, .supplemental-card) .sales-delta { display: inline-flex; font-size: 20px; font-weight: 600; line-height: 1.3; letter-spacing: -.025em; padding: 2px 7px; border-radius: 6px; }
+:is(.sales-card, .supplemental-card) .sales-delta.up { color: #006b47; background: #e1f7ec; }
+:is(.sales-card, .supplemental-card) .sales-delta.down { color: #ad372b; background: #fff0eb; }
+:is(.sales-card, .supplemental-card) .sales-delta.neutral { color: #53565f; background: #f0f1f4; }
+.sales-card .sales-unavailable { color: #666973; font-size: 13px; line-height: 1.25; }
+.sales-card .sales-plot { --plot-height: 142px; position: relative; isolation: isolate; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-top: 22px; }
+/* A single zero baseline joins the three quarter groups. Quiet guides belong
+   to the count plot only, never the captions or portfolio percentages. */
+.sales-card .sales-plot::before {
+  content: ""; position: absolute; inset: 0 0 auto; height: var(--plot-height);
+  background-image: linear-gradient(#e3e7ec, #e3e7ec), linear-gradient(#e3e7ec, #e3e7ec);
+  background-size: 100% 1px; background-position: top, center; background-repeat: no-repeat;
+  z-index: -1; pointer-events: none;
+}
+.sales-card .sales-plot::after {
+  content: ""; position: absolute; top: var(--plot-height); left: 0; right: 0;
+  height: 2px; background: #c6ced8; border-radius: 1px;
+  pointer-events: none;
+}
+.sales-card .sales-quarter { border: 0; padding: 0 3px; background: transparent; color: inherit; cursor: pointer; min-width: 0; border-radius: 8px; }
+.sales-card .sales-bars { display: flex; gap: 5px; justify-content: center; }
+.sales-card .sales-bar-column { display: flex; flex-direction: column; flex: 1; min-width: 0; max-width: 76px; }
+.sales-card .sales-track { display: block; height: var(--plot-height); position: relative; background: color-mix(in srgb, var(--series-wash) 60%, transparent); border-radius: 10px 10px 3px 3px; overflow: hidden; }
+.sales-card .sales-track.is-missing { background: #f5f5f8; border: 1px dashed #d8dae2; }
+.sales-card .sales-fill { position: absolute; inset: 0; background: var(--series-color); transition: clip-path 250ms var(--ease-out), opacity 160ms ease; }
+/* The data fill clips its decorative light: no shine on empty tracks, labels,
+   missing values or the neighbouring meetings chart. */
+.metric-sales .sales-fill::after {
+  content: ""; position: absolute; inset-block: 0; left: 0; width: 70%;
+  pointer-events: none; opacity: 0;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / .6), transparent);
+  animation: sales-bar-light var(--chart-sheen-cycle) linear infinite;
+  animation-play-state: paused;
+}
+.metric-sales:has(.sales-glyph[data-motion="running"]) .sales-fill::after { animation-play-state: running; }
+.metric-sales .sales-quarter:nth-child(2) .sales-fill::after { animation-delay: .25s; }
+.metric-sales .sales-quarter:nth-child(3) .sales-fill::after { animation-delay: .5s; }
+@keyframes sales-bar-light {
+  0%, 3.333% { transform: translateX(-200%) skewX(-18deg); opacity: 0; }
+  5.333% { opacity: .85; }
+  16% { transform: translateX(400%) skewX(-18deg); opacity: .85; }
+  18.333%, 100% { transform: translateX(400%) skewX(-18deg); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .metric-sales .sales-fill::after { display: none; animation: none; }
+}
+.sales-card .sales-bar-value { display: block; padding: 9px 0 8px; font-size: 16px; letter-spacing: -.035em; font-weight: 600; color: var(--series-color); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.sales-card .sales-quarter-label { display: block; padding: 7px 2px; font-size: 16px; font-weight: 500; border-radius: 8px; color: #5c606b; transition: color 180ms ease, background 180ms ease; }
+.sales-card .sales-quarter.is-selected .sales-quarter-label { background: #20242e; color: white; }
+.sales-card .sales-notes { margin-top: auto; padding-top: 15px; display: flex; flex-direction: column; gap: 3px; color: #656871; font-size: 13px; line-height: 1.4; }
+.sales-card :is(button, a):focus-visible { outline: 2px solid #5746d8; outline-offset: 3px; }
+@media (hover: hover) and (pointer: fine) {
+  .sales-card .sales-open:hover { background: #20242e; color: white; }
+  .sales-card .sales-quarter:not(.is-selected):hover .sales-quarter-label { background: #eff0f5; color: #191c22; }
+  .sales-card .sales-quarter:hover .sales-fill { opacity: .85; }
+}
+@container (max-width: 320px) {
+  .sales-card .sales-heading h2 { font-size: 20px; }
+  :is(.sales-card, .supplemental-card) .sales-number { font-size: 36px; }
+  .sales-card .sales-bar-value { font-size: 15px; }
+  .sales-card .sales-totals { gap: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-overview .sales-card::before { animation: none; transform: none; }
+  .sales-card *, .sales-card *::before { transition: none !important; animation: none !important; }
+}
+html[data-input="keyboard"] .sales-card * { transition: none !important; }
+
+.funnel-stages { display: flex; gap: 3px; padding: 4px; border-radius: 10px; background: #eff0f5; margin-top: 20px; }
+.funnel-stages button { flex: 1; min-width: 0; min-height: 40px; border: 0; padding: 7px 5px; border-radius: 8px; background: transparent; color: #555b67; font-size: 14px; font-weight: 500; }
+.funnel-stages button[aria-pressed="true"] { color: #fff; background: #20242e; }
+.sales-card.funnel-card .sales-period { margin-top: 16px; }
+.funnel-unit { display: block; color: #555b67; font-size: 14px; margin-top: 1px; }
+.funnel-absolute { margin-top: 10px; color: #3f4550; font-size: 14px; line-height: 1.5; }
+.funnel-absolute strong { color: #20242e; font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.funnel-absolute > span { white-space: nowrap; color: #656871; }
+.funnel-chart-heading { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 12px; margin-top: 22px; font-size: 14px; color: #555b67; }
+.funnel-legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; }
+.funnel-legend > span { display: flex; align-items: center; gap: 5px; }
+.funnel-legend i { width: 18px; height: 8px; border-radius: 2px; background: linear-gradient(90deg, #00855e 50%, #5746d8 50%); }
+.funnel-legend .funnel-key-activation { background: linear-gradient(90deg, #75c9ab 50%, #b0a5ed 50%); }
+.sales-card.funnel-card .sales-plot { margin-top: 12px; }
+.sales-card .sales-fill.funnel-fill { inset: auto 0 0; transition: height 240ms ease, bottom 240ms ease; }
+.sales-pilot .funnel-activation { background: #75c9ab; }
+.sales-nonpilot .funnel-activation { background: #b0a5ed; }
+@container (max-width: 360px) {
+  .funnel-stages button { font-size: 13px; }
+  .funnel-absolute > span { display: block; }
+  .sales-card.funnel-card .sales-period { flex-wrap: wrap; }
+}
+
+.sales-card .complex-shares { margin-top: 10px; padding-top: 8px; border-top: 1px solid #edf0f3; }
+.sales-card .complex-shares h3 { margin: 0 0 6px; font-size: 14px; font-weight: 500; color: #555963; }
+.sales-card .complex-share { display: flex; align-items: baseline; flex-wrap: wrap; gap: 3px 6px; min-width: 0; }
+.sales-card .complex-share > strong { font-size: 26px; line-height: 1.2; letter-spacing: -.025em; font-weight: 600; color: var(--series-color); font-variant-numeric: tabular-nums; }
+.sales-card .complex-share .sales-delta { font-size: 14px; padding: 1px 5px; white-space: nowrap; }
+.sales-card.complex-card .sales-period { margin-top: 16px; }
+.sales-card.complex-card .sales-plot { --plot-height: 108px; margin-top: 18px; }
+.sales-card.complex-card .sales-bar-value { padding-bottom: 0; }
+.sales-card .complex-bar-share { color: var(--series-color); font-size: 15px; font-weight: 500; line-height: 1.5; letter-spacing: -.025em; padding-bottom: 7px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+/* Each ring has its own complete 100% portfolio; the cohorts are not slices
+   of one combined total. The visible figures carry the exact values. */
+.page-overview .metrics-grid > .complex-card > .complex-rings { grid-row: 4; margin-top: 14px; display: flex; flex-direction: column; min-width: 0; }
+.complex-rings h3 { margin: 0; font-size: 14px; font-weight: 500; color: #555963; }
+.complex-rings-body { display: grid; grid-template-columns: minmax(108px, .9fr) minmax(160px, 1fr); align-items: center; gap: 16px; flex: 1; width: 100%; max-width: 400px; margin-inline: auto; }
+.complex-ring-values { grid-column: 2; grid-row: 1; display: flex; flex-direction: column; gap: 16px; }
+.sales-card .complex-ring-values .complex-share { display: flex; flex-direction: row; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
+.complex-ring-values .complex-share + .complex-share { padding-top: 14px; border-top: 1px solid #edf0f3; }
+.complex-ring-name { display: flex; flex-basis: 100%; align-items: center; gap: 6px; font-size: 14px; font-weight: 500; }
+.complex-ring-name i { width: 7px; height: 7px; border-radius: 2px; background: var(--series-color); }
+.complex-ring-chart { grid-column: 1; grid-row: 1; display: block; width: 100%; max-width: 220px; max-height: 220px; justify-self: center; overflow: visible; }
+@container (max-width: 300px) {
+  .complex-rings-body { grid-template-columns: minmax(95px, .75fr) minmax(0, 1fr); gap: 10px; }
+}
+.complex-ring-track { stroke: #eff0f3; stroke-linecap: round; transition: stroke-dashoffset 250ms var(--ease-out), stroke-dasharray 250ms var(--ease-out); }
+.complex-ring-fill { stroke: var(--series-color); stroke-linecap: round; transition: stroke-dashoffset 250ms var(--ease-out); }
+.complex-ring-mask { transition: stroke-dashoffset 250ms var(--ease-out); }
+/* Decorative light only: never rotate the scale or pretend the share changed.
+   The existing card motion control also pauses on visibility/reduced motion. */
+.complex-ring-sheen { opacity: 0; animation: complex-ring-light var(--chart-sheen-cycle) linear infinite; animation-play-state: paused; }
+.complex-card:has(.sales-glyph[data-motion="running"]) .complex-ring-sheen { animation-play-state: running; }
+@keyframes complex-ring-light {
+  0%, 3.333% { transform: translateX(-100px) skewX(-18deg); opacity: 0; }
+  5.333% { opacity: .85; }
+  16% { transform: translateX(240px) skewX(-18deg); opacity: .85; }
+  18.333%, 100% { transform: translateX(240px) skewX(-18deg); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .complex-ring-sheen { display: none; animation: none; }
+}
+.complex-ring-quarters { margin-top: 10px; }
+
+/* A single cohort leaves room for its portfolio share beside the count.
+   Comparison mode retains two unambiguous cohort columns. */
+.complex-card .sales-summary[data-groups="1"] {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.complex-card .sales-summary[data-groups="1"] .complex-shares {
+  margin: 0;
+  padding: 0 0 0 16px;
+  border-top: 0;
+  border-left: 1px solid #edf0f3;
+}
+.complex-card .sales-summary[data-groups="1"] .complex-share {
+  flex-direction: column;
+  gap: 8px;
+}
+.complex-card .sales-summary[data-groups="1"] .complex-share > strong { font-size: 32px; }
+
+/* Shared content tracks, not equal-height shells. The optional share row sizes
+   itself from real content; neither card guesses the other card's text height. */
+@media (min-width: 981px) {
+  .metrics-grid:has(.complex-card) > .metric-card { grid-row: span 6; }
+  .page-overview .metrics-grid:has(.complex-card) > .sales-card {
+    display: grid;
+    container-type: normal;
+    grid-template-rows: subgrid;
+    row-gap: 0;
+  }
+  .metrics-grid:has(.complex-card) .sales-heading { grid-row: 1; align-self: start; }
+  .metrics-grid:has(.complex-card) .sales-period { grid-row: 2; margin: 20px 0 14px; }
+  .metrics-grid:has(.complex-card) .sales-summary { grid-row: 3 / span 2; display: grid; grid-template-rows: subgrid; row-gap: 0; }
+  .metrics-grid:has(.complex-card) .sales-summary > .sales-totals { grid-row: 1; align-self: start; }
+  .metrics-grid:has(.complex-card) .complex-shares { grid-row: 2; align-self: start; }
+  .metrics-grid:has(.complex-card) .sales-plot { grid-row: 5; margin-top: 18px; align-self: start; }
+  .metrics-grid:has(.complex-card) .sales-notes { grid-row: 6; align-self: end; }
+  .metrics-grid:has(.complex-card) .sales-plot { --plot-height: 128px; }
+  .metrics-grid:has(.complex-card) .sales-bar-caption { display: block; min-height: 53px; }
+  .metrics-grid:has(.complex-card) .sales-bar-value { padding: 6px 0 0; line-height: 1.4; }
+  .metrics-grid:has(.complex-card) .complex-bar-share { display: block; padding: 0; line-height: 1.4; }
+
+  .metrics-grid:has(.complex-card .sales-summary[data-groups="1"]) > .metric-card { grid-row: span 5; }
+  .metrics-grid:has(.complex-card .sales-summary[data-groups="1"]) .sales-summary {
+    grid-row: 3;
+    grid-template-rows: auto;
+  }
+  .metrics-grid:has(.complex-card .sales-summary[data-groups="1"]) .complex-shares { grid-row: 1; }
+  .metrics-grid:has(.complex-card .sales-summary[data-groups="1"]) .sales-plot { grid-row: 4; }
+  .metrics-grid:has(.complex-card .sales-summary[data-groups="1"]) .sales-notes { grid-row: 5; }
+}
+/* The funnel adds its own stage control; inherited cross-card subgrid rows
+   must not auto-place that control below the plot. */
+.page-overview .metrics-grid:has(.metric-sales) > .sales-card.funnel-card { display: flex; flex-direction: column; container-type: inline-size; }
+.page-overview .metrics-grid .funnel-card .sales-summary { display: block; }
+.page-overview .metrics-grid .funnel-card .sales-plot { align-self: stretch; margin-top: 12px; }

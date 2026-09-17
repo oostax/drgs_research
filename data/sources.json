@@ -1,0 +1,21 @@
+{
+  "year": 2026,
+  "roster": "/Users/sergey/Downloads/штат.xlsx",
+  "branches": "/Users/sergey/Downloads/кластеризация ГОСБ_2025-2026.xlsx",
+  "sales": {
+    "1": "/Users/sergey/Downloads/1 квартал.xlsx",
+    "2": "/Users/sergey/Downloads/2 квартал.xlsx",
+    "3": "/Users/sergey/Downloads/лиды и сделки в работе 3 квартал.xlsx"
+  },
+  "meetings": "/Users/sergey/Downloads/встречи 1,2,3 квартал.xlsx",
+  "surveys": "/Users/sergey/Desktop/projects/nastroenije/mood-platform/data",
+  "payroll": null,
+  "appeals": null,
+  "payrollVerifiedQuarters": [],
+  "appealsVerifiedQuarters": [],
+  "supplemental": {
+    "volume": "/Users/sergey/Downloads/Объем ФОТ (март, июль).xlsx",
+    "recipients": "/Users/sergey/Downloads/Получатели ФОТ (март, июль).xlsx",
+    "appeals": "/Users/sergey/Downloads/обращения 2025-2026_свод.xlsx"
+  }
+}

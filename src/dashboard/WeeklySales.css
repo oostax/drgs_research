@@ -1,0 +1,117 @@
+.sales-card .sales-period-label { display: flex; flex: 1; justify-content: space-between; gap: 8px; }
+.sales-card .sales-period-label { flex-direction: column; gap: 2px; }
+.sales-card .sales-period-label > span { font-size: 13px; }
+.metric-sales .sales-period-label > span[aria-hidden="true"] { visibility: hidden; }
+.sales-card .sales-mode { position: relative; isolation: isolate; display: grid; grid-template-columns: 1fr 1fr; padding: 3px; background: #eff0f4; border-radius: 8px; flex: none; }
+.sales-card .sales-mode button { border: 0; background: transparent; color: #565b65; padding: 7px 9px; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; border-radius: 6px; }
+.sales-card .sales-mode button[aria-pressed="true"] { color: #fff; }
+.sales-mode-indicator { position: absolute; top: 3px; bottom: 3px; left: 3px; width: calc(50% - 3px); border-radius: 6px; background: #20242e; z-index: -1; transition: transform 250ms var(--ease-out); }
+.weekly-context { grid-row: 2; align-self: end; padding-top: 6px; min-height: 40px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.weekly-context strong { display: inline-block; font-size: 15px; font-weight: 500; color: #565b65; line-height: 1.4; }
+.weekly-stepper { display: flex; gap: 4px; flex: none; }
+.sales-card .weekly-stepper button { display: grid; place-items: center; width: 34px; height: 34px; padding: 0; border: 1px solid #e3e5ea; border-radius: 8px; color: #434751; background: #fff; cursor: pointer; }
+.weekly-stepper button:first-child svg { transform: rotate(180deg); }
+.sales-card .weekly-stepper button:disabled { opacity: .35; cursor: default; }
+/* Both modes use the same tracks. Switching content must not resize the card,
+   its neighbour, or the headline numbers. Extra room remains available for
+   wrapped accessibility text instead of clipping it to a fixed height. */
+.page-overview .metrics-grid:has(.metric-sales) > .sales-card:is(.metric-sales, .metric-complex) {
+  display: grid;
+  grid-template-rows: auto auto minmax(114px, max-content) minmax(280px, 1fr);
+  row-gap: 0;
+  container-type: inline-size;
+}
+.page-overview .metrics-grid:has(.metric-sales) > :is(.metric-sales, .metric-complex) .sales-heading { grid-row: 1; width: 100%; align-self: start; }
+.page-overview .metrics-grid:has(.metric-sales) > :is(.metric-sales, .metric-complex) .sales-period { grid-row: 2; margin: 16px 0 10px; min-height: 44px; }
+.page-overview .metrics-grid:has(.metric-sales) > :is(.metric-sales, .metric-complex) .sales-summary { grid-row: 3; display: block; align-self: start; }
+.page-overview .metrics-grid:has(.metric-sales) > :is(.metric-sales, .metric-complex) > .sales-plot { grid-row: 4; grid-column: 1; align-self: start; width: 100%; margin-top: 18px; }
+.page-overview .metrics-grid:has(.metric-sales) > :is(.metric-sales, .metric-complex) > .sales-notes { grid-row: 5; margin-top: 0; }
+.page-overview .metrics-grid:has(.metric-sales) > .metric-sales > .weekly-notes { grid-row: 4; grid-column: 1; align-self: end; }
+.page-overview .metrics-grid:has(.complex-card .sales-summary[data-groups="1"]) > .metric-sales > .weekly-notes { grid-row: 4; }
+.page-overview .metrics-grid:has(.metric-sales) > :is(.metric-sales, .metric-complex) > .sales-plot:not(.weekly-plot) { align-self: stretch; }
+/* The plot, values and quarter controls share real tracks. Extra card height
+   goes into the data plot, not into an empty strip below its buttons. */
+.page-overview .metrics-grid:has(.metric-sales) > .metric-sales > .sales-plot:not(.weekly-plot) { --plot-height: calc(100% - 82px); grid-template-rows: minmax(0, 1fr); }
+.page-overview .metrics-grid:has(.metric-sales) > .metric-sales .sales-quarter { display: grid; grid-template-rows: minmax(0, 1fr) 38px; gap: 12px; }
+.page-overview .metrics-grid:has(.metric-sales) > .metric-sales .sales-quarter > .sales-bars { width: 100%; min-height: 0; }
+.page-overview .metrics-grid:has(.metric-sales) > .metric-sales .sales-bar-column { display: grid; grid-template-rows: minmax(0, 1fr) 32px; max-width: none; }
+.page-overview .metrics-grid:has(.metric-sales) > .metric-sales .sales-track { height: 100%; min-height: 0; }
+.page-overview .metrics-grid:has(.metric-sales) > .metric-sales .sales-bar-caption { min-height: 0; }
+.page-overview .metrics-grid:has(.metric-sales) > .metric-sales .sales-quarter-label { display: grid; place-items: center; margin: 0; padding: 0; height: 38px; width: 100%; }
+/* Funnel cards flow naturally; percentage heights need a definite plot box. */
+.page-overview .metrics-grid:has(.metric-sales) > .metric-sales.funnel-card > .sales-plot:not(.weekly-plot) {
+  --plot-height: clamp(160px, 40cqi, 220px);
+  height: calc(var(--plot-height) + 82px);
+  min-height: calc(var(--plot-height) + 82px);
+  flex-shrink: 0;
+}
+.sales-card .sales-plot.weekly-plot { display: block; margin-top: 16px; }
+.sales-card .sales-plot.weekly-plot::before, .sales-card .sales-plot.weekly-plot::after { content: none; }
+.weekly-charts { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 24px; }
+.weekly-charts[data-groups="1"] { grid-template-columns: 1fr; }
+.weekly-chart { min-width: 0; }
+.weekly-chart-frame { position: relative; height: 128px; border-bottom: 1px solid #c6ced8; margin-top: 28px; }
+.weekly-chart > .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+.weekly-columns { display: grid; position: absolute; inset: 0; gap: 0; }
+.weekly-column { position: relative; padding: 0 2px; border: 0; background: transparent; min-width: 0; cursor: pointer; border-radius: 6px; }
+.weekly-track { display: block; position: relative; height: 128px; width: 100%; }
+.weekly-track.is-missing { border-bottom: 1px dashed #a8adb8; }
+.weekly-fill { position: absolute; bottom: 0; left: 50%; width: min(100%, 16px); transform: translateX(-50%); background: #e7e9ed; border-radius: 8px; transition: background-color 160ms ease; }
+.weekly-column.is-selected .weekly-fill { background: var(--series-color); }
+.weekly-zero { position: absolute; bottom: 0; left: 1px; right: 1px; height: 2px; background: #a8adb8; }
+.weekly-column.is-selected .weekly-zero { background: var(--series-color); }
+.weekly-tick { position: absolute; bottom: -8px; left: calc(50% - 1px); width: 2px; height: 3px; border-radius: 2px; background: #a8adb8; }
+.weekly-column.is-selected .weekly-tick { background: var(--series-color); height: 5px; }
+.weekly-indicator { position: absolute; left: 0; bottom: 0; z-index: 2; pointer-events: none; display: flex; justify-content: center; transition: transform 250ms var(--ease-out), opacity 160ms ease; }
+.weekly-value-pin { position: relative; bottom: 7px; display: block; border-radius: 5px; padding: 2px 5px; background: var(--series-color); color: white; font-size: 13px; line-height: 1.4; font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; transition: transform 250ms var(--ease-out); }
+.weekly-value-pin::after { content: ""; position: absolute; bottom: -3px; left: calc(50% - 3px); width: 6px; height: 6px; background: var(--series-color); transform: rotate(45deg); }
+.weekly-average { position: absolute; inset-inline: 0; height: 0; border-top: 1px dotted #343841; z-index: 1; pointer-events: none; }
+.weekly-average > span { position: absolute; left: 0; bottom: 3px; background: #20242e; color: #fff; padding: 1px 4px; border-radius: 3px; font-size: 12px; font-weight: 500; line-height: 1.3; white-space: nowrap; }
+.weekly-axis { display: flex; justify-content: space-between; margin-top: 14px; color: #656871; font-size: 12px; font-variant-numeric: tabular-nums; }
+.sales-card .weekly-notes { gap: 7px; padding-top: 12px; }
+@media (min-width: 1201px) {
+  .page-overview .metrics-grid[data-count="2"]:has(.metric-sales) > .metric-sales {
+    grid-template-rows: auto auto minmax(114px, max-content) minmax(250px, 1fr);
+  }
+}
+.weekly-method { font-size: 12px; line-height: 1.4; color: #565b65; }
+.weekly-quarters { display: flex; gap: 4px; }
+.sales-card .weekly-quarters button { flex: 1; border: 0; padding: 7px 2px; background: transparent; color: #5c606b; font: inherit; font-size: 16px; line-height: 1.5; font-weight: 500; border-radius: 8px; cursor: pointer; }
+.sales-card .weekly-quarters button[aria-pressed="true"] { background: #20242e; color: #fff; }
+.weekly-extras { display: flex; flex-wrap: wrap; gap: 5px 10px; }
+.weekly-extras:empty { display: none; }
+.weekly-extras button { border: 0; padding: 3px 0; background: transparent; color: #565b65; font: inherit; font-size: 12px; text-align: left; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.weekly-extras button span { font-variant-numeric: tabular-nums; }
+.sales-card .weekly-extras button[aria-pressed="true"] { color: #191c22; font-weight: 600; }
+.weekly-empty { color: #565b65; font-size: 15px; min-height: 150px; }
+@media (hover: hover) and (pointer: fine) {
+  .weekly-column:not(.is-selected):hover .weekly-fill { background: #b7bdc8; }
+  .weekly-quarters button:not([aria-pressed="true"]):hover { background: #eff0f4; }
+}
+@media (max-width: 400px) {
+  .sales-card .sales-mode button { padding-inline: 7px; }
+  .weekly-charts { gap: 20px; }
+  .weekly-column { padding-inline: 1px; }
+}
+
+/* Native snapshots preserve the actual digits (including NumberFlow's shadow
+   DOM). Only this card transitions; the rest of the document never crossfades. */
+.sales-mode-transition .metric-sales { view-transition-name: sales-mode-card; }
+.sales-mode-transition .metric-sales .sales-pilot .sales-number { view-transition-name: sales-mode-pilot; }
+.sales-mode-transition .metric-sales .sales-nonpilot .sales-number { view-transition-name: sales-mode-nonpilot; }
+.sales-mode-transition::view-transition-old(root),
+.sales-mode-transition::view-transition-new(root) { animation: none; }
+.sales-mode-transition::view-transition-group(sales-mode-card),
+.sales-mode-transition::view-transition-group(sales-mode-pilot),
+.sales-mode-transition::view-transition-group(sales-mode-nonpilot) { animation-duration: 280ms; animation-timing-function: var(--ease-out); }
+.sales-mode-transition::view-transition-old(sales-mode-card),
+.sales-mode-transition::view-transition-old(sales-mode-pilot),
+.sales-mode-transition::view-transition-old(sales-mode-nonpilot) { animation: sales-mode-exit 120ms var(--ease-out) both; }
+.sales-mode-transition::view-transition-new(sales-mode-card),
+.sales-mode-transition::view-transition-new(sales-mode-pilot),
+.sales-mode-transition::view-transition-new(sales-mode-nonpilot) { animation: sales-mode-enter 240ms var(--ease-out) both; }
+@keyframes sales-mode-exit { to { opacity: 0; transform: translateY(-3px); } }
+@keyframes sales-mode-enter { from { opacity: 0; transform: translateY(3px); } }
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}

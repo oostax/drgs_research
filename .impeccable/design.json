@@ -1,0 +1,206 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-02T14:35:15.964183+00:00",
+  "title": "Design System: Результаты пилота",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "primary",
+        "canonical": "#298463",
+        "tonalRamp": [
+          "oklch(15.00% 0.0999 164.90)",
+          "oklch(26.43% 0.0999 164.90)",
+          "oklch(37.86% 0.0999 164.90)",
+          "oklch(49.29% 0.0999 164.90)",
+          "oklch(60.71% 0.0999 164.90)",
+          "oklch(72.14% 0.0999 164.90)",
+          "oklch(83.57% 0.0999 164.90)",
+          "oklch(95.00% 0.0999 164.90)"
+        ]
+      },
+      "primary-deep": {
+        "role": "primary",
+        "displayName": "primary-deep",
+        "canonical": "#1f684e",
+        "tonalRamp": [
+          "oklch(15.00% 0.0834 165.40)",
+          "oklch(26.43% 0.0834 165.40)",
+          "oklch(37.86% 0.0834 165.40)",
+          "oklch(49.29% 0.0834 165.40)",
+          "oklch(60.71% 0.0834 165.40)",
+          "oklch(72.14% 0.0834 165.40)",
+          "oklch(83.57% 0.0834 165.40)",
+          "oklch(95.00% 0.0834 165.40)"
+        ]
+      },
+      "comparison": {
+        "role": "secondary",
+        "displayName": "comparison",
+        "canonical": "#77a8ae",
+        "tonalRamp": [
+          "oklch(15.00% 0.0528 205.56)",
+          "oklch(26.43% 0.0528 205.56)",
+          "oklch(37.86% 0.0528 205.56)",
+          "oklch(49.29% 0.0528 205.56)",
+          "oklch(60.71% 0.0528 205.56)",
+          "oklch(72.14% 0.0528 205.56)",
+          "oklch(83.57% 0.0528 205.56)",
+          "oklch(95.00% 0.0528 205.56)"
+        ]
+      },
+      "complex": {
+        "role": "secondary",
+        "displayName": "complex",
+        "canonical": "#8573bf",
+        "tonalRamp": [
+          "oklch(15.00% 0.1142 293.58)",
+          "oklch(26.43% 0.1142 293.58)",
+          "oklch(37.86% 0.1142 293.58)",
+          "oklch(49.29% 0.1142 293.58)",
+          "oklch(60.71% 0.1142 293.58)",
+          "oklch(72.14% 0.1142 293.58)",
+          "oklch(83.57% 0.1142 293.58)",
+          "oklch(95.00% 0.1142 293.58)"
+        ]
+      },
+      "canvas": {
+        "role": "neutral",
+        "displayName": "canvas",
+        "canonical": "#f5f7f4",
+        "tonalRamp": [
+          "oklch(15.00% 0.0045 134.85)",
+          "oklch(26.43% 0.0045 134.85)",
+          "oklch(37.86% 0.0045 134.85)",
+          "oklch(49.29% 0.0045 134.85)",
+          "oklch(60.71% 0.0045 134.85)",
+          "oklch(72.14% 0.0045 134.85)",
+          "oklch(83.57% 0.0045 134.85)",
+          "oklch(95.00% 0.0045 134.85)"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "surface",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "oklch(15.00% 0.0000 89.88)",
+          "oklch(26.43% 0.0000 89.88)",
+          "oklch(37.86% 0.0000 89.88)",
+          "oklch(49.29% 0.0000 89.88)",
+          "oklch(60.71% 0.0000 89.88)",
+          "oklch(72.14% 0.0000 89.88)",
+          "oklch(83.57% 0.0000 89.88)",
+          "oklch(95.00% 0.0000 89.88)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "ink",
+        "canonical": "#24352f",
+        "tonalRamp": [
+          "oklch(15.00% 0.0248 170.82)",
+          "oklch(26.43% 0.0248 170.82)",
+          "oklch(37.86% 0.0248 170.82)",
+          "oklch(49.29% 0.0248 170.82)",
+          "oklch(60.71% 0.0248 170.82)",
+          "oklch(72.14% 0.0248 170.82)",
+          "oklch(83.57% 0.0248 170.82)",
+          "oklch(95.00% 0.0248 170.82)"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "line",
+        "canonical": "#e4eae3",
+        "tonalRamp": [
+          "oklch(15.00% 0.0113 141.26)",
+          "oklch(26.43% 0.0113 141.26)",
+          "oklch(37.86% 0.0113 141.26)",
+          "oklch(49.29% 0.0113 141.26)",
+          "oklch(60.71% 0.0113 141.26)",
+          "oklch(72.14% 0.0113 141.26)",
+          "oklch(83.57% 0.0113 141.26)",
+          "oklch(95.00% 0.0113 141.26)"
+        ]
+      }
+    },
+    "shadows": [
+      {
+        "name": "surface",
+        "value": "0 4px 18px #273e2e04",
+        "purpose": "Лёгкое отделение белой поверхности"
+      }
+    ],
+    "motion": [
+      {
+        "name": "number",
+        "value": "360ms ease-out",
+        "purpose": "Смена чисел; отключается при reduced motion"
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "680",
+        "value": "680px"
+      },
+      {
+        "name": "980",
+        "value": "980px"
+      },
+      {
+        "name": "1200",
+        "value": "1200px"
+      },
+      {
+        "name": "1450",
+        "value": "1450px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Фильтры",
+      "kind": "input",
+      "description": "Подписанное поле выбора",
+      "html": "<label>Роль пилота<select><option>Все роли пилота</option><option>Младшая</option></select></label>",
+      "css": "label{font:11px sans-serif;color:#636e62;display:flex;flex-direction:column;gap:7px}select{font:12px sans-serif;color:#24352f;padding:10px;border:1px solid #dfe6da;border-radius:9px;background:white}select:focus-visible{outline:3px solid #7faa89;outline-offset:4px}"
+    },
+    {
+      "name": "Навигация",
+      "kind": "nav",
+      "description": "Три страницы, выбранная на белой поверхности",
+      "html": "<nav><button aria-current=\"page\">Главная</button><button>Анализ</button><button>Карта</button></nav>",
+      "css": "nav{display:flex;gap:6px;background:#f5f7f3;padding:5px;border-radius:30px}button{border:0;background:transparent;color:#636e67;padding:10px 19px;font:13px sans-serif;cursor:pointer}button[aria-current]{background:white;border-radius:24px;color:#1f684e;box-shadow:0 2px 5px #233d3110}button:focus-visible{outline:3px solid #7faa89;outline-offset:4px}"
+    },
+    {
+      "name": "Аналитический блок",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Заголовок, единица и проверенное число",
+      "html": "<article><h2>Количество сделок</h2><p>Продуктовые предложения · все стадии</p><strong>7 229</strong><small>Пилот · III квартал</small></article>",
+      "css": "article{font:14px sans-serif;padding:28px;background:#fff;color:#24352f;border:1px solid #e4eae3;border-radius:22px;box-shadow:0 4px 18px #273e2e04}h2{font-size:17px;font-weight:550}p,small{font-size:11px;color:#636e67}strong{display:block;font-size:42px;font-weight:500;font-variant-numeric:tabular-nums}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Квартальные результаты в одном поле зрения",
+    "overview": "Светлая аналитическая поверхность с крупными числами, самостоятельными диаграммами и спокойными отступами. Референс Fikri определяет скруглённые столбцы, лёгкие направляющие и цветовые акценты. Реализованные графики учитывают смысл конкретного показателя.",
+    "keyCharacteristics": [
+      "Три квартала видны одновременно.",
+      "Постоянное цветовое соответствие групп.",
+      "Факт, гипотеза и неполные данные различимы по подписи.",
+      "Подробности раскрываются без потери контекста."
+    ],
+    "rules": [],
+    "dos": [
+      "Do сохранять цвет групп, периоды и статус достоверности на каждой странице.",
+      "Do показывать динамику только при известной базе сравнения.",
+      "Do использовать отдельную подпись для гипотезы и переход к её проверке."
+    ],
+    "donts": [
+      "Don't дорисовывать отсутствующий квартал графика или подставлять ноль вместо неизвестного.",
+      "Don't применять роль пилота к сравнительной серии непилота.",
+      "Don't заменять фактический ФОТ суммами продуктовых предложений."
+    ]
+  }
+}

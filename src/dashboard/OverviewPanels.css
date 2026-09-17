@@ -1,0 +1,145 @@
+/* Preserve the white canvas; rules and spacing separate reading tasks. */
+.page-overview .metric-card {
+  --section-rule: #e5e8ee;
+  --cohort-gap: clamp(24px, 6cqi, 40px);
+}
+.page-overview .metrics-grid:has(.metric-sales) > .metric-sales.funnel-card .sales-summary {
+  align-self: stretch;
+  width: 100%;
+}
+.page-overview .metric-card .sales-totals:has(> .sales-total),
+.page-overview .metric-card .supplemental-totals {
+  column-gap: var(--cohort-gap);
+}
+.page-overview .metric-card :is(.sales-summary, .supplemental-totals) {
+  padding-bottom: 4px;
+}
+/* Dividers sit in the existing gutter, leaving the content width intact. */
+.page-overview .metric-card .sales-totals > .sales-total,
+.page-overview .metric-card .supplemental-totals > .supplemental-total {
+  position: relative;
+}
+.page-overview .metric-card .sales-totals > .sales-total + .sales-total::before,
+.page-overview .metric-card .supplemental-totals > .supplemental-total + .supplemental-total::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  left: calc(var(--cohort-gap) / -2);
+  width: 1px;
+  background: var(--section-rule);
+  pointer-events: none;
+}
+.page-overview .metric-card .funnel-chart-heading {
+  border-top: 1px solid var(--section-rule);
+  padding-top: 18px;
+  margin-top: 20px;
+}
+.page-overview .metrics-grid > .complex-card > .complex-rings {
+  border-top: 1px solid var(--section-rule);
+  padding-top: 18px;
+  margin-top: 20px;
+}
+.page-overview .complex-card .complex-rings h3 {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: #20242e;
+}
+.page-overview .metric-card .meetings-trend {
+  border-top: 1px solid var(--section-rule);
+  padding-top: 18px;
+  margin-top: 20px;
+}
+.page-overview .metric-card .meetings-coverage {
+  border-top-color: var(--section-rule);
+  padding-top: 18px;
+  margin-top: 20px;
+}
+.page-overview .metric-card .fikri-ranking {
+  border-top: 1px solid var(--section-rule);
+  padding-top: 18px;
+  margin-top: 20px;
+}
+.page-overview .metric-card .payroll-changes { border-top-color: var(--section-rule); }
+.page-overview .mood-card :is(.mood-score-panel, .mood-heatmap) { position: relative; }
+@media (min-width: 681px) {
+  .page-overview .mood-card :is(.mood-score-panel, .mood-heatmap) + :is(.mood-score-panel, .mood-heatmap)::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -18px;
+    width: 1px;
+    background: var(--section-rule);
+    pointer-events: none;
+  }
+}
+/* When the trend is alongside totals, its separator follows the column. */
+@media (min-width: 681px) and (max-width: 1200px) {
+  .page-overview .metrics-grid[data-count="3"] .meetings-card .meetings-trend {
+    border-top: 0;
+    border-left: 1px solid var(--section-rule);
+    padding-top: 0;
+    padding-left: 18px;
+  }
+}
+@media (min-width: 1201px) {
+  .page-overview .metrics-grid[data-count="2"] .meetings-card .meetings-trend {
+    border-top: 0;
+    border-left: 1px solid var(--section-rule);
+    padding-top: 0;
+    padding-left: 14px;
+  }
+}
+@media (max-width: 680px) {
+  .page-overview .mood-card :is(.mood-score-panel, .mood-heatmap) + :is(.mood-score-panel, .mood-heatmap) {
+    border-top: 1px solid var(--section-rule);
+    padding-top: 18px;
+  }
+}
+@container (max-width: 320px) {
+  .page-overview .supplemental-card .supplemental-total + .supplemental-total::before { display: none; }
+}
+
+/* Period and comparison form one quiet, non-interactive context label. */
+.page-overview .metric-card .sales-period-label,
+.page-overview .metric-card .supplemental-period > div {
+  display: flex;
+  flex-direction: column;
+  flex: 0 1 auto;
+  align-items: flex-start;
+  width: fit-content;
+  max-width: 100%;
+  gap: 3px;
+  padding: 9px 12px;
+  border-radius: 9px;
+  background: #f2f3f6;
+}
+.page-overview .metric-card :is(.sales-period-label > strong, .supplemental-period strong) {
+  padding: 0;
+  background: transparent;
+  color: #333740;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+.page-overview .metric-card :is(.sales-period-label > span, .supplemental-period-comparison) {
+  margin: 0;
+  color: #656871;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.page-overview .metric-card :is(.appeal-current-month, .weekly-context strong) {
+  display: inline-block;
+  width: fit-content;
+  max-width: 100%;
+  padding: 7px 10px;
+  border-radius: 8px;
+  background: #f2f3f6;
+  color: #333740;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+.page-overview .metric-card .sales-period { align-items: flex-start; }

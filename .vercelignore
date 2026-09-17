@@ -1,0 +1,11 @@
+.agents/
+.base/
+.impeccable/
+.playwright-cli/
+.tmp/
+graft/
+graphify-out/
+output/
+DESIGN.md
+PRODUCT.md
+skills-lock.json

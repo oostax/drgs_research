@@ -1,0 +1,14 @@
+node_modules/
+dist/
+*.tsbuildinfo
+vite.config.js
+vite.config.d.ts
+.DS_Store
+.vercel
+.base/
+.playwright-cli/
+
+# graft's local graph cache — regenerable, not committed (run `graft build`).
+/graft/
+.cache/
+output/

@@ -1,0 +1,12 @@
+.supplemental-heading .supplemental-glyph { display: grid; place-items: center; width: 25px; height: 32px; padding: 0; flex: none; border: 0; border-radius: 6px; background: transparent; color: #00855e; cursor: pointer; }
+.supplemental-glyph path { animation: supplemental-icon-morph 6.8s cubic-bezier(.45, 0, .55, 1) infinite; }
+.supplemental-glyph-payroll path { animation-duration: 8.2s; animation-delay: -1.4s; }
+.supplemental-glyph[data-motion="paused"] path, .supplemental-glyph:focus-visible path { animation-play-state: paused; }
+.supplemental-heading .supplemental-glyph:hover { color: #006b47; background: transparent; }
+.supplemental-glyph:disabled { cursor: default; opacity: 1; }
+@keyframes supplemental-icon-morph {
+  0%, 18%, 100% { d: var(--glyph-rest); }
+  43%, 68% { d: var(--glyph-alternate); }
+  90% { d: var(--glyph-rest); }
+}
+@media (prefers-reduced-motion: reduce) { .supplemental-glyph path { animation: none; } }

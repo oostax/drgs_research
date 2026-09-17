@@ -1,0 +1,56 @@
+/* Isolated from content and hit testing. The centre stays completely blank. */
+.page-overview .metric-card { position: relative; isolation: isolate; }
+.card-ambient { position: absolute; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; border-radius: inherit; }
+.ambient-corner { position: absolute; width: 240px; height: 140px; color: #9baabb; opacity: .48; mask-image: radial-gradient(ellipse at 100% 0, #000 0%, transparent 70%); }
+.ambient-top { top: 0; right: 0; }
+.ambient-bottom { bottom: 0; left: 0; transform: rotate(180deg); width: 185px; height: 108px; opacity: .34; }
+.ambient-dot { fill: currentColor; }
+.card-ambient :is(.ambient-row, .ambient-dot, .ambient-ripple, .ambient-contour) { animation-play-state: paused; }
+.card-ambient[data-running="true"] :is(.ambient-row, .ambient-dot, .ambient-ripple, .ambient-contour) { animation-play-state: running; }
+.ambient-sales .ambient-row { animation: ambient-tide 10s cubic-bezier(.45,0,.55,1) var(--phase) infinite; }
+.ambient-complex .ambient-dot { transform-box: fill-box; transform-origin: center; animation: ambient-crystal 14s cubic-bezier(.45,0,.55,1) var(--phase) infinite; }
+.ambient-ripple { stroke: currentColor; stroke-width: 1; transform-origin: 190px 28px; animation: ambient-ripple 13s cubic-bezier(.45,0,.55,1) var(--phase) infinite; }
+.ambient-contour { stroke: currentColor; stroke-width: 1; stroke-dasharray: 2 6; animation: ambient-contour 16s cubic-bezier(.45,0,.55,1) var(--phase) infinite; }
+.ambient-appeals .ambient-row { animation: ambient-message 15s cubic-bezier(.45,0,.55,1) var(--phase) infinite; }
+.ambient-payroll .ambient-dot { transform-box: fill-box; transform-origin: center; animation: ambient-weave 18s cubic-bezier(.45,0,.55,1) var(--phase) infinite; }
+/* Explicit state rules follow animation shorthands, which reset play-state. */
+.card-ambient[data-running="false"] *, .page-overview .metric-card:has(:is(.sales-glyph, .meetings-glyph)[aria-pressed="false"]) .card-ambient * { animation-play-state: paused; }
+.page-overview .metric-card:focus-within .card-ambient * { animation-play-state: paused; }
+.page-overview .sales-card::before { content: none; }
+.page-overview .sales-card .sales-open { background-color: #fff; }
+.page-overview .sales-heading h2 { background-color: #fff; }
+@media (hover: hover) and (pointer: fine) {
+  .page-overview .sales-card .sales-open:hover { background-color: #20242e; }
+}
+@keyframes ambient-tide {
+  0%, 100% { transform: translateY(0); opacity: .65; }
+  45% { transform: translateY(5px); opacity: 1; }
+  75% { transform: translateY(-2px); opacity: .75; }
+}
+@keyframes ambient-crystal {
+  0%, 18%, 100% { rx: 1.3px; transform: rotate(0) scale(1); opacity: .7; }
+  48%, 62% { rx: .25px; transform: rotate(45deg) scale(1.3); opacity: 1; }
+}
+@keyframes ambient-ripple {
+  0%, 100% { transform: scale(.86); opacity: .3; }
+  50% { transform: scale(1.1); opacity: .8; }
+}
+@keyframes ambient-contour {
+  0%, 100% { d: path("M0 35 C60 5 80 65 140 35 S210 5 240 35"); stroke-dashoffset: 0; opacity: .65; }
+  50% { d: path("M0 35 C60 60 80 10 140 35 S210 60 240 35"); stroke-dashoffset: 16; opacity: 1; }
+}
+@keyframes ambient-message {
+  0%, 100% { transform: translateX(0); opacity: .5; }
+  50% { transform: translateX(7px); opacity: .9; }
+}
+@keyframes ambient-weave {
+  0%, 100% { transform: scaleX(1); opacity: .6; }
+  50% { transform: scaleX(2.2); opacity: .9; }
+}
+@media (max-width: 600px) {
+  .ambient-corner { width: 165px; height: 100px; opacity: .35; }
+  .ambient-bottom { width: 125px; height: 75px; opacity: .25; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .card-ambient * { animation: none !important; }
+}

@@ -1,0 +1,296 @@
+{
+  "communities": {
+    "0": [
+      "src_data_integrity_test",
+      "src_data_integrity_test_data",
+      "src_lib_format_pct",
+      "src_lib_management",
+      "src_lib_management_buildsignals",
+      "src_lib_management_confidencesummary",
+      "src_lib_management_contribution",
+      "src_types",
+      "src_types_analyticsdataset",
+      "src_types_comparisonkey",
+      "src_types_comparisonsummary",
+      "src_types_deepsignal",
+      "src_types_deltarow",
+      "src_types_evidencerecord",
+      "src_types_funnelentitytype",
+      "src_types_funnelmetrics",
+      "src_types_julyactivity",
+      "src_types_managementsignal",
+      "src_types_managerperformance",
+      "src_types_metricdefinition",
+      "src_types_normalizedmovement",
+      "src_types_percentagecontext",
+      "src_types_portfolioturnover",
+      "src_types_registryrecord",
+      "src_types_snapshotsummary",
+      "src_types_sourceprovenance"
+    ],
+    "1": [
+      "ref_dom",
+      "ref_dom_iterable",
+      "ref_es2022",
+      "ref_src",
+      "ref_webworker",
+      "tsconfig_app",
+      "tsconfig_app_compileroptions",
+      "tsconfig_app_compileroptions_allowjs",
+      "tsconfig_app_compileroptions_allowsyntheticdefaultimports",
+      "tsconfig_app_compileroptions_esmoduleinterop",
+      "tsconfig_app_compileroptions_forceconsistentcasinginfilenames",
+      "tsconfig_app_compileroptions_isolatedmodules",
+      "tsconfig_app_compileroptions_jsx",
+      "tsconfig_app_compileroptions_lib",
+      "tsconfig_app_compileroptions_module",
+      "tsconfig_app_compileroptions_moduleresolution",
+      "tsconfig_app_compileroptions_noemit",
+      "tsconfig_app_compileroptions_resolvejsonmodule",
+      "tsconfig_app_compileroptions_skiplibcheck",
+      "tsconfig_app_compileroptions_strict",
+      "tsconfig_app_compileroptions_target",
+      "tsconfig_app_compileroptions_usedefineforclassfields",
+      "tsconfig_app_include"
+    ],
+    "2": [
+      "src_app",
+      "src_app_app",
+      "src_app_contributionrows",
+      "src_app_data",
+      "src_app_evidencepanel",
+      "src_app_expandlabel",
+      "src_app_managerdetail",
+      "src_app_managerscatter",
+      "src_app_pairoptions",
+      "src_app_periodlabel",
+      "src_app_periodswitch",
+      "src_app_reliabilitytext",
+      "src_app_share",
+      "src_app_signalcard",
+      "src_app_signed",
+      "src_app_turnoverflow",
+      "src_lib_format",
+      "src_lib_format_fmt",
+      "src_lib_format_initials",
+      "src_lib_format_pctplain",
+      "src_lib_management_builddeepsignals",
+      "src_main"
+    ],
+    "3": [
+      "package",
+      "package_dependencies",
+      "package_dependencies_react",
+      "package_dependencies_react_dom",
+      "package_dependencies_typescript",
+      "package_dependencies_vite",
+      "package_dependencies_vitejs_plugin_react",
+      "package_name",
+      "package_private",
+      "package_scripts",
+      "package_scripts_build",
+      "package_scripts_dev",
+      "package_scripts_test",
+      "package_type",
+      "package_version",
+      "react",
+      "react_dom",
+      "typescript",
+      "vite",
+      "vitejs_plugin_react"
+    ],
+    "4": [
+      "counter",
+      "path",
+      "scripts_preprocess",
+      "scripts_preprocess_build_funnel_metrics",
+      "scripts_preprocess_compare",
+      "scripts_preprocess_delta_rows",
+      "scripts_preprocess_entity_type",
+      "scripts_preprocess_evidence_record",
+      "scripts_preprocess_iter_rows",
+      "scripts_preprocess_main",
+      "scripts_preprocess_percentile",
+      "scripts_preprocess_read_july",
+      "scripts_preprocess_read_snapshot",
+      "scripts_preprocess_safe_num",
+      "scripts_preprocess_sha256"
+    ],
+    "5": [
+      "jsdom",
+      "package_devdependencies",
+      "package_devdependencies_jsdom",
+      "package_devdependencies_rollup_rollup_darwin_x64",
+      "package_devdependencies_testing_library_react",
+      "package_devdependencies_types_react",
+      "package_devdependencies_types_react_dom",
+      "package_devdependencies_vitest",
+      "rollup_rollup_darwin_x64",
+      "testing_library_react",
+      "types_react",
+      "types_react_dom",
+      "vitest"
+    ],
+    "6": [
+      "ref_vite_config_ts",
+      "tsconfig_node",
+      "tsconfig_node_compileroptions",
+      "tsconfig_node_compileroptions_composite",
+      "tsconfig_node_compileroptions_module",
+      "tsconfig_node_compileroptions_moduleresolution",
+      "tsconfig_node_compileroptions_noemit",
+      "tsconfig_node_compileroptions_skiplibcheck",
+      "tsconfig_node_include"
+    ],
+    "7": [
+      "src_components_icons",
+      "src_components_icons_filtericon",
+      "src_components_icons_iconprops",
+      "src_components_icons_pulseicon",
+      "src_components_icons_searchicon",
+      "src_components_icons_trendicon",
+      "src_components_icons_uploadicon"
+    ],
+    "8": [
+      "src_components_periodvessels",
+      "src_components_periodvessels_colors",
+      "src_components_periodvessels_periodvessels",
+      "src_components_periodvessels_stagerow",
+      "src_types_snapshotperiod"
+    ],
+    "9": [
+      "tsconfig",
+      "tsconfig_files",
+      "tsconfig_references"
+    ],
+    "10": [
+      "vite_config"
+    ]
+  },
+  "cohesion": {
+    "0": 0.11076923076923077,
+    "1": 0.08695652173913043,
+    "2": 0.2077922077922078,
+    "3": 0.1,
+    "4": 0.2857142857142857,
+    "5": 0.15384615384615385,
+    "6": 0.2222222222222222,
+    "7": 0.2857142857142857,
+    "8": 0.4,
+    "9": 0.6666666666666666,
+    "10": 1.0
+  },
+  "gods": [
+    {
+      "id": "tsconfig_app_compileroptions",
+      "label": "compilerOptions",
+      "degree": 16
+    },
+    {
+      "id": "src_lib_format_fmt",
+      "label": "fmt()",
+      "degree": 14
+    },
+    {
+      "id": "src_app_app",
+      "label": "App()",
+      "degree": 8
+    },
+    {
+      "id": "scripts_preprocess_read_snapshot",
+      "label": "read_snapshot()",
+      "degree": 7
+    },
+    {
+      "id": "src_app_signed",
+      "label": "signed()",
+      "degree": 6
+    },
+    {
+      "id": "src_app_share",
+      "label": "share()",
+      "degree": 6
+    },
+    {
+      "id": "src_app_managerdetail",
+      "label": "ManagerDetail()",
+      "degree": 6
+    },
+    {
+      "id": "src_lib_format_pctplain",
+      "label": "pctPlain()",
+      "degree": 6
+    },
+    {
+      "id": "src_lib_management_builddeepsignals",
+      "label": "buildDeepSignals()",
+      "degree": 6
+    },
+    {
+      "id": "tsconfig_node_compileroptions",
+      "label": "compilerOptions",
+      "degree": 6
+    }
+  ],
+  "surprises": [
+    {
+      "source": "PeriodVessels()",
+      "target": "fmt()",
+      "source_files": [
+        "src/components/PeriodVessels.tsx",
+        "src/lib/format.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "bridges separate communities; peripheral node `PeriodVessels()` unexpectedly reaches hub `fmt()`"
+    },
+    {
+      "source": "confidenceSummary()",
+      "target": "fmt()",
+      "source_files": [
+        "src/lib/management.ts",
+        "src/lib/format.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "bridges separate communities; peripheral node `confidenceSummary()` unexpectedly reaches hub `fmt()`"
+    },
+    {
+      "source": "EvidencePanel()",
+      "target": "fmt()",
+      "source_files": [
+        "src/App.tsx",
+        "src/lib/format.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "peripheral node `EvidencePanel()` unexpectedly reaches hub `fmt()`"
+    },
+    {
+      "source": "buildSignals()",
+      "target": "fmt()",
+      "source_files": [
+        "src/lib/management.ts",
+        "src/lib/format.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "bridges separate communities"
+    },
+    {
+      "source": "buildDeepSignals()",
+      "target": "pct()",
+      "source_files": [
+        "src/lib/management.ts",
+        "src/lib/format.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "bridges separate communities"
+    }
+  ],
+  "tokens": {
+    "input": 0,
+    "output": 0
+  }
+}
