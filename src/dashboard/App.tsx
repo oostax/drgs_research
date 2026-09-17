@@ -41,6 +41,7 @@ import type { SupplementalLoad } from './SupplementalCard';
 import { isSupplemental, type Supplemental } from './supplementalModel';
 import { WelcomePage } from "./WelcomePage";
 import { SalesModelDeck } from './SalesModelDeck';
+import { NextStepsSlide } from './NextStepsSlide';
 import { PresentationSectionControls } from './PresentationSectionControls';
 import { adjacentPresentation, presentationSections } from './presentationNavigation';
 
@@ -1315,7 +1316,7 @@ export default function App() {
             onPreviousSection={() => { const destination = adjacentPresentation(c, -1); if (destination) change(destination.patch); }}
             onNextSection={() => { const destination = adjacentPresentation(c, 1); if (destination) change(destination.patch); }} />
         ) : c.modelView === "next" ? (
-          <section className="empty-presentation-section" aria-label="Раздел будет наполнен данными"><h1>Дальнейшие шаги</h1><p>Материалы раздела пока не добавлены.</p></section>
+          <NextStepsSlide />
         ) : c.page === "overview" ? (
           <Overview {...{ data, c, change, supplemental }} />
         ) : c.page === "analysis" ? (
