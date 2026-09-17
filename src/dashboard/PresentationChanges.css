@@ -1,12 +1,12 @@
 /* Slide 3: presentation-scale copy, independent of the dashboard's small body type. */
-.sales-deck.is-responsive .deck-changes .change-columns { flex: 1 0 auto; min-height: min-content; }
-.sales-deck.is-responsive .deck-changes .change-columns section { min-height: min-content; }
+.sales-deck.is-responsive .deck-changes .change-columns { flex: 1 0 auto; min-height: auto; }
+.sales-deck.is-responsive .deck-changes .change-columns section { min-height: auto; }
 .sales-deck.is-responsive .deck-changes .change-columns ol {
-  min-height: min-content;
-  grid-template-rows: repeat(5, minmax(min-content, 1fr));
+  min-height: auto;
+  grid-template-rows: repeat(5, 1fr);
 }
 .sales-deck.is-responsive .deck-changes .change-columns li {
-  min-height: min-content;
+  min-height: auto;
   font-size: clamp(24px, 1.65vw, 32px);
   font-weight: 450;
   line-height: 1.32;
