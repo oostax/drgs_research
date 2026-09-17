@@ -1,0 +1,21 @@
+/* Fitting is atomic, not an animation. Keep authored slide/icon motion separate. */
+.sales-deck.is-responsive .deck-fit-content { transition: none; }
+.sales-deck.is-responsive .deck-stage[data-fit-ready='false'] .deck-fit-content { visibility: hidden; }
+.sales-deck.is-responsive .deck-stage[data-fit-ready='false'],
+.sales-deck.is-responsive .deck-stage[data-fit-ready='false'] *,
+.sales-deck.is-responsive .deck-stage[data-fit-ready='false'] *::before,
+.sales-deck.is-responsive .deck-stage[data-fit-ready='false'] *::after { animation-play-state: paused !important; }
+/* Never shrink a role row below its text. The whole slide is fitted instead.
+   In particular, the four-line AKM rule must determine its white card's height. */
+.sales-deck.is-responsive .assignment-roles {
+  flex: 1 0 auto;
+  min-height: min-content;
+  grid-template-rows: repeat(2, minmax(min-content, auto));
+  grid-auto-rows: minmax(min-content, auto);
+}
+.sales-deck.is-responsive .assignment-role {
+  min-height: min-content;
+  grid-template-rows: max-content minmax(min-content, 1fr);
+}
+.sales-deck.is-responsive .deck-table-slide > h2,
+.sales-deck.is-responsive .table-note { flex: 0 0 auto; }

@@ -1,17 +1,17 @@
 name: Presentation regression
 on:
   push:
-    branches: [master]
+    branches: [master, fix/presentation-stability]
     paths:
       - 'src/**'
-      - 'scripts/presentation-review.mjs'
+      - 'scripts/presentation-*.mjs'
       - 'package.json'
       - 'pnpm-lock.yaml'
       - '.github/workflows/presentation-review.yml'
   pull_request:
     paths:
       - 'src/**'
-      - 'scripts/presentation-review.mjs'
+      - 'scripts/presentation-*.mjs'
       - 'package.json'
       - 'pnpm-lock.yaml'
       - '.github/workflows/presentation-review.yml'
@@ -35,17 +35,20 @@ jobs:
       - name: Install locked dependencies
         run: pnpm install --frozen-lockfile --force
       - name: Unit tests and production build
+        shell: bash
         run: |
+          set -euo pipefail
           mkdir -p review-artifacts
           pnpm test 2>&1 | tee review-artifacts/unit-tests.txt
           pnpm build 2>&1 | tee review-artifacts/build.txt
-      - name: Browser, gesture and layout regression
+      - name: Browser, gesture, first-paint and layout regression
         run: |
           npm install --prefix /tmp/presentation-browser --no-package-lock playwright@1.55.1
           /tmp/presentation-browser/node_modules/.bin/playwright install --with-deps chromium webkit
           pnpm exec vite preview --host 127.0.0.1 --port 4176 > /tmp/presentation-preview.log 2>&1 &
           for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4176/ > /dev/null && break; sleep 1; done
           node scripts/presentation-review.mjs
+          node scripts/presentation-stability-review.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:

@@ -1,4 +1,26 @@
 import { type ReactNode, type RefObject, useLayoutEffect, useRef } from "react";
+import "./PresentationStability.css";
+
+const fontSpecs = [400, 500, 600, 700].map(weight => `${weight} 16px "Golos Text"`);
+let pendingFonts: Promise<void> | undefined;
+let fontsSettled = false;
+
+/** Load every slide weight before revealing a layout measured with its final font metrics. */
+function presentationFonts(): Promise<void> | undefined {
+  if (!document.fonts || fontsSettled) return;
+  if (fontSpecs.every(font => document.fonts.check(font, "Модель продаж"))) return;
+  return pendingFonts ??= Promise.all(fontSpecs.map(font =>
+    document.fonts.load(font, "Модель продаж").catch(() => []),
+  )).then(() => document.fonts.ready).then(() => { fontsSettled = true; });
+}
+
+function syncPresentationHeight(element: HTMLElement | null) {
+  if (!element || (window.visualViewport && window.visualViewport.scale > 1.01)) return;
+  const header = document.querySelector<HTMLElement>(".pulse-header");
+  const height = window.visualViewport?.height ?? window.innerHeight;
+  const value = `${Math.max(120, height - (header?.offsetHeight ?? 0))}px`;
+  if (element.style.getPropertyValue("--deck-height") !== value) element.style.setProperty("--deck-height", value);
+}
 
 /** Use the real header height, including wrapping, orientation and browser toolbar changes. */
 export function usePresentationHeight(ref: RefObject<HTMLElement | null>) {
@@ -6,11 +28,7 @@ export function usePresentationHeight(ref: RefObject<HTMLElement | null>) {
     const element = ref.current;
     if (!element) return;
     const header = document.querySelector<HTMLElement>(".pulse-header");
-    const update = () => {
-      if (window.visualViewport && window.visualViewport.scale > 1.01) return;
-      const height = window.visualViewport?.height ?? window.innerHeight;
-      element.style.setProperty("--deck-height", `${Math.max(120, height - (header?.offsetHeight ?? 0))}px`);
-    };
+    const update = () => syncPresentationHeight(element);
     update();
     const observer = typeof ResizeObserver !== "undefined" ? new ResizeObserver(update) : null;
     if (header) observer?.observe(header);
@@ -24,7 +42,7 @@ export function usePresentationHeight(ref: RefObject<HTMLElement | null>) {
   }, [ref]);
 }
 
-/** Reflow at the available width, then contain the entire slide without cropping. */
+/** Complete fitting before paint; only a real viewport change may refit a visible slide. */
 export function PresentationFrame({ children, className = "", hidden, slide }: {
   children: ReactNode; className?: string; hidden?: boolean; slide: number;
 }) {
@@ -33,17 +51,20 @@ export function PresentationFrame({ children, className = "", hidden, slide }: {
   useLayoutEffect(() => {
     const outer = frame.current, inner = content.current;
     if (!outer || !inner) return;
-    let disposed = false;
+    let disposed = false, fontsReady = false;
+    let lastWidth = -1, lastHeight = -1;
     const fit = () => {
-      if (disposed || !outer.clientWidth || !outer.clientHeight) return;
+      if (disposed || !fontsReady) return;
+      // Child layout effects run first. Resolve header + deck geometry here too, not
+      // one paint later in the parent's effect or its ResizeObserver notification.
+      syncPresentationHeight(outer.closest<HTMLElement>(".sales-deck"));
       const width = outer.clientWidth, height = outer.clientHeight;
+      if (!width || !height || (width === lastWidth && height === lastHeight)) return;
       const measure = (scale: number) => {
         inner.style.width = `${width / scale}px`;
         inner.style.setProperty("--slide-available-height", `${height / scale}px`);
         return inner.offsetHeight * scale;
       };
-      // Keep the full width when fitting: expanding the layout first avoids a tiny,
-      // narrow column with unused margins on phones. Search for the largest legible scale.
       let scale = 1;
       if (measure(1) > height + .5) {
         let low = .15, high = 1;
@@ -56,17 +77,22 @@ export function PresentationFrame({ children, className = "", hidden, slide }: {
       }
       measure(scale);
       inner.style.setProperty("--slide-scale", String(scale));
+      lastWidth = width;
+      lastHeight = height;
       inner.style.visibility = "visible";
+      outer.dataset.fitReady = "true";
     };
-    fit();
+    const reveal = () => { if (!disposed) { fontsReady = true; fit(); } };
+    const fonts = presentationFonts();
+    if (fonts) void fonts.then(reveal); else reveal();
+    // Never observe the element we resize: that fed our own measurement writes
+    // back into layout and could visibly refit the slide throughout its entrance.
     const observer = typeof ResizeObserver !== "undefined" ? new ResizeObserver(fit) : null;
     observer?.observe(outer);
-    observer?.observe(inner);
-    document.fonts?.ready.then(fit);
     window.addEventListener("resize", fit);
     return () => { disposed = true; observer?.disconnect(); window.removeEventListener("resize", fit); };
   }, []);
-  return <div ref={frame} className={`deck-stage ${className}`} aria-hidden={hidden || undefined} inert={hidden || undefined} data-slide={slide}>
+  return <div ref={frame} className={`deck-stage ${className}`} aria-hidden={hidden || undefined} inert={hidden || undefined} data-slide={slide} data-fit-ready="false">
     <div ref={content} className="deck-fit-content">{children}</div>
   </div>;
 }
