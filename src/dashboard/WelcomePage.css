@@ -20,8 +20,10 @@
 .welcome-panel::after { content: ''; position: absolute; width: 23%; height: 3px; top: 0; left: 6%; background: linear-gradient(90deg, #00895a, #93d444, transparent); }
 .welcome-glow { position: absolute; z-index: -1; pointer-events: none; width: 55%; height: 78%; top: 10%; right: -3%; border-radius: 50%; background: radial-gradient(ellipse, #b4edd37a, #dcf3c133 43%, transparent 68%); animation: welcome-breathe 10s ease-in-out infinite; }
 .welcome-copy { z-index: 2; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: clamp(28px,4.3vw,82px); padding-right: 0; }
-.welcome-sector { display: inline-flex; align-items: center; gap: 15px; margin-bottom: clamp(24px,3.6vh,44px); color: #286747; font-size: clamp(24px,3vw,50px); font-weight: 500; letter-spacing: -.01em; }
-.welcome-sector > span { width: 13px; height: 13px; border-radius: 50%; background: #179660; box-shadow: 0 0 0 8px #e5f3e7; flex: none; }
+.welcome-sector { position: relative; isolation: isolate; display: inline-flex; align-items: center; gap: 15px; margin-bottom: clamp(24px,3.6vh,44px); padding: .38em .68em .42em; overflow: hidden; border: 1px solid #b9dfc9; border-radius: 999px; color: #1d6b48; background: linear-gradient(105deg, #eff9f1, #dff3e6); box-shadow: inset 0 1px 0 #fff, 0 12px 28px #17644912; font-size: clamp(24px,3vw,50px); font-weight: 500; letter-spacing: -.01em; }
+.welcome-sector::after { content: ""; position: absolute; z-index: -1; inset: -15% auto -15% -42%; width: 30%; background: linear-gradient(90deg, transparent, #fff9, transparent); transform: skewX(-18deg) translateX(0); animation: welcome-badge-sheen 5.6s 1s linear infinite; }
+.welcome-sector > span { position: relative; width: 13px; height: 13px; border-radius: 50%; background: #179660; box-shadow: 0 0 0 8px #cdebd7; flex: none; }
+.welcome-sector > span::after { content: ""; position: absolute; inset: -8px; border: 1px solid #179660; border-radius: inherit; opacity: 0; transform: scale(.92); animation: welcome-sector-signal 3.4s .8s var(--ease-out) infinite; }
 .welcome-heading { font-size: clamp(42px,5.65vw,104px); line-height: 1.04; letter-spacing: -.052em; font-weight: 600; }
 .welcome-title-line { display: block; white-space: nowrap; }
 .welcome-title-accent, .welcome-heading em { color: #099a57; background: linear-gradient(100deg, #076644 0%, #11964f 27%, #4dac39 48%, #0b8851 72%, #076644 100%); background-size: 240% 100%; background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: welcome-text-light 12s ease-in-out infinite; }
@@ -72,6 +74,8 @@
 @keyframes welcome-art-reveal { from { opacity: 0; } to { opacity: 1; } }
 @keyframes welcome-nav-rise { 0%,100% { transform: translateY(1px); } 45%,65% { transform: translateY(-1px); } }
 @keyframes welcome-nav-rays { 0%,100% { opacity: .5; } 45%,65% { opacity: 1; } }
+@keyframes welcome-badge-sheen { 0%,68% { transform: skewX(-18deg) translateX(0); } 82%,100% { transform: skewX(-18deg) translateX(560%); } }
+@keyframes welcome-sector-signal { 0%,62%,100% { opacity: 0; transform: scale(.92); } 76% { opacity: .55; transform: scale(1.55); } }
 @media (max-width: 1050px) and (min-width: 681px) {
   .welcome-page { min-height: 450px; }
   .welcome-panel { grid-template-columns: 1.25fr 1fr; }
