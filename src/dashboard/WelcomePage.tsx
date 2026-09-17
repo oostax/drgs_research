@@ -91,7 +91,7 @@ export function WelcomePage({ c, change }: { c: Context; change: (patch: Partial
     if (document.fonts) {
       // Reveal text only at final font metrics; no scale-fitting or typewriter reflow.
       void Promise.all([400, 500, 600, 700].map(weight =>
-        document.fonts.load(`${weight} 16px "Golos Text"`, "Осенняя квартальная встреча КИБ").catch(() => []),
+        document.fonts.load(`${weight} 16px "Golos Text"`, "Государственный сектор Осенняя квартальная встреча КИБ").catch(() => []),
       )).then(() => document.fonts.ready).then(() => { if (!disposed) setReady(true); });
     }
     return () => { disposed = true; };
@@ -108,12 +108,14 @@ export function WelcomePage({ c, change }: { c: Context; change: (patch: Partial
     <div className="welcome-panel">
       <div className="welcome-glow" aria-hidden="true"/>
       <div className="welcome-copy">
-        <p className="welcome-sector"><span aria-hidden="true"/>Государственный сектор</p>
-        <h1 className="welcome-heading">
-          <span className="welcome-title-line welcome-title-accent">Осенняя</span>{" "}
-          <span className="welcome-title-line">квартальная</span>{" "}
-          <span className="welcome-title-line">встреча <em>КИБ</em></span>
+        <h1 className="welcome-heading" aria-label="Государственный сектор">
+          <span className="welcome-title-line">Государственный</span>
+          <span className="welcome-title-line welcome-title-accent">сектор</span>
         </h1>
+        <div className="welcome-event">
+          <span className="welcome-event-mark" aria-hidden="true"/>
+          <h2 className="welcome-event-title">Осенняя квартальная встреча <em>КИБ</em></h2>
+        </div>
         <p className="welcome-speaker"><span aria-hidden="true"/>М.Л. Чачин</p>
       </div>
       <div className="welcome-art"><WelcomeSculpture/></div>

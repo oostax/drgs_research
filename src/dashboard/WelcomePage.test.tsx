@@ -14,8 +14,8 @@ afterEach(() => {
 describe("Приветствие квартальной встречи", () => {
   it("содержит заданный текст, крупный заголовок и одну кнопку продолжения", () => {
     render(<WelcomePage c={context} change={vi.fn()} />);
-    expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Осенняя квартальная встреча КИБ");
-    expect(screen.getByText("Государственный сектор")).toBeTruthy();
+    expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Государственныйсектор");
+    expect(screen.getByRole("heading", { level: 2 }).textContent).toBe("Осенняя квартальная встреча КИБ");
     expect(screen.getByText("М.Л. Чачин")).toBeTruthy();
     expect(screen.getByText("2026")).toBeTruthy();
     expect(screen.getAllByRole("button")).toHaveLength(1);
@@ -74,7 +74,7 @@ describe("Приветствие квартальной встречи", () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("Unavailable")));
     render(<App />);
     await act(async () => { await Promise.resolve(); });
-    expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Осенняя квартальная встреча КИБ");
+    expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Государственныйсектор");
     expect(document.title).toBe("Приветствие · Пульс");
     expect(screen.queryByText("Данные недоступны")).toBeNull();
   });

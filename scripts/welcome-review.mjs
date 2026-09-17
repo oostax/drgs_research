@@ -12,7 +12,7 @@ function audit() {
   const root = document.querySelector('.welcome-panel');
   const r = root.getBoundingClientRect();
   const contains = (a,b) => b.top >= a.top - 1 && b.left >= a.left - 1 && b.right <= a.right + 1 && b.bottom <= a.bottom + 1;
-  const elements = [...root.querySelectorAll('.welcome-sector,.welcome-heading,.welcome-speaker,.welcome-footer')];
+  const elements = [...root.querySelectorAll('.welcome-heading,.welcome-event,.welcome-speaker,.welcome-footer')];
   const copyInside = elements.every(e => {
     const box = e.getBoundingClientRect();
     const range = document.createRange(); range.selectNodeContents(e);
@@ -38,7 +38,7 @@ for (const [engine,type] of [['chromium',chromium],['webkit',webkit]]) {
       assert(result.document[0] <= width + 1 && result.document[1] <= height + 1, `${engine} ${width}x${height}: page overflow ${result.document}`);
       assert(result.buttonInside, `${engine} ${width}: CTA outside viewport`);
       assert(result.fontSize >= 32, `${engine} ${width}: small title`);
-      assert.equal(result.headline,'Осенняя квартальная встреча КИБ');
+      assert.equal(result.headline,'Государственныйсектор');
       assert(result.nav.every(r=>r.left>=0 && r.right<=width+1 && r.top>=0), 'Navigation clipped');
       assert.equal(await page.getByRole('link',{name:'Приветствие',exact:true}).getAttribute('aria-current'),'page');
       assert.equal(await page.locator('.welcome-page button').count(),1);
@@ -76,7 +76,7 @@ for (const [engine,type] of [['chromium',chromium],['webkit',webkit]]) {
     const samples = [];
     for(let i=0;i<12;i++) {
       samples.push(await animated.evaluate(()=>({transform:getComputedStyle(document.querySelector('.welcome-ribbon-main')).transform,
-        layout: [...document.querySelectorAll('.welcome-copy,.welcome-heading,.welcome-sector,.welcome-speaker')].map(e=>[e.offsetTop,e.offsetLeft,e.offsetWidth,e.offsetHeight]).flat().join('|')})));
+        layout: [...document.querySelectorAll('.welcome-copy,.welcome-heading,.welcome-event,.welcome-speaker')].map(e=>[e.offsetTop,e.offsetLeft,e.offsetWidth,e.offsetHeight]).flat().join('|')})));
       await animated.waitForTimeout(400);
     }
     assert(new Set(samples.map(s=>s.transform)).size>1, 'Sculpture is not animated in keyboard mode');
