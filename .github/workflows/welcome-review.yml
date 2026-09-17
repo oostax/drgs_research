@@ -1,0 +1,61 @@
+name: Welcome page review
+on:
+  push:
+    branches: [feat/animated-welcome]
+  pull_request:
+    paths:
+      - 'src/dashboard/Welcome*'
+      - 'scripts/welcome-review.mjs'
+permissions:
+  contents: read
+concurrency:
+  group: welcome-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reproducible source snapshot
+        run: |
+          mkdir -p review-artifacts
+          git archive --format=tar.gz --output=review-artifacts/source.tgz HEAD
+      - uses: actions/upload-artifact@v4
+        with:
+          name: welcome-source
+          path: review-artifacts/source.tgz
+          retention-days: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - name: Install and test
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm install --frozen-lockfile --force
+          pnpm test 2>&1 | tee review-artifacts/tests.txt
+          pnpm build 2>&1 | tee review-artifacts/build.txt
+      - name: Browser and visual regression
+        if: ${{ hashFiles('scripts/welcome-review.mjs') != '' }}
+        run: |
+          npm install --prefix /tmp/presentation-browser --no-package-lock playwright@1.55.1
+          /tmp/presentation-browser/node_modules/.bin/playwright install --with-deps chromium webkit
+          pnpm exec vite preview --host 127.0.0.1 --port 4176 > /tmp/welcome-preview.log 2>&1 &
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4176/ > /dev/null && break; sleep 1; done
+          node scripts/welcome-review.mjs
+          node scripts/presentation-typography-review.mjs
+          node scripts/presentation-stability-review.mjs
+          node scripts/presentation-review.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: welcome-review
+          path: |
+            review-artifacts/*.txt
+            review-artifacts/*.json
+            review-artifacts/welcome
+          retention-days: 7
