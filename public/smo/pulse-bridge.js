@@ -31,6 +31,11 @@
     void content.offsetWidth;
     requestAnimationFrame(() => content.classList.add('pulse-rendering'));
   }
+  function replayDetailReveal(panel) {
+    panel.classList.remove('pulse-detail-rendering');
+    void panel.offsetWidth;
+    requestAnimationFrame(() => panel.classList.add('pulse-detail-rendering'));
+  }
   function decorate() {
     renderSequence += 1;
     document.body.dataset.pulseRender = String(renderSequence);
@@ -93,7 +98,9 @@
   const pauseMotion = () => { document.body.dataset.motionPaused = String(document.hidden); };
   document.addEventListener('visibilitychange', pauseMotion); pauseMotion();
   document.getElementById('content').addEventListener('toggle', event => {
-    if (event.target instanceof HTMLDetailsElement && event.target.open) replayReveal();
+    if (!(event.target instanceof HTMLDetailsElement)) return;
+    if (event.target.open) replayDetailReveal(event.target);
+    else event.target.classList.remove('pulse-detail-rendering');
   }, true);
   state.tab = mainView;
   render();
