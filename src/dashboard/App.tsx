@@ -1262,7 +1262,7 @@ export default function App() {
     return () => window.removeEventListener("popstate", back);
   }, [data]);
   const change: Change = (patch) => {
-    const sectionDefaults: Partial<Context> = patch.section && patch.section !== c.section
+    const sectionDefaults: Partial<Context> = patch.section && patch.smoView === undefined && (patch.section !== c.section || patch.section === "smo")
       ? {
           ...(patch.section === "smo" ? { smoView: "intro" as const } : {}),
           ...(patch.section === "sales-model" ? { modelView: "premises" as const, slide: 1 } : {}),
