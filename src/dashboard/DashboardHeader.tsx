@@ -53,7 +53,7 @@ export function DashboardHeader({ c, change }: { c: Context; change: (patch: Par
         <nav className="presentation-navigation" aria-label="Разделы презентации">
           {sections.map((section) => {
             const sectionDefaults = {
-              ...(section.id === "smo" ? { smoView: "market" as const } : {}),
+              ...(section.id === "smo" ? { smoView: "intro" as const } : {}),
               ...(section.id === "sales-model" ? { modelView: "premises" as const, slide: 1 } : {}),
               ...(section.id === "academy" ? { academyView: "essence" as const } : {}),
             };
