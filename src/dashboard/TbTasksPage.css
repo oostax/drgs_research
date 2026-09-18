@@ -11,6 +11,10 @@
 .tb-tasks-stage .tb-task-item::before,
 .tb-tasks-stage .tb-task-item::after,
 .tb-tasks-stage .premise-loop-icon svg { animation: none; }
+.tb-tasks-stage .tb-task-item { animation: premise-card-in 720ms cubic-bezier(.23,1,.32,1) both; }
+.tb-tasks-stage .tb-task-item:nth-child(2) { animation-delay: 160ms; }
+.tb-tasks-stage .tb-task-item:nth-child(3) { animation-delay: 320ms; }
+.tb-tasks-stage .tb-task-item:nth-child(4) { animation-delay: 480ms; }
 .tb-tasks-stage .premise-loop-icon { background: var(--deck-green); }
 .tb-tasks-stage .tb-task-item:nth-child(even) .premise-loop-icon { background: var(--deck-violet); }
 @media (max-width: 680px) {
