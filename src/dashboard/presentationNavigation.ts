@@ -17,7 +17,7 @@ export const presentationSections: { id: PresentationSection; label: string; sho
 ];
 export const salesModelViews: { id: SalesModelView; label: string; short: string }[] = [
   { id: "premises", label: "Предпосылки изменений", short: "Предпосылки" },
-  { id: "results", label: "Результаты", short: "Результаты" },
+  { id: "results", label: "Текущие результаты", short: "Текущие результаты" },
   { id: "next", label: "Дальнейшие шаги", short: "Далее" },
 ];
 export function normalizeSlide(value: number): number {
@@ -37,11 +37,11 @@ export function adjacentPresentation(c: Context, direction: -1 | 1): Presentatio
     if (destination) return { label: destination.label, patch: { academyView: destination.id } };
   }
   if (c.section === "sales-model") {
-    if (c.modelView === "premises" && direction === 1) return { label: "Результаты", patch: { modelView: "results", page: "overview" } };
+    if (c.modelView === "premises" && direction === 1) return { label: "Текущие результаты", patch: { modelView: "results", page: "overview" } };
     if (c.modelView === "results") return direction === 1
       ? { label: "Дальнейшие шаги", patch: { modelView: "next" } }
       : { label: "Предпосылки изменений", patch: { modelView: "premises", slide: slideTitles.length } };
-    if (c.modelView === "next" && direction === -1) return { label: "Результаты", patch: { modelView: "results", page: "overview" } };
+    if (c.modelView === "next" && direction === -1) return { label: "Текущие результаты", patch: { modelView: "results", page: "overview" } };
   }
   const section = presentationSections[presentationSections.findIndex(item => item.id === c.section) + direction];
   if (!section) return null;

@@ -22,7 +22,7 @@ describe('Общий хедер', () => {
   it('показывает подразделы только для модели продаж', () => {
     const { rerender } = render(<DashboardHeader c={defaults} change={vi.fn()} />);
     expect(screen.getByRole('navigation', { name: 'Разделы модели продаж' })).toBeTruthy();
-    expect(screen.getByRole('link', { name: 'Результаты' }).getAttribute('aria-current')).toBe('page');
+    expect(screen.getByRole('link', { name: 'Текущие результаты' }).getAttribute('aria-current')).toBe('page');
     rerender(<DashboardHeader c={{ ...defaults, section: 'academy' }} change={vi.fn()} />);
     expect(screen.queryByRole('navigation', { name: 'Разделы модели продаж' })).toBeNull();
   });

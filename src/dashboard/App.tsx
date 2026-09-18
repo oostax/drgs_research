@@ -46,6 +46,7 @@ import { isSupplemental, type Supplemental } from './supplementalModel';
 import { WelcomePage } from "./WelcomePage";
 import { SalesModelDeck } from './SalesModelDeck';
 import { NextStepsSlide } from './NextStepsSlide';
+import { TbTasksPage } from './TbTasksPage';
 import { adjacentPresentation, presentationSections } from './presentationNavigation';
 
 type Change = (patch: Partial<Context>) => void;
@@ -1344,7 +1345,9 @@ export default function App() {
       </a>
       <DashboardHeader c={c} change={change} />
       <main id="main" className={`app-main page-${c.page} section-${c.section} model-${c.modelView}`}>
-        {c.section !== "sales-model" ? (
+        {c.section === "tb-tasks" ? (
+          <TbTasksPage />
+        ) : c.section !== "sales-model" ? (
           <section className="empty-presentation-section" aria-label="Раздел будет наполнен данными"><h1>{presentationSections.find(section => section.id === c.section)?.label}</h1><p>Материалы раздела пока не добавлены.</p></section>
         ) : c.modelView === "premises" ? (
           <SalesModelDeck slide={c.slide} onSlideChange={(slide) => change({ slide })}

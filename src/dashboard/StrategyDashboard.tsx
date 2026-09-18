@@ -4,8 +4,8 @@ import "./StrategyDashboard.css";
 const SOURCE = "/strategy/client-understanding.html";
 const views = [
   { label: "Новый формат", short: "Новый формат" },
-  { label: "Текущие результаты", short: "Результаты" },
-  { label: "Что дальше?", short: "Что дальше?" },
+  { label: "Текущие результаты", short: "Текущие результаты" },
+  { label: "Дальнейшие шаги", short: "Дальнейшие шаги" },
 ];
 
 export function StrategyNavigation() {
