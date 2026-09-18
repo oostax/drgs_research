@@ -69,7 +69,7 @@ export function SmoCreditDashboard({ view, onViewChange }: { view: SmoView; onVi
   useEffect(() => {
     let active = true;
     setError(''); setReady(false);
-    loadSource().then(html => { if (active) setDocumentHtml(embeddedDocument(html, viewRef.current)); })
+    loadSource().then(html => { if (active) setDocumentHtml(embeddedDocument(html, viewRef.current === 'intro' ? 'market' : viewRef.current)); })
       .catch((reason: unknown) => { if (active) setError(reason instanceof Error ? reason.message : 'Не удалось загрузить исходный дашборд.'); });
     return () => { active = false; };
   }, [retry]);
@@ -87,15 +87,15 @@ export function SmoCreditDashboard({ view, onViewChange }: { view: SmoView; onVi
     return () => window.removeEventListener('message', receive);
   }, []);
   useEffect(() => {
-    if (ready) frame.current?.contentWindow?.postMessage({ type: 'pulse:smo', command: 'view', view }, window.location.origin);
+    if (ready) frame.current?.contentWindow?.postMessage({ type: 'pulse:smo', command: 'view', view: view === 'intro' ? 'market' : view }, window.location.origin);
   }, [view, ready]);
   useEffect(() => {
     if (!documentHtml || ready || error) return;
     const timeout = window.setTimeout(() => setError('Дашборд не завершил загрузку. Повторите открытие или используйте исходный HTML.'), 30000);
     return () => window.clearTimeout(timeout);
   }, [documentHtml, ready, error]);
-  if (view === 'intro') return <section className="smo-dashboard smo-intro" aria-label="Титульная страница Кредитования СМО"><SmoCover onOpen={() => onViewChange('market')} /></section>;
   return <section className="smo-dashboard" aria-label="Кредитование СМО">
+    {view === 'intro' && <div className="smo-cover-overlay"><SmoCover onOpen={() => onViewChange('market')} /></div>}
     <div className="smo-frame-shell" aria-busy={!ready && !error}>
       {!documentHtml && !error && <div className="smo-loading" role="status"><SmoIcon view={view}/><p>Загрузка данных кредитования</p><span>Карта, расчёты и подробные материалы</span></div>}
       {error && <div className="smo-load-error" role="alert"><h2>Материалы пока недоступны</h2><p>{error}</p><button onClick={() => { setDocumentHtml(''); setRetry(value => value + 1); }}>Повторить загрузку</button></div>}
