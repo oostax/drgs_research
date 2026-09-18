@@ -1264,7 +1264,7 @@ export default function App() {
   const change: Change = (patch) => {
     const sectionDefaults: Partial<Context> = patch.section && patch.section !== c.section
       ? {
-          ...(patch.section === "smo" ? { smoView: "market" as const } : {}),
+          ...(patch.section === "smo" ? { smoView: "intro" as const } : {}),
           ...(patch.section === "sales-model" ? { modelView: "premises" as const, slide: 1 } : {}),
           ...(patch.section === "academy" ? { academyView: "essence" as const } : {}),
         }

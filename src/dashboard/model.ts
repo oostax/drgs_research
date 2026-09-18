@@ -76,7 +76,7 @@ export function parseContext(search: string, data?: Manifest): Context {
   return normalizeMetricContext({
     section: valid("section", ["title", "smo", "sales-model", "strategy", "academy", "tb-tasks"], "sales-model"),
     modelView: valid("modelView", ["premises", "results", "next"], "results"),
-    smoView: valid("smoView", ["market", "structure", "risk"] as const, "market"),
+    smoView: valid("smoView", ["intro", "market", "structure", "risk"] as const, "intro"),
     ...(p.get("section") === "academy" || p.has("academyView") ? { academyView: valid("academyView", ["essence", "results", "next"] as const, "essence") } : {}),
     slide: normalizeSlide(Number(p.get("slide") || 1)),
     page: valid("page", ["overview", "analysis", "map"], "overview"),

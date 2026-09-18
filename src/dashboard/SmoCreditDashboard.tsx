@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import type { Context } from './types';
+import { Icon } from './Icons';
 import { contextUrl } from './model';
 import { normalizeSmoView, smoViews, type SmoView } from './smoNavigation';
 import './SmoCreditDashboard.css';
@@ -18,7 +19,7 @@ function loadSource(): Promise<string> {
 
 export function SmoIcon({ view }: { view: SmoView }) {
   return <svg className={`smo-icon smo-icon-${view}`} width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    {view === 'market' ? <><path d="M3 20h18"/><path className="smo-stroke smo-stroke-1" d="M6 16v-5"/><path className="smo-stroke smo-stroke-2" d="M12 16V7"/><path className="smo-stroke smo-stroke-3" d="M18 16V3"/></> : view === 'structure' ? <><path className="smo-stroke smo-stroke-1" d="M3 7h11m-3-3 3 3-3 3"/><path className="smo-stroke smo-stroke-2" d="M3 17h7m-3-3 3 3-3 3"/><rect className="smo-stroke smo-stroke-3" x="17" y="4" width="4" height="16" rx="2"/></> : <><path className="smo-stroke smo-stroke-1" d="m3 5 6-2 6 3 6-2v15l-6 2-6-3-6 2Z"/><path d="M9 3v15m6-12v15"/><path className="smo-stroke smo-stroke-2" d="m7 12 3 2 6-5"/></>}
+    {view === 'intro' ? <><circle cx="12" cy="12" r="8"/><path className="smo-stroke smo-stroke-1" d="M12 7v10m-5-5h10"/></> : view === 'market' ? <><path d="M3 20h18"/><path className="smo-stroke smo-stroke-1" d="M6 16v-5"/><path className="smo-stroke smo-stroke-2" d="M12 16V7"/><path className="smo-stroke smo-stroke-3" d="M18 16V3"/></> : view === 'structure' ? <><path className="smo-stroke smo-stroke-1" d="M3 7h11m-3-3 3 3-3 3"/><path className="smo-stroke smo-stroke-2" d="M3 17h7m-3-3 3 3-3 3"/><rect className="smo-stroke smo-stroke-3" x="17" y="4" width="4" height="16" rx="2"/></> : <><path className="smo-stroke smo-stroke-1" d="m3 5 6-2 6 3 6-2v15l-6 2-6-3-6 2Z"/><path d="M9 3v15m6-12v15"/><path className="smo-stroke smo-stroke-2" d="m7 12 3 2 6-5"/></>}
   </svg>;
 }
 
@@ -42,6 +43,18 @@ function embeddedDocument(original: string, view: SmoView): string {
     .replace(/<\/head>/i, `${style}</head>`)
     .replace(/<body([^>]*)>/i, (_, attributes: string) => `<body${attributes.replace(/\sdata-theme=("[^"]*"|'[^']*')/i, '')} data-theme="light" data-smo-view="${view}" data-smo-embedded="true">`)
     .replace(/<\/body>/i, `${bridge}</body>`);
+}
+
+function SmoCover({ onOpen }: { onOpen: () => void }) {
+  return <section className="smo-cover" aria-labelledby="smo-cover-title">
+    <div className="smo-cover-copy">
+      <p className="smo-cover-kicker">Сбер · регионы и муниципалитеты</p>
+      <h1 id="smo-cover-title">Кредитование<br />СМО</h1>
+      <p className="smo-cover-lead">Рынок, конкуренты и возможности роста в субъектах и муниципальных образованиях</p>
+    </div>
+    <div className="smo-cover-media"><img src="/images/smo-credit-cover.png" alt="Современный региональный город, набережная и мост" /></div>
+    <button className="smo-cover-next" onClick={onOpen} aria-label="К материалам Кредитования СМО"><span>К материалам</span><span className="smo-cover-next-icon"><Icon name="arrow" size={22}/></span></button>
+  </section>;
 }
 
 export function SmoCreditDashboard({ view, onViewChange }: { view: SmoView; onViewChange: (view: SmoView) => void }) {
@@ -81,6 +94,7 @@ export function SmoCreditDashboard({ view, onViewChange }: { view: SmoView; onVi
     const timeout = window.setTimeout(() => setError('Дашборд не завершил загрузку. Повторите открытие или используйте исходный HTML.'), 30000);
     return () => window.clearTimeout(timeout);
   }, [documentHtml, ready, error]);
+  if (view === 'intro') return <section className="smo-dashboard smo-intro" aria-label="Титульная страница Кредитования СМО"><SmoCover onOpen={() => onViewChange('market')} /></section>;
   return <section className="smo-dashboard" aria-label="Кредитование СМО">
     <div className="smo-frame-shell" aria-busy={!ready && !error}>
       {!documentHtml && !error && <div className="smo-loading" role="status"><SmoIcon view={view}/><p>Загрузка данных кредитования</p><span>Карта, расчёты и подробные материалы</span></div>}

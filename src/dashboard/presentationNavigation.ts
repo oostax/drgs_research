@@ -47,6 +47,6 @@ export function adjacentPresentation(c: Context, direction: -1 | 1): Presentatio
   if (!section) return null;
   return {
     label: section.label,
-    patch: { section: section.id, slide: 1, ...(section.id === "academy" ? { academyView: direction === 1 ? "essence" : "next" } as const : {}), ...(section.id === "smo" ? { smoView: direction === 1 ? "market" : "risk" } as const : {}), ...(section.id === "sales-model" ? { modelView: direction === 1 ? "premises" : "next" } as const : {}) },
+    patch: { section: section.id, slide: 1, ...(section.id === "academy" ? { academyView: direction === 1 ? "essence" : "next" } as const : {}), ...(section.id === "smo" ? { smoView: direction === 1 ? "intro" : "risk" } as const : {}), ...(section.id === "sales-model" ? { modelView: direction === 1 ? "premises" : "next" } as const : {}) },
   };
 }
