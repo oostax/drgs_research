@@ -51,6 +51,28 @@
 .welcome-ground { transform-origin: 372px 648px; animation: welcome-ground-pulse 8s ease-in-out infinite; }
 .welcome-orb { animation: welcome-orb-float 7s ease-in-out infinite; }
 .welcome-leaf { transform-origin: 25px 40px; animation: welcome-leaf-float 9s ease-in-out infinite; }
+/* Each leaf owns one lifecycle: descend, settle, rest, then disappear on the floor. */
+.welcome-maple-fall { animation: welcome-maple-fall var(--leaf-cycle) var(--leaf-delay) linear infinite; }
+.welcome-maple-sway { animation: welcome-maple-sway var(--leaf-cycle) var(--leaf-delay) ease-in-out infinite; }
+.welcome-maple-turn { animation: welcome-maple-turn var(--leaf-cycle) var(--leaf-delay) linear infinite; }
+@keyframes welcome-maple-fall {
+  0% { transform: translateY(-65px); opacity: 1; }
+  60%,94% { transform: translateY(var(--leaf-floor)); opacity: 1; }
+  100% { transform: translateY(var(--leaf-floor)); opacity: 0; }
+}
+@keyframes welcome-maple-sway {
+  0% { transform: translateX(0); }
+  13% { transform: translateX(var(--leaf-drift)); }
+  29% { transform: translateX(calc(var(--leaf-drift) * -.7)); }
+  44% { transform: translateX(calc(var(--leaf-drift) * .8)); }
+  60%,100% { transform: translateX(calc(var(--leaf-drift) * -.3)); }
+}
+@keyframes welcome-maple-turn {
+  0% { transform: rotate(var(--leaf-angle)); }
+  27% { transform: rotate(calc(var(--leaf-angle) + var(--leaf-turn) * .4)); }
+  56% { transform: rotate(calc(var(--leaf-angle) + var(--leaf-turn))) scaleY(1); }
+  60%,100% { transform: rotate(calc(var(--leaf-angle) + var(--leaf-turn))) scaleY(.48); }
+}
 .welcome-light-trace { stroke-dasharray: 70 680; stroke-dashoffset: 750; animation: welcome-trace 6s ease-in-out infinite; }
 .welcome-light-trace-second { animation-delay: -3s; }
 .welcome-page[data-ready='false'] .welcome-copy, .welcome-page[data-ready='false'] .welcome-art, .welcome-page[data-ready='false'] .welcome-footer { visibility: hidden; }
@@ -135,6 +157,7 @@
   .welcome-sculpture { width: 85%; }
 }
 @media (prefers-reduced-motion: reduce) {
+  .welcome-maple-shower { display: none; }
   .welcome-page *, .welcome-page *::before, .pulse-header .welcome-nav-sun, .pulse-header .welcome-nav-rays { animation: none !important; transition: none !important; }
 }
 @media (forced-colors: active) {

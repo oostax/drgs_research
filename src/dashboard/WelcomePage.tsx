@@ -1,4 +1,5 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+import type { CSSProperties } from "react";
 import type { Context } from "./types";
 import { Icon } from "./Icons";
 import { usePresentationHeight } from "./PresentationFrame";
@@ -31,6 +32,14 @@ function WelcomeSculpture() {
         <stop stopColor="#f6e7a1"/><stop offset=".47" stopColor="#d7bb68"/><stop offset="1" stopColor="#86aa4e"/>
       </linearGradient>
       <radialGradient id={`${id}-shadow`}><stop stopColor="#075b40" stopOpacity=".24"/><stop offset="1" stopColor="#075b40" stopOpacity="0"/></radialGradient>
+      <linearGradient id={`${id}-maple`} x1="-28" y1="-32" x2="26" y2="30" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#e7aa68"/><stop offset=".48" stopColor="#c96c50"/><stop offset="1" stopColor="#a94d43"/>
+      </linearGradient>
+      <clipPath id={`${id}-leaf-bounds`}><path d="M100 0h580v700H100z"/></clipPath>
+      <g id={`${id}-maple-leaf`}>
+        <path d="m0-34 7 15 7-5-2 18 15-10-1 10 11 1-15 16 5 7-22 3-5 8-5-8-22-3 5-7-15-16 11-1-1-10 15 10-2-18 7 5Z" fill={paint("maple")} stroke="#b56046" strokeWidth=".7" strokeLinejoin="round"/>
+        <path d="M0-25v65M0 17-21-2M0 17 21-2M0 3-8-11M0 3 8-11" stroke="#793f32" strokeOpacity=".42" strokeWidth="1.1" strokeLinecap="round"/>
+      </g>
     </defs>
     <circle cx="364" cy="356" r="278" stroke="#12875d" strokeOpacity=".12"/>
     <circle cx="364" cy="356" r="225" stroke="#12875d" strokeOpacity=".1" strokeDasharray="2 12"/>
@@ -78,6 +87,28 @@ function WelcomeSculpture() {
       </g>
     </g>
     <path d="m614 507 0 16m-8-8h16M180 117v12m-6-6h12" stroke="#1d9e76" strokeOpacity=".5" strokeWidth="2" strokeLinecap="round"/>
+    {/* Sparse, staggered paths stay inside the artwork, away from the copy. */}
+    <g clipPath={paint("leaf-bounds")} className="welcome-maple-shower">
+      {[{ x: 190, scale: .58, duration: 27, delay: -19, angle: -48, turn: 205, drift: 24, floor: 628 },
+        { x: 300, scale: .46, duration: 31, delay: -12, angle: 124, turn: -165, drift: -30, floor: 640 },
+        { x: 410, scale: .64, duration: 29, delay: -23, angle: 37, turn: -240, drift: 20, floor: 632 },
+        { x: 566, scale: .5, duration: 34, delay: -8, angle: -156, turn: 190, drift: -26, floor: 624 },
+        { x: 244, scale: .52, duration: 32, delay: -3, angle: 72, turn: -195, drift: 35, floor: 650 },
+        { x: 475, scale: .56, duration: 30, delay: -17, angle: -115, turn: 260, drift: -22, floor: 646 },
+      ].map((leaf, index) => <g key={index} transform={`translate(${leaf.x} 0)`} style={{
+        "--leaf-cycle": `${leaf.duration}s`, "--leaf-delay": `${leaf.delay}s`,
+        "--leaf-floor": `${leaf.floor}px`, "--leaf-drift": `${leaf.drift}px`,
+        "--leaf-angle": `${leaf.angle}deg`, "--leaf-turn": `${leaf.turn}deg`,
+      } as CSSProperties}>
+        <g className="welcome-maple-fall">
+          <g className="welcome-maple-sway">
+            <g transform={`scale(${leaf.scale})`}>
+              <g className="welcome-maple-turn"><use href={`#${id}-maple-leaf`}/></g>
+            </g>
+          </g>
+        </g>
+      </g>)}
+    </g>
   </svg>;
 }
 
